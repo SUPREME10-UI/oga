@@ -1,0 +1,190 @@
+/* Navbar.css */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--header-height);
+    z-index: 1000;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: var(--backdrop-blur);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: var(--transition-base);
+}
+
+.navbar.scrolled {
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-sm);
+    border-bottom: 1px solid var(--neutral-200);
+}
+
+.nav-container {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-container.fluid {
+    max-width: 100%;
+}
+
+/* Logo */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 800;
+    font-size: var(--text-xl);
+    color: var(--neutral-900);
+    letter-spacing: -0.02em;
+}
+
+.logo i {
+    color: var(--brand-primary);
+    font-size: var(--text-2xl);
+}
+
+/* Desktop Menu */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--space-8);
+}
+
+.nav-link {
+    font-weight: var(--font-medium);
+    color: var(--neutral-600);
+    font-size: var(--text-sm);
+    transition: var(--transition-base);
+    position: relative;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: var(--brand-primary);
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--brand-primary);
+    transition: width 0.3s ease;
+    border-radius: 2px;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+    width: 100%;
+}
+
+/* Buttons */
+.nav-buttons {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.btn-nav {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    transition: var(--transition-base);
+}
+
+.btn-login {
+    color: var(--neutral-700);
+}
+
+.btn-login:hover {
+    color: var(--brand-primary);
+    background-color: var(--brand-primary-subtle);
+}
+
+.btn-signup {
+    background-color: var(--brand-primary);
+    color: #fff;
+    box-shadow: var(--shadow-brand);
+}
+
+.btn-signup:hover {
+    background-color: var(--brand-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Mobile Toggle */
+.mobile-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 1002;
+}
+
+.mobile-toggle span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: var(--neutral-800);
+    border-radius: 2px;
+    transition: var(--transition-base);
+}
+
+/* Mobile Menu */
+@media (max-width: 768px) {
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 80%;
+        max-width: 300px;
+        height: 100vh;
+        background-color: #fff;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: var(--space-20) var(--space-6) var(--space-6);
+        box-shadow: -5px 0 20px rgba(0, 0, 0, 0.1);
+        transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1001;
+    }
+
+    .nav-menu.active {
+        right: 0;
+    }
+
+    .nav-link {
+        font-size: var(--text-lg);
+        width: 100%;
+        display: block;
+        padding: var(--space-2) 0;
+    }
+
+    .mobile-toggle {
+        display: flex;
+    }
+
+    .nav-buttons {
+        display: none;
+        /* Might want to move these inside mobile menu for mobile */
+    }
+
+    /* Add buttons to mobile menu if needed via JS or duplicate structure */
+    .mobile-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        width: 100%;
+        margin-top: var(--space-6);
+    }
+}
