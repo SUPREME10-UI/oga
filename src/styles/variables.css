@@ -4,13 +4,13 @@
 
 :root {
    /* 
-     Color Palette 
-     Primary: Orange #f97415
-  */
-   --brand-primary: #f97415;
-   --brand-primary-hover: #ea6a10;
-   --brand-primary-active: #d85f0d;
-   --brand-primary-subtle: #fff7ed;
+      Color Palette 
+      Primary: Azure Blue #3182ce
+   */
+   --brand-primary: #3182ce;
+   --brand-primary-hover: #2b6cb0;
+   --brand-primary-active: #2c5282;
+   --brand-primary-subtle: #ebf8ff;
 
    --brand-secondary: hsl(220, 15%, 20%);
    /* Charcoal for secondary actions */
@@ -68,8 +68,16 @@
    /* Yellow-600 */
 
    /* Typography */
-   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-   --font-heading: 'Poppins', var(--font-sans);
+   --font-sans: 'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      Helvetica,
+      Arial,
+      sans-serif;
+   --font-heading: 'Poppins',
+      var(--font-sans);
 
    --text-xs: 0.75rem;
    /* 12px */
@@ -138,9 +146,12 @@
    --radius-full: 9999px;
 
    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+   --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
    --shadow-brand: 0 10px 25px -5px rgba(var(--primary-hue), 95%, 50%, 0.25);
 
    --backdrop-blur: blur(12px);

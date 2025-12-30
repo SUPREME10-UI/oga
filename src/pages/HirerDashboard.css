@@ -192,39 +192,42 @@
 
 .stat-box {
     background: white;
-    padding: 1.25rem;
-    /* Reduced padding */
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    border: 1px solid #eef0f2;
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid #edf2f7;
+    transition: transform 0.2s ease;
+}
+
+.stat-box:hover {
+    transform: translateY(-2px);
 }
 
 .stat-box.green {
-    border-top: 3px solid #10b981;
-    /* Thinner border */
+    border-left: 4px solid #38a169;
 }
 
 .stat-box.orange {
-    border-top: 3px solid #f97316;
+    border-left: 4px solid #ed8936;
 }
 
 .stat-box.purple {
-    border-top: 3px solid #8b5cf6;
+    border-left: 4px solid #805ad5;
 }
 
 .stat-label {
-    color: #6b7280;
-    font-size: 0.85rem;
-    /* Smaller text */
-    font-weight: 500;
-    margin-bottom: 0.25rem;
+    color: #718096;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
 }
 
 .stat-number {
-    font-size: 1.5rem;
-    /* Significantly reduced from 2rem */
-    font-weight: 700;
-    color: #111;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1a202c;
 }
 
 /* Sections */
@@ -263,19 +266,18 @@
 
 .listing-item {
     background: white;
-    border-radius: 8px;
-    padding: 0.85rem;
-    /* Reduced padding */
+    border-radius: 12px;
+    padding: 1.25rem;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    border: 1px solid #eee;
-    transition: box-shadow 0.2s;
+    gap: 1.25rem;
+    border: 1px solid #edf2f7;
+    transition: all 0.2s ease;
 }
 
 .listing-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-color: #d1fae5;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: #bee3f8;
 }
 
 .listing-img {
@@ -360,6 +362,44 @@
 
 .btn-icon:hover {
     color: #374151;
+}
+
+.action-btns-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action-edit,
+.btn-action-delete {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    background: white;
+    transition: all 0.2s;
+    font-size: 0.85rem;
+}
+
+.btn-action-edit {
+    color: #4f46e5;
+}
+
+.btn-action-edit:hover {
+    background: #e0e7ff;
+    border-color: #4f46e5;
+}
+
+.btn-action-delete {
+    color: #dc2626;
+}
+
+.btn-action-delete:hover {
+    background: #fee2e2;
+    border-color: #dc2626;
 }
 
 .action-buttons {

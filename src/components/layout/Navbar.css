@@ -6,9 +6,9 @@
     width: 100%;
     height: var(--header-height);
     z-index: 1000;
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: var(--backdrop-blur);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     transition: var(--transition-base);
 }
 
@@ -39,7 +39,7 @@
     gap: var(--space-2);
     font-weight: 800;
     font-size: var(--text-xl);
-    color: var(--neutral-900);
+    color: var(--brand-primary);
     letter-spacing: -0.02em;
 }
 
@@ -57,7 +57,7 @@
 
 .nav-link {
     font-weight: var(--font-medium);
-    color: var(--neutral-600);
+    color: var(--brand-primary);
     font-size: var(--text-sm);
     transition: var(--transition-base);
     position: relative;

@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LabourerCard from '../components/common/LabourerCard';
+import JobCard from '../components/common/JobCard';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { professions, locations } from '../services/mockData';
 import './Explore.css';
 
 function Explore() {
-    const { labourers } = useData();
+    const { labourers, jobs } = useData();
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+
+    const [activeTab, setActiveTab] = useState('labourers'); // 'labourers' or 'jobs'
     const [filteredLabourers, setFilteredLabourers] = useState(labourers);
+    const [filteredJobs, setFilteredJobs] = useState(jobs);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedProfession, setSelectedProfession] = useState('All');
     const [selectedLocation, setSelectedLocation] = useState('All');
@@ -21,7 +26,8 @@ function Explore() {
     };
 
     useEffect(() => {
-        const results = labourers.filter(labourer => {
+        // Filter Labourers
+        const labResults = labourers.filter(labourer => {
             const matchesSearch = labourer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 labourer.profession.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesProfession = selectedProfession === 'All' || labourer.profession === selectedProfession;
@@ -29,8 +35,24 @@ function Explore() {
 
             return matchesSearch && matchesProfession && matchesLocation;
         });
-        setFilteredLabourers(results);
-    }, [searchTerm, selectedProfession, selectedLocation, labourers]);
+        setFilteredLabourers(labResults);
+
+        // Filter Jobs
+        const jobResults = jobs.filter(job => {
+            const matchesSearch = (job.title && job.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                (job.description && job.description.toLowerCase().includes(searchTerm.toLowerCase()));
+
+            // Handle case-insensitive profession/category matching
+            const matchesProfession = selectedProfession === 'All' ||
+                (job.category && job.category.toLowerCase() === selectedProfession.toLowerCase());
+
+            const matchesLocation = selectedLocation === 'All' ||
+                (job.location && job.location.toLowerCase() === selectedLocation.toLowerCase());
+
+            return matchesSearch && matchesProfession && matchesLocation;
+        });
+        setFilteredJobs(jobResults);
+    }, [searchTerm, selectedProfession, selectedLocation, labourers, jobs]);
 
     return (
         <div className="explore-page">
@@ -99,37 +121,81 @@ function Explore() {
                             Search
                         </button>
                     </div>
+
+                    {/* Tab Navigation */}
+                    <div className="explore-tabs">
+                        <button
+                            className={`tab-btn ${activeTab === 'labourers' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('labourers')}
+                        >
+                            <i className="fas fa-user-friends"></i>
+                            Find Labourers
+                        </button>
+                        <button
+                            className={`tab-btn ${activeTab === 'jobs' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('jobs')}
+                        >
+                            <i className="fas fa-briefcase"></i>
+                            Browse Jobs
+                        </button>
+                    </div>
                 </div>
             </header>
 
             <section className="results-section">
                 <div className="container">
                     <div className="results-count">
-                        Showing {filteredLabourers.length} results
+                        Showing {activeTab === 'labourers' ? filteredLabourers.length : filteredJobs.length} {activeTab === 'labourers' ? 'labourers' : 'jobs'} found
                     </div>
 
-                    {filteredLabourers.length > 0 ? (
-                        <div className="labourers-grid">
-                            {filteredLabourers.map(labourer => (
-                                <LabourerCard key={labourer.id} labourer={labourer} />
-                            ))}
-                        </div>
+                    {activeTab === 'labourers' ? (
+                        filteredLabourers.length > 0 ? (
+                            <div className="labourers-grid">
+                                {filteredLabourers.map(labourer => (
+                                    <LabourerCard key={labourer.id} labourer={labourer} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="no-results">
+                                <i className="fas fa-search"></i>
+                                <h3>No labourers found</h3>
+                                <p>Try adjusting your search or filters to find what you're looking for.</p>
+                                <button
+                                    className="btn-text"
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setSelectedProfession('All');
+                                        setSelectedLocation('All');
+                                    }}
+                                >
+                                    Clear all filters
+                                </button>
+                            </div>
+                        )
                     ) : (
-                        <div className="no-results">
-                            <i className="fas fa-search"></i>
-                            <h3>No labourers found</h3>
-                            <p>Try adjusting your search or filters to find what you're looking for.</p>
-                            <button
-                                className="btn-text"
-                                onClick={() => {
-                                    setSearchTerm('');
-                                    setSelectedProfession('All');
-                                    setSelectedLocation('All');
-                                }}
-                            >
-                                Clear all filters
-                            </button>
-                        </div>
+                        filteredJobs.length > 0 ? (
+                            <div className="labourers-grid">
+                                {filteredJobs.map(job => (
+                                    <JobCard key={job.id} job={job} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="no-results">
+                                <i className="fas fa-briefcase"></i>
+                                <h3>No jobs found</h3>
+                                <p>Try adjusting your search or filters to find what you're looking for.</p>
+                                <button
+                                    className="btn-text"
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setSelectedProfession('All');
+                                        setSelectedLocation('All');
+                                    }}
+                                >
+                                    Clear all filters
+                                </button>
+                            </div>
+                        )
                     )}
                 </div>
             </section>

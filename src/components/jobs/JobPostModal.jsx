@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './JobPostModal.css';
 
-function JobPostModal({ isOpen, onClose, onJobPost }) {
+function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         title: '',
@@ -11,6 +11,14 @@ function JobPostModal({ isOpen, onClose, onJobPost }) {
         description: '',
         urgency: 'normal'
     });
+
+    useEffect(() => {
+        if (initialData) {
+            setFormData(initialData);
+        } else {
+            setFormData({ title: '', category: '', location: '', budget: '', description: '', urgency: 'normal' });
+        }
+    }, [initialData, isOpen]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -39,7 +47,7 @@ function JobPostModal({ isOpen, onClose, onJobPost }) {
         <div className="job-modal-overlay">
             <div className="job-modal-container">
                 <div className="job-modal-header">
-                    <h2>Post a New Job</h2>
+                    <h2>{initialData ? 'Update Job Posting' : 'Post a New Job'}</h2>
                     <button className="close-btn" onClick={onClose}><i className="fas fa-times"></i></button>
                 </div>
 
@@ -68,10 +76,10 @@ function JobPostModal({ isOpen, onClose, onJobPost }) {
                                 <label>Category</label>
                                 <select name="category" value={formData.category} onChange={handleChange}>
                                     <option value="">Select Category</option>
-                                    <option value="plumbing">Plumbing</option>
-                                    <option value="electrical">Electrical</option>
-                                    <option value="carpentry">Carpentry</option>
-                                    <option value="cleaning">Cleaning</option>
+                                    <option value="Plumbing">Plumbing</option>
+                                    <option value="Electrical">Electrical</option>
+                                    <option value="Carpentry">Carpentry</option>
+                                    <option value="Cleaning">Cleaning</option>
                                 </select>
                             </div>
 
@@ -116,7 +124,9 @@ function JobPostModal({ isOpen, onClose, onJobPost }) {
 
                             <div className="form-actions-row">
                                 <button type="button" className="btn-back" onClick={handleBack}>Back</button>
-                                <button type="submit" className="btn-submit">Post Job</button>
+                                <button type="submit" className="btn-submit">
+                                    {initialData ? 'Update Job' : 'Post Job'}
+                                </button>
                             </div>
                         </div>
                     )}

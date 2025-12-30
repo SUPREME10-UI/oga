@@ -1,0 +1,182 @@
+.labourer-card {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #edf2f7;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.labourer-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    border-color: #bee3f8;
+}
+
+.card-header {
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+.labourer-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.labourer-card:hover .labourer-img {
+    transform: scale(1.05);
+}
+
+.verified-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: white;
+    color: #38a169;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 2;
+}
+
+.card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.labourer-info-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.labourer-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+.labourer-profession {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #3182ce;
+    background: #ebf8ff;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.labourer-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #718096;
+    font-size: 0.85rem;
+}
+
+.meta-item i {
+    width: 14px;
+    color: #a0aec0;
+}
+
+.meta-item.rating {
+    color: #ecc94b;
+}
+
+.meta-item.rating i {
+    color: #ecc94b;
+}
+
+.review-count {
+    color: #a0aec0;
+    margin-left: 4px;
+}
+
+.labourer-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-grow: 1;
+}
+
+.skill-tag {
+    font-size: 0.75rem;
+    color: #4a5568;
+    background: #f7fafc;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 500;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid #edf2f7;
+}
+
+.hourly-rate {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+}
+
+.hourly-rate .currency {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.hourly-rate .amount {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #2d3748;
+}
+
+.hourly-rate .period {
+    font-size: 0.8rem;
+    color: #718096;
+    margin-left: 2px;
+}
+
+.btn-card-action {
+    background: #3182ce;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(49, 130, 206, 0.15);
+}
+
+.btn-card-action:hover {
+    background: #2b6cb0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(49, 130, 206, 0.2);
+}

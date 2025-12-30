@@ -101,12 +101,12 @@ function Profile({ onOpenAuth }) {
                         </header>
 
                         <section className="profile-section">
-                            <h3>About</h3>
+                            <h3><i className="fas fa-user"></i> About</h3>
                             <p className="profile-bio">{labourer.bio || "No bio provided."}</p>
                         </section>
 
                         <section className="profile-section">
-                            <h3>Skills</h3>
+                            <h3><i className="fas fa-tools"></i> Skills</h3>
                             <div className="profile-skills-list">
                                 {labourer.skills.map(skill => (
                                     <span key={skill} className="skill-badge">{skill}</span>
@@ -115,7 +115,7 @@ function Profile({ onOpenAuth }) {
                         </section>
 
                         <section className="profile-section">
-                            <h3>Reviews ({labourer.reviews})</h3>
+                            <h3><i className="fas fa-star"></i> Reviews ({labourer.reviews})</h3>
                             <div className="reviews-list">
                                 {labourer.reviewsList && labourer.reviewsList.length > 0 ? (
                                     labourer.reviewsList.map(review => (

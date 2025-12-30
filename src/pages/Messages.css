@@ -1,0 +1,118 @@
+.messages-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    background: #fff;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    height: 70vh;
+    overflow: hidden;
+    border: 1px solid var(--neutral-100);
+}
+
+.chat-list-sidebar {
+    border-right: 1px solid var(--neutral-100);
+    overflow-y: auto;
+}
+
+.chat-item {
+    display: flex;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    cursor: pointer;
+    transition: var(--transition-base);
+    border-bottom: 1px solid var(--neutral-50);
+}
+
+.chat-item:hover {
+    background: var(--neutral-50);
+}
+
+.chat-item.unread {
+    background: var(--brand-primary-subtle);
+}
+
+.chat-avatar {
+    width: 50px;
+    height: 50px;
+    background: var(--neutral-100);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--neutral-400);
+}
+
+.chat-preview {
+    flex: 1;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--space-1);
+}
+
+.chat-header strong {
+    color: var(--neutral-900);
+}
+
+.chat-header span {
+    font-size: 0.75rem;
+    color: var(--neutral-400);
+}
+
+.chat-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-footer p {
+    font-size: var(--text-sm);
+    color: var(--neutral-500);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+}
+
+.unread-count {
+    background: var(--brand-primary);
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.chat-window-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--neutral-50);
+}
+
+.placeholder-content {
+    text-align: center;
+    color: var(--neutral-300);
+}
+
+.placeholder-content i {
+    font-size: 4rem;
+    margin-bottom: var(--space-4);
+}
+
+@media (max-width: 900px) {
+    .messages-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .chat-window-placeholder {
+        display: none;
+    }
+}

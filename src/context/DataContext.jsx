@@ -34,6 +34,16 @@ export function DataProvider({ children }) {
         return newJob;
     };
 
+    const updateJob = (id, updatedData) => {
+        setJobs(prevJobs => prevJobs.map(job =>
+            job.id === id ? { ...job, ...updatedData } : job
+        ));
+    };
+
+    const deleteJob = (id) => {
+        setJobs(prevJobs => prevJobs.filter(job => job.id !== id));
+    };
+
     const addLabourer = (labourer) => {
         const newLabourer = {
             ...labourer,
@@ -46,7 +56,7 @@ export function DataProvider({ children }) {
     };
 
     return (
-        <DataContext.Provider value={{ jobs, labourers, addJob, addLabourer }}>
+        <DataContext.Provider value={{ jobs, labourers, addJob, updateJob, deleteJob, addLabourer }}>
             {children}
         </DataContext.Provider>
     );

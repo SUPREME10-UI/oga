@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import './LabourerCard.css';
 
 function LabourerCard({ labourer }) {
     return (

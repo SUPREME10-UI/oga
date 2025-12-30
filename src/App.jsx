@@ -8,6 +8,12 @@ import Explore from './pages/Explore';
 import Profile from './pages/Profile';
 import HirerDashboard from './pages/HirerDashboard';
 import LabourerDashboard from './pages/LabourerDashboard';
+import JobDetail from './pages/JobDetail';
+import MyJobs from './pages/MyJobs';
+import Applications from './pages/Applications';
+import Earnings from './pages/Earnings';
+import Messages from './pages/Messages';
+import Settings from './pages/Settings';
 import MainLayout from './components/layout/MainLayout';
 import './App.css';
 
@@ -40,14 +46,22 @@ function App() {
           <Route path="/" element={<Home onOpenAuth={openAuthModal} />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/profile/:id" element={<Profile onOpenAuth={openAuthModal} />} />
+          <Route path="/job/:id" element={<JobDetail />} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute allowedRoles={['hirer']} />}>
             <Route path="/dashboard/hirer" element={<HirerDashboard />} />
+            <Route path="/dashboard/hirer/jobs" element={<MyJobs />} />
+            <Route path="/dashboard/hirer/messages" element={<Messages />} />
+            <Route path="/dashboard/hirer/settings" element={<Settings />} />
           </Route>
 
           <Route element={<ProtectedRoute allowedRoles={['labourer']} />}>
             <Route path="/dashboard/labourer" element={<LabourerDashboard />} />
+            <Route path="/dashboard/labourer/applications" element={<Applications />} />
+            <Route path="/dashboard/labourer/earnings" element={<Earnings />} />
+            <Route path="/dashboard/labourer/messages" element={<Messages />} />
+            <Route path="/dashboard/labourer/settings" element={<Settings />} />
           </Route>
 
           {/* Generic Redirect */}

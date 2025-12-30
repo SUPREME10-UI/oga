@@ -3,13 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import JobPostModal from '../components/jobs/JobPostModal';
+import ConfirmModal from '../components/common/ConfirmModal';
 import './HirerDashboard.css';
 
 function HirerDashboard() {
     const [isPostJobValOpen, setIsPostJobValOpen] = useState(false);
+    const [editingJob, setEditingJob] = useState(null);
+    const [jobToDelete, setJobToDelete] = useState(null);
 
     // Use data from context instead of local mock state
-    const { jobs: allJobs, addJob } = useData();
+    const { jobs: allJobs, addJob, updateJob, deleteJob } = useData();
     // Filter to only show jobs created by this hirer (or for demo, maybe all jobs if we want simple testing, but better to simulate "My Jobs")
     // For this simple demo without real user IDs linking, let's just show all jobs or assume they are mine since I just posted them. 
     // To make it cleaner, let's filter by nothing for now or just show all.
@@ -24,9 +27,34 @@ function HirerDashboard() {
         navigate('/');
     };
 
-    const handleAddJob = (newJob) => {
-        addJob(newJob);
-        // Date and Id are handled in context
+    const handleAddJob = (jobData) => {
+        if (editingJob) {
+            updateJob(editingJob.id, jobData);
+            setEditingJob(null);
+        } else {
+            addJob(jobData);
+        }
+    };
+
+    const handleDeleteJob = (id) => {
+        setJobToDelete(id);
+    };
+
+    const confirmDelete = () => {
+        if (jobToDelete) {
+            deleteJob(jobToDelete);
+            setJobToDelete(null);
+        }
+    };
+
+    const handleEditJob = (job) => {
+        setEditingJob(job);
+        setIsPostJobValOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsPostJobValOpen(false);
+        setEditingJob(null);
     };
 
     const getCategoryIcon = (category) => {
@@ -58,11 +86,11 @@ function HirerDashboard() {
                     <p>Hirer Account</p>
                 </div>
                 <nav className="sidebar-nav">
-                    <a href="#" className="active"><i className="fas fa-th-large"></i> Overview</a>
-                    <a href="#"><i className="fas fa-briefcase"></i> My Jobs</a>
+                    <Link to="/dashboard/hirer" className="active"><i className="fas fa-th-large"></i> Overview</Link>
+                    <Link to="/dashboard/hirer/jobs"><i className="fas fa-briefcase"></i> My Jobs</Link>
                     <Link to="/explore"><i className="fas fa-search"></i> Explore</Link>
-                    <a href="#"><i className="fas fa-envelope"></i> Messages</a>
-                    <a href="#"><i className="fas fa-cog"></i> Settings</a>
+                    <Link to="/dashboard/hirer/messages"><i className="fas fa-envelope"></i> Messages</Link>
+                    <Link to="/dashboard/hirer/settings"><i className="fas fa-cog"></i> Settings</Link>
                 </nav>
             </div>
 
@@ -74,7 +102,7 @@ function HirerDashboard() {
                         <button
                             className="btn-post-job"
                             onClick={handleLogout}
-                            style={{ backgroundColor: '#fff', color: '#e53e3e', border: '1px solid #e53e3e', marginRight: '10px' }}
+                            style={{ backgroundColor: '#fff', color: '#e53e3e', border: '1px solid #fee2e2', marginRight: '10px' }}
                         >
                             <i className="fas fa-sign-out-alt"></i> Logout
                         </button>
@@ -121,7 +149,17 @@ function HirerDashboard() {
                                     </div>
                                     <div className="listing-actions">
                                         <span className={`badge ${job.status === 'Active' ? 'active' : 'review'}`}>{job.status}</span>
-                                        <button className="btn-icon"><i className="fas fa-ellipsis-v"></i></button>
+                                        <div className="action-btns-group">
+                                            <button className="btn-action-edit" onClick={() => navigate(`/job/${job.id}`)} title="View Job" style={{ color: 'var(--brand-primary)', backgroundColor: 'var(--brand-primary-subtle)' }}>
+                                                <i className="fas fa-eye"></i>
+                                            </button>
+                                            <button className="btn-action-edit" onClick={() => handleEditJob(job)} title="Edit Job">
+                                                <i className="fas fa-edit"></i>
+                                            </button>
+                                            <button className="btn-action-delete" onClick={() => handleDeleteJob(job.id)} title="Delete Job">
+                                                <i className="fas fa-trash-alt"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -154,8 +192,20 @@ function HirerDashboard() {
 
             <JobPostModal
                 isOpen={isPostJobValOpen}
-                onClose={() => setIsPostJobValOpen(false)}
+                onClose={handleCloseModal}
                 onJobPost={handleAddJob}
+                initialData={editingJob}
+            />
+
+            <ConfirmModal
+                isOpen={!!jobToDelete}
+                onClose={() => setJobToDelete(null)}
+                onConfirm={confirmDelete}
+                title="Delete Job Posting?"
+                message="Are you sure you want to delete this job? This action cannot be undone."
+                confirmText="Okay"
+                cancelText="Cancel"
+                type="danger"
             />
         </div>
     );

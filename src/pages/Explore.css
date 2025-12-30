@@ -37,7 +37,7 @@
     gap: 1.5rem;
 }
 
-.nav-link {
+.explore-navbar .nav-link {
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -179,6 +179,46 @@
     box-shadow: var(--shadow-brand);
 }
 
+/* Explore Tabs */
+.explore-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2.5rem;
+}
+
+.tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 0.8rem 1.75rem;
+    border-radius: 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(8px);
+}
+
+.tab-btn i {
+    font-size: 1.1rem;
+}
+
+.tab-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.tab-btn.active {
+    background: white;
+    color: var(--brand-primary);
+    border-color: white;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
 /* Results Section */
 .results-section {
     padding: 2rem 3rem;
@@ -231,208 +271,106 @@
 
 /* Results Section */
 .results-section {
-    padding: 2rem 0;
+    padding: 4rem 3rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 .results-count {
-    margin-bottom: 1.5rem;
-    color: var(--color-gray);
+    margin-bottom: 2rem;
+    color: #64748b;
+    font-size: 1.1rem;
     font-weight: 500;
 }
 
 .labourers-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-}
-
-/* Labourer Card Styles */
-.labourer-card {
-    background: var(--color-white);
-    border-radius: var(--border-radius-lg);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: 1px solid var(--color-gray-light);
-}
-
-.labourer-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-md);
-}
-
-.card-header {
-    height: 180px;
-    overflow: hidden;
-    position: relative;
-}
-
-.labourer-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.verified-badge {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    background: var(--color-secondary);
-    color: var(--color-white);
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.9rem;
-    box-shadow: var(--shadow-sm);
-}
-
-.card-body {
-    padding: 1.5rem;
-}
-
-.labourer-info-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 0.5rem;
-}
-
-.labourer-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: var(--color-dark);
-}
-
-.labourer-profession {
-    font-size: 0.9rem;
-    color: var(--color-primary);
-    font-weight: 500;
-    background: rgba(255, 87, 34, 0.1);
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--border-radius-sm);
-}
-
-.labourer-meta {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    font-size: 0.9rem;
-    color: var(--color-gray);
-}
-
-.meta-item {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-}
-
-.meta-item.rating {
-    color: #ffc107;
-}
-
-.review-count {
-    color: var(--color-gray);
-    font-size: 0.8rem;
-}
-
-.labourer-skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.skill-tag {
-    font-size: 0.75rem;
-    color: var(--color-gray);
-    font-weight: 600;
-    background: #f5f5f5;
-    padding: 0.2rem 0.5rem;
-    border-radius: var(--border-radius-sm);
-}
-
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 1px solid var(--color-gray-light);
-    padding-top: 1rem;
-}
-
-.hourly-rate .currency {
-    font-size: 0.9rem;
-    color: var(--color-primary);
-    font-weight: 600;
-}
-
-.hourly-rate .amount {
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--color-dark);
-}
-
-.hourly-rate .period {
-    font-size: 0.8rem;
-    color: var(--color-gray);
-}
-
-.btn-card-action {
-    background: var(--color-dark);
-    color: var(--color-white);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-md);
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background 0.3s ease;
-}
-
-.btn-card-action:hover {
-    background: var(--color-primary);
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2.5rem;
 }
 
 /* No Results */
 .no-results {
     text-align: center;
-    padding: 3rem;
-    color: var(--color-gray);
+    padding: 5rem 2rem;
+    background: white;
+    border-radius: 16px;
+    border: 1px dashed #e2e8f0;
+    color: #64748b;
 }
 
 .no-results i {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
+    font-size: 3.5rem;
+    margin-bottom: 1.5rem;
+    color: #cbd5e1;
+}
+
+.no-results h3 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 0.75rem;
+}
+
+.no-results p {
+    margin-bottom: 1.5rem;
 }
 
 .btn-text {
-    background: none;
+    background: #3182ce;
     border: none;
-    color: var(--color-primary);
-    text-decoration: underline;
+    color: white;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    margin-top: 1rem;
-    font-size: 1rem;
+    transition: all 0.2s;
 }
 
-/* Mobile Responsive */
+.btn-text:hover {
+    background: #2b6cb0;
+    transform: translateY(-1px);
+}
+
+/* Mobile Responsive Refinements */
 @media (max-width: 768px) {
+    .explore-navbar {
+        padding: 1rem 1.5rem;
+    }
+
+    .explore-hero h1 {
+        font-size: 2.25rem;
+    }
+
     .search-filter-container {
         flex-direction: column;
+        border-radius: 20px;
+        padding: 1rem;
     }
 
-    .filters {
+    .search-box,
+    .filter-select,
+    .btn-search-submit {
         width: 100%;
-        min-width: unset;
     }
 
-    .search-box {
+    .explore-tabs {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .tab-btn {
         width: 100%;
+        justify-content: center;
     }
 
-    .explore-header h1 {
-        font-size: 2rem;
+    .results-section {
+        padding: 2rem 1.5rem;
+    }
+
+    .labourers-grid {
+        grid-template-columns: 1fr;
     }
 }
