@@ -268,10 +268,14 @@ export function DataProvider({ children }) {
         setLabourers(prev => {
             const exists = prev.find(l => l.id === labourerId);
             if (exists) {
-                return prev.map(l => l.id === labourerId ? { ...l, ...updates } : l);
+                const updated = prev.map(l => l.id === labourerId ? { ...l, ...updates } : l);
+                console.log('Updated existing labourer:', updated.find(l => l.id === labourerId));
+                return updated;
             }
-            // If it doesn't exist, we might be updating the current user's initial professional profile
-            return [...prev, { id: labourerId, ...updates }];
+            // If it doesn't exist, add them to the list
+            const newLabourer = { id: labourerId, ...updates };
+            console.log('Added new labourer to list:', newLabourer);
+            return [...prev, newLabourer];
         });
     };
 

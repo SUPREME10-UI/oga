@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../context/AuthContext';
@@ -9,7 +9,34 @@ import './LabourerDashboard.css';
 function LabourerDashboard() {
     const [activeTab, setActiveTab] = useState('jobs'); // 'jobs' or 'applications'
     const { user, updateUser, logout } = useAuth();
-    const { jobs, applications, updateLabourerProfile, notifications } = useData();
+    const { jobs, applications, updateLabourerProfile, notifications, labourers } = useData();
+    
+    // Ensure labourer is in the global list when they access dashboard
+    useEffect(() => {
+        if (user && user.type === 'labourer' && user.id) {
+            const existsInList = labourers.find(l => l.id === user.id);
+            if (!existsInList) {
+                // Add labourer to the list if they don't exist
+                updateLabourerProfile(user.id, {
+                    id: user.id,
+                    name: user.name || 'Labourer',
+                    profession: user.profession || 'Labourer',
+                    location: user.location || 'Accra, Ghana',
+                    photo: user.photo || null,
+                    email: user.email || '',
+                    availabilityStatus: user.availabilityStatus || 'Available',
+                    availabilityNote: user.availabilityNote || '',
+                    statusUpdateTime: user.statusUpdateTime || null,
+                    rating: user.rating || 0,
+                    reviewCount: user.reviewCount || 0,
+                    hourlyRate: user.hourlyRate || 50,
+                    skills: user.skills || [],
+                    verified: user.verified || false
+                });
+                console.log('Added labourer to global list on dashboard load:', user.id);
+            }
+        }
+    }, [user, labourers, updateLabourerProfile]);
 
     const [isAvailabilityEditing, setIsAvailabilityEditing] = useState(false);
     const [availStatus, setAvailStatus] = useState(user?.availabilityStatus || 'Available');
@@ -24,21 +51,38 @@ function LabourerDashboard() {
     };
 
     const handleSaveAvailability = () => {
-        // Update global labourers list for Explore page
-        updateLabourerProfile(user.id, {
-            name: user.name,
-            profession: user.profession,
-            location: user.location,
-            photo: user.photo,
+        const statusUpdateTime = new Date().toISOString();
+        
+        // Ensure labourer is added to the global list with all required fields
+        const labourerData = {
+            id: user.id,
+            name: user.name || 'Labourer',
+            profession: user.profession || 'Labourer',
+            location: user.location || 'Accra, Ghana',
+            photo: user.photo || null,
+            email: user.email || '',
             availabilityStatus: availStatus,
             availabilityNote: availNote,
+            statusUpdateTime: statusUpdateTime,
             rating: user.rating || 0,
-            reviewCount: user.reviewCount || 0
-        });
+            reviewCount: user.reviewCount || 0,
+            hourlyRate: user.hourlyRate || 50,
+            skills: user.skills || [],
+            verified: user.verified || false
+        };
+        
+        // Update global labourers list for Explore page
+        updateLabourerProfile(user.id, labourerData);
 
         // Update local user state
-        updateUser({ availabilityStatus: availStatus, availabilityNote: availNote });
+        updateUser({ 
+            availabilityStatus: availStatus, 
+            availabilityNote: availNote,
+            statusUpdateTime: statusUpdateTime
+        });
         setIsAvailabilityEditing(false);
+        
+        console.log('Status update saved:', labourerData);
     };
 
     const getCategoryIconClass = (category) => {

@@ -28,14 +28,21 @@ function Explore() {
     useEffect(() => {
         // Filter Labourers
         const labResults = labourers.filter(labourer => {
-            const matchesSearch = labourer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                labourer.profession.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesProfession = selectedProfession === 'All' || labourer.profession === selectedProfession;
-            const matchesLocation = selectedLocation === 'All' || labourer.location === selectedLocation;
+            if (!labourer || !labourer.id) return false;
+            
+            const nameMatch = labourer.name ? labourer.name.toLowerCase().includes(searchTerm.toLowerCase()) : false;
+            const professionMatch = labourer.profession ? labourer.profession.toLowerCase().includes(searchTerm.toLowerCase()) : false;
+            const matchesSearch = searchTerm === '' || nameMatch || professionMatch;
+            
+            const matchesProfession = selectedProfession === 'All' || 
+                (labourer.profession && labourer.profession === selectedProfession);
+            const matchesLocation = selectedLocation === 'All' || 
+                (labourer.location && labourer.location === selectedLocation);
 
             return matchesSearch && matchesProfession && matchesLocation;
         });
         setFilteredLabourers(labResults);
+        console.log('Filtered labourers:', labResults.length, 'out of', labourers.length);
 
         // Filter Jobs
         const jobResults = jobs.filter(job => {
