@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import './AuthModal.css';
@@ -21,11 +21,20 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
 
     const { login, demoLogin } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
 
     // Sync internal tab state when prop changes
     useEffect(() => {
         setActiveTab(initialTab);
     }, [initialTab, isOpen]);
+
+    // Automatically close modal when route changes
+    useEffect(() => {
+        if (isOpen) {
+            onClose();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.pathname]);
 
     // Prevent scrolling when modal is open
     useEffect(() => {
@@ -64,10 +73,15 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
     const handleLogin = (e) => {
         e.preventDefault();
 
+        const idMap = {
+            'hirer@oga.com': 'demo-hirer-99',
+            'labourer@oga.com': 'demo-labourer-88'
+        };
+
         let type = 'hirer';
         let name = 'Demo User';
+        let id = idMap[formData.email] || ('demo-user-' + Date.now());
 
-        // Exact match for demo accounts
         if (formData.email === 'hirer@oga.com') {
             type = 'hirer';
             name = 'Demo Hirer';
@@ -75,21 +89,19 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             type = 'labourer';
             name = 'Demo Labourer';
         } else {
-            // Fallback purely for other testing: mock based on email string
             type = formData.email.includes('labour') ? 'labourer' : 'hirer';
         }
 
-        const userData = {
-            email: formData.email,
-            name: name,
-            type: type,
-            id: 'demo-' + Date.now(),
-            location: 'Accra, Ghana'
-        };
-
+        const userData = { email: formData.email, name, type, id, location: 'Accra, Ghana' };
+        console.log('AuthModal: Logging in with:', userData);
         login(userData);
-        onClose();
-        navigate(`/dashboard/${type}`);
+
+        console.log('AuthModal: Navigating to dashboard in 300ms...');
+        setTimeout(() => {
+            console.log('AuthModal: Navigating now to', `/dashboard/${type}`);
+            // onClose() is handled by useEffect on location.pathname change
+            navigate(`/dashboard/${type}`);
+        }, 300);
     };
 
     const fillDemoCredentials = (role) => {
@@ -127,8 +139,16 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
         };
 
         login(userData);
+
+        setTimeout(() => {
+            // onClose() is handled by useEffect on location.pathname change
+            navigate(`/dashboard/${accountType}`);
+        }, 300);
+    };
+
+    const handleLegalClick = (path) => {
         onClose();
-        navigate(`/dashboard/${accountType}`);
+        navigate(path);
     };
 
     if (!isOpen) return null;
@@ -223,10 +243,10 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                             <input type="checkbox" />
                                             <span>Remember me</span>
                                         </label>
-                                        <a href="#" className="forgot-password">Forgot password?</a>
+                                        <a href="#" className="forgot-password" onClick={(e) => { e.preventDefault(); setActiveTab('forgot-password'); }}>Forgot password?</a>
                                     </div>
 
-                                    <button type="submit" className="btn-auth btn-primary" style={{ width: '100%', margin: 0, padding: '0.8rem 2rem' }}>Sign In</button>
+                                    <button type="submit" className="btn-auth btn-primary btn-auth-medium" style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem' }}>Sign In</button>
                                 </form>
 
                                 <p className="login-create-account">
@@ -288,6 +308,73 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                             </div>
                         )}
 
+                        {/* Forgot Password Tab Content */}
+                        {activeTab === 'forgot-password' && (
+                            <div className="auth-tab-content active">
+                                <h2 className="auth-form-title">Reset Password</h2>
+                                <p className="auth-form-subtitle">Enter your email and we'll send you a link to reset your password.</p>
+
+                                <form className="auth-form" onSubmit={(e) => {
+                                    e.preventDefault();
+                                    setActiveTab('email-sent');
+                                    alert(`SIMULATED EMAIL SENT TO: ${formData.email}\n\nReset Link: http://localhost:5173/reset-password?token=simulated-token-123\n\n(This is a simulation for development purposes)`);
+                                }}>
+                                    <div className="form-group">
+                                        <label htmlFor="reset-email">Email</label>
+                                        <input
+                                            type="email"
+                                            id="reset-email"
+                                            placeholder="Enter your email"
+                                            required
+                                            value={formData.email}
+                                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                                        />
+                                    </div>
+
+                                    <button type="submit" className="btn-auth btn-primary btn-auth-medium" style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem' }}>Send Reset Link</button>
+                                </form>
+
+                                <p className="login-create-account">
+                                    Remember your password?
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('login'); }}>Back to Login</a>
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Email Sent Tab Content */}
+                        {activeTab === 'email-sent' && (
+                            <div className="auth-tab-content active" style={{ textAlign: 'center' }}>
+                                <div style={{ fontSize: '3rem', color: 'var(--color-success)', marginBottom: '1.5rem' }}>
+                                    <i className="fas fa-paper-plane"></i>
+                                </div>
+                                <h2 className="auth-form-title">Check Your Email</h2>
+                                <p className="auth-form-subtitle">
+                                    We've sent a password reset link to: <br />
+                                    <strong style={{ color: 'var(--neutral-900)' }}>{formData.email}</strong>
+                                </p>
+
+                                <div style={{ background: 'var(--brand-primary-subtle)', padding: '1rem', borderRadius: 'var(--radius-md)', margin: '1.5rem 0', color: 'var(--neutral-700)', fontSize: '0.9rem' }}>
+                                    <p style={{ margin: 0 }}>Didn't receive the email? Check your spam folder or try resending it.</p>
+                                </div>
+
+                                <button
+                                    className="btn-auth btn-outline btn-auth-medium"
+                                    style={{ margin: '0 auto 1.5rem', display: 'block', padding: '0.6rem 1.5rem', border: '1px solid var(--neutral-300)' }}
+                                    onClick={() => {
+                                        alert('Reset email resent to ' + formData.email);
+                                    }}
+                                >
+                                    Resend Email
+                                </button>
+
+                                <p className="login-create-account">
+                                    <a href="#" onClick={(e) => { e.preventDefault(); setActiveTab('login'); }} style={{ fontWeight: '600' }}>
+                                        <i className="fas fa-arrow-left" style={{ marginRight: '0.5rem' }}></i>
+                                        Back to Login
+                                    </a>
+                                </p>
+                            </div>
+                        )}
                         {/* Signup Tab Content */}
                         {activeTab === 'signup' && (
                             <div className="auth-tab-content active">
@@ -482,11 +569,11 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     <div className="form-group">
                                         <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                             <input type="checkbox" required style={{ width: 'auto', margin: 0 }} />
-                                            <span>I agree to the <a href="#">Terms</a> and <a href="#">Privacy Policy</a></span>
+                                            <span>I agree to the <button type="button" onClick={() => handleLegalClick('/terms')} style={{ color: 'var(--color-primary)', fontWeight: '600', padding: 0, border: 'none', background: 'none', font: 'inherit', textDecoration: 'underline', cursor: 'pointer' }}>Terms</button> and <button type="button" onClick={() => handleLegalClick('/privacy')} style={{ color: 'var(--color-primary)', fontWeight: '600', padding: 0, border: 'none', background: 'none', font: 'inherit', textDecoration: 'underline', cursor: 'pointer' }}>Privacy Policy</button></span>
                                         </label>
                                     </div>
 
-                                    <button type="submit" className="btn-auth btn-primary" style={{ width: '100%' }}>Create Account</button>
+                                    <button type="submit" className="btn-auth btn-primary btn-auth-medium" style={{ margin: '0 auto', display: 'block' }}>Create Account</button>
                                 </form>
 
                                 <div className="auth-divider">

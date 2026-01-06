@@ -27,6 +27,41 @@
     gap: var(--space-6);
 }
 
+.my-job-card-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.my-job-footer-actions {
+    background: #fff;
+    padding: 0 24px 24px;
+    border-radius: 0 0 16px 16px;
+    margin-top: -16px;
+    /* Overlap with JobCard footer */
+}
+
+.btn-view-applicants {
+    width: 100%;
+    background: var(--brand-primary-subtle);
+    color: var(--brand-primary);
+    border: 1px solid var(--brand-primary-subtle);
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-view-applicants:hover {
+    background: var(--brand-primary);
+    color: #fff;
+}
+
 .empty-state {
     text-align: center;
     padding: var(--space-20) 0;

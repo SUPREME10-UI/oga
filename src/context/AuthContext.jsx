@@ -4,14 +4,32 @@ const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(() => {
-        const savedUser = localStorage.getItem('oga_user');
-        return savedUser ? JSON.parse(savedUser) : null;
+        try {
+            const savedUser = localStorage.getItem('oga_user');
+            console.log('AuthContext: Initializing user from localStorage:', savedUser);
+            return savedUser ? JSON.parse(savedUser) : null;
+        } catch (error) {
+            console.error('Error parsing user data:', error);
+            localStorage.removeItem('oga_user');
+            return null;
+        }
     });
 
     const login = (userData) => {
         // userData should include { name, email, type ('hirer' | 'labourer'), ... }
+        console.log('AuthContext: login called with:', userData);
         setUser(userData);
         localStorage.setItem('oga_user', JSON.stringify(userData));
+        console.log('AuthContext: user state updated and saved to localStorage');
+    };
+
+    const updateUser = (updates) => {
+        setUser(prev => {
+            if (!prev) return null;
+            const updated = { ...prev, ...updates };
+            localStorage.setItem('oga_user', JSON.stringify(updated));
+            return updated;
+        });
     };
 
     const demoLogin = (role) => {
@@ -31,7 +49,7 @@ export function AuthProvider({ children }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, demoLogin, logout }}>
+        <AuthContext.Provider value={{ user, login, demoLogin, logout, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

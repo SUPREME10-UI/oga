@@ -88,3 +88,31 @@
     font-weight: normal;
     color: var(--neutral-400);
 }
+
+.trans-status.completed {
+    color: #38a169;
+    font-weight: var(--font-bold);
+}
+
+.empty-earnings-state {
+    text-align: center;
+    padding: var(--space-12) var(--space-6);
+    color: var(--neutral-400);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    grid-column: 1 / -1;
+}
+
+.empty-earnings-state i {
+    font-size: var(--text-5xl);
+    opacity: 0.15;
+    margin-bottom: var(--space-2);
+    color: var(--brand-primary);
+}
+
+.empty-earnings-state span {
+    font-size: var(--text-sm);
+    color: var(--neutral-500);
+}

@@ -1,12 +1,18 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { useAuth } from '../context/AuthContext';
+import ConfirmModal from '../components/common/ConfirmModal';
 import './JobDetail.css';
 
 function JobDetail() {
     const { id } = useParams();
     const navigate = useNavigate();
-    const { jobs } = useData();
+    const { jobs, applyForJob } = useData();
+    const { user } = useAuth();
+
+    const [isApplyModalOpen, setIsApplyModalOpen] = React.useState(false);
+    const [showSuccess, setShowSuccess] = React.useState(false);
 
     const job = jobs.find(j => j.id.toString() === id);
 
@@ -29,6 +35,25 @@ function JobDetail() {
             </div>
         );
     }
+
+    const handleApply = () => {
+        if (!user) {
+            alert('Please login as a labourer to apply for this job.');
+            return;
+        }
+        if (user.type !== 'labourer') {
+            alert('Only labourers can apply for jobs.');
+            return;
+        }
+        setIsApplyModalOpen(true);
+    };
+
+    const confirmApply = () => {
+        applyForJob(job.id, user.id, user.name, job.hirerId || 'demo-hirer-id', job.title);
+        setIsApplyModalOpen(false);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+    };
 
     const getCategoryIcon = (category) => {
         switch (category?.toLowerCase()) {
@@ -98,15 +123,51 @@ function JobDetail() {
                                 )}
                             </div>
                         </section>
+
+                        <section className="job-section">
+                            <h2>Hirer Information</h2>
+                            <div className="hirer-profile-card">
+                                <div className="hirer-avatar">
+                                    <i className="fas fa-user-tie"></i>
+                                </div>
+                                <div className="hirer-info">
+                                    <h3>{job.hirerName || 'Oga User'}</h3>
+                                    <p className="hirer-meta">Verified Hirer • 5.0 <i className="fas fa-star" style={{ color: '#ecc94b' }}></i></p>
+                                    <button
+                                        className="btn-message-hirer"
+                                        onClick={() => navigate('/dashboard/labourer/messages')}
+                                    >
+                                        <i className="fas fa-comment-alt"></i> Message Hirer
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
                     </div>
 
                     <div className="job-detail-footer">
-                        <button className="btn-apply" onClick={() => alert('Application feature coming soon!')}>
-                            Apply for this Job
-                        </button>
+                        {showSuccess ? (
+                            <div className="application-success">
+                                <i className="fas fa-check-circle"></i> Application Sent Successfully!
+                            </div>
+                        ) : (
+                            <button className="btn-apply" onClick={handleApply}>
+                                Apply for this Job
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
+
+            <ConfirmModal
+                isOpen={isApplyModalOpen}
+                onClose={() => setIsApplyModalOpen(false)}
+                onConfirm={confirmApply}
+                title="Apply for this Job?"
+                message={`Are you sure you want to apply for "${job.title}"? Your profile will be shared with the hirer.`}
+                confirmText="Apply Now"
+                cancelText="Not Now"
+                type="primary"
+            />
         </div>
     );
 }

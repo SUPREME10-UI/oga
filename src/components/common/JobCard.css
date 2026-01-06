@@ -168,3 +168,78 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(49, 130, 206, 0.2);
 }
+
+.job-hirer-summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: var(--neutral-500);
+    margin-bottom: 12px;
+}
+
+.job-hirer-summary i {
+    font-size: 1.1rem;
+    color: var(--neutral-300);
+}
+
+.job-actions-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 0 24px 24px;
+}
+
+.btn-message-hirer-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #f8fafc;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-message-hirer-card:hover {
+    background: var(--brand-primary-subtle);
+    color: var(--brand-primary);
+    border-color: var(--brand-primary-subtle);
+}
+
+.btn-view-details {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #3182ce;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(49, 130, 206, 0.15);
+}
+
+.btn-view-details:hover {
+    background: #2b6cb0;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(49, 130, 206, 0.2);
+}
+
+.btn-view-details i {
+    font-size: 0.8rem;
+    transition: transform 0.2s;
+}
+
+.btn-view-details:hover i {
+    transform: translateX(3px);
+}

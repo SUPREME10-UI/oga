@@ -1,8 +1,24 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Home.css';
 
 function Home({ onOpenAuth }) {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const location = useLocation();
+
+    // Handle scroll to hash from navigation
+    useEffect(() => {
+        if (location.state && location.state.scrollTo) {
+            const element = document.getElementById(location.state.scrollTo);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+            // Clear state to avoid scrolling on refresh? React Router handles this well usually.
+            // But we might want to manually clear it if it sticks. 
+            // For now, this is sufficient.
+        }
+    }, [location]);
+
     const slides = [
         "url('images/carpenter.png')",
         "url('images/electrician.png')",

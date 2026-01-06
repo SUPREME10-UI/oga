@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 function Footer() {
@@ -18,34 +19,34 @@ function Footer() {
 
                     <div className="footer-section">
                         <h3>Quick Links</h3>
-                        <a href="#home">Home</a>
-                        <a href="#how-it-works">How It Works</a>
-                        <a href="#features">Features</a>
-                        <a href="#about">About</a>
+                        <Link to="/">Home</Link>
+                        <a href="/#how-it-works">How It Works</a>
+                        <a href="/#features">Features</a>
+                        <a href="/#about">About</a>
                     </div>
 
                     <div className="footer-section">
                         <h3>For Labourers</h3>
-                        <a href="#">Sign Up</a>
-                        <a href="#">Create Profile</a>
-                        <a href="#">Browse Jobs</a>
-                        <a href="#">Success Stories</a>
+                        <Link to="/explore">Browse Profile</Link>
+                        <a href="/#signup">Sign Up</a>
+                        <Link to="/explore">Browse Jobs</Link>
+                        <a href="/#about">Success Stories</a>
                     </div>
 
                     <div className="footer-section">
                         <h3>For Hirers</h3>
-                        <a href="#">Sign Up</a>
-                        <a href="#">Find Labourers</a>
-                        <a href="#">Post Jobs</a>
-                        <a href="#">Pricing</a>
+                        <a href="/#signup">Sign Up</a>
+                        <Link to="/explore">Find Labourers</Link>
+                        <Link to="/explore">Post Jobs</Link>
+                        <a href="/#features">Pricing</a>
                     </div>
 
                     <div className="footer-section">
                         <h3>Support</h3>
-                        <a href="#">Help Center</a>
-                        <a href="#">Contact Us</a>
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Terms of Service</a>
+                        <a href="/#about">Help Center</a>
+                        <a href="/#about">Contact Us</a>
+                        <Link to="/privacy">Privacy Policy</Link>
+                        <Link to="/terms">Terms of Service</Link>
                     </div>
 
 

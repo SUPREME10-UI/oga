@@ -1,9 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import './JobCard.css';
 
 function JobCard({ job }) {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const isLabourer = user?.type === 'labourer';
     const getCategoryIcon = (category) => {
         switch (category?.toLowerCase()) {
             case 'plumbing': return 'fas fa-wrench';
@@ -30,6 +33,10 @@ function JobCard({ job }) {
 
                 <div className="job-card-content">
                     <h3 className="job-title">{job.title}</h3>
+                    <div className="job-hirer-summary">
+                        <i className="fas fa-user-circle"></i>
+                        <span>Posted by <strong>{job.hirerName || 'Oga Hirer'}</strong></span>
+                    </div>
                     <p className="job-description">{job.description || 'No description provided.'}</p>
 
                     <div className="job-info-grid">
@@ -58,10 +65,34 @@ function JobCard({ job }) {
                             <span className="amount">{isNaN(job.budget) ? job.budget : job.budget}</span>
                         </div>
                     </div>
-                    <button className="btn-apply-now" onClick={() => navigate(`/job/${job.id}`)}>
-                        View Details
-                    </button>
                 </div>
+            </div>
+            <div className="job-actions-container">
+                {isLabourer && (
+                    <button
+                        className="btn-message-hirer-card"
+                        title="Message Hirer"
+                        onClick={() => {
+                            if (!job.hirerId) {
+                                alert("Messaging unavailable: Hirer information not found for this job.");
+                                return;
+                            }
+                            navigate('/dashboard/labourer/messages', {
+                                state: {
+                                    chatWith: {
+                                        name: job.hirerName || 'Oga Hirer',
+                                        id: job.hirerId
+                                    }
+                                }
+                            });
+                        }}
+                    >
+                        <i className="fas fa-comment-alt"></i> Message
+                    </button>
+                )}
+                <button className="btn-view-details" onClick={() => navigate(`/job/${job.id}`)}>
+                    View Details <i className="fas fa-arrow-right"></i>
+                </button>
             </div>
         </div>
     );

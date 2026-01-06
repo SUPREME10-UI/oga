@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -14,6 +14,9 @@ import Applications from './pages/Applications';
 import Earnings from './pages/Earnings';
 import Messages from './pages/Messages';
 import Settings from './pages/Settings';
+import Applicants from './pages/Applicants';
+import TermsOfService from './pages/TermsOfService';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import MainLayout from './components/layout/MainLayout';
 import './App.css';
 
@@ -30,14 +33,14 @@ function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState('login');
 
-  const openAuthModal = (tab = 'login') => {
+  const openAuthModal = useCallback((tab = 'login') => {
     setAuthModalTab(tab);
     setIsAuthModalOpen(true);
-  };
+  }, []);
 
-  const closeAuthModal = () => {
+  const closeAuthModal = useCallback(() => {
     setIsAuthModalOpen(false);
-  };
+  }, []);
 
   return (
     <Router>
@@ -47,11 +50,14 @@ function App() {
           <Route path="/explore" element={<Explore />} />
           <Route path="/profile/:id" element={<Profile onOpenAuth={openAuthModal} />} />
           <Route path="/job/:id" element={<JobDetail />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute allowedRoles={['hirer']} />}>
             <Route path="/dashboard/hirer" element={<HirerDashboard />} />
             <Route path="/dashboard/hirer/jobs" element={<MyJobs />} />
+            <Route path="/dashboard/hirer/jobs/:jobId/applicants" element={<Applicants />} />
             <Route path="/dashboard/hirer/messages" element={<Messages />} />
             <Route path="/dashboard/hirer/settings" element={<Settings />} />
           </Route>
@@ -64,8 +70,12 @@ function App() {
             <Route path="/dashboard/labourer/settings" element={<Settings />} />
           </Route>
 
+
           {/* Generic Redirect */}
           <Route path="/dashboard" element={<DashboardRedirect />} />
+
+          {/* Fallback Catch-All - Fixes "pages aren't open" for bad URLs */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>
 

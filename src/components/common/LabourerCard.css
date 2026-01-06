@@ -180,3 +180,76 @@
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(49, 130, 206, 0.2);
 }
+
+.name-verify {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.verified-icon {
+    color: #38a169;
+    font-size: 0.9rem;
+}
+
+.availability-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 12px 0;
+    border: 1px solid transparent;
+}
+
+.availability-banner i {
+    font-size: 0.75rem;
+}
+
+.availability-banner.available {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.availability-banner.busy {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.availability-banner.away {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.avail-note {
+    font-weight: 500;
+    opacity: 0.9;
+}
+
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-message-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--brand-primary-subtle);
+    color: var(--brand-primary);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-message-circle:hover {
+    background: var(--brand-primary);
+    color: #fff;
+    transform: scale(1.1);
+}

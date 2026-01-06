@@ -183,6 +183,84 @@
     box-shadow: var(--shadow-xl);
 }
 
+.hirer-profile-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    background: #f8fafc;
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--neutral-100);
+}
+
+.hirer-avatar {
+    width: 64px;
+    height: 64px;
+    background: var(--brand-primary-subtle);
+    color: var(--brand-primary);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-2xl);
+}
+
+.hirer-info h3 {
+    font-size: var(--text-lg);
+    color: var(--neutral-800);
+    margin-bottom: var(--space-1);
+}
+
+.hirer-meta {
+    font-size: var(--text-sm);
+    color: var(--neutral-500);
+    margin-bottom: var(--space-3);
+}
+
+.btn-message-hirer {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: #fff;
+    border: 1px solid var(--brand-primary-subtle);
+    color: var(--brand-primary);
+    border-radius: var(--radius-md);
+    font-weight: var(--font-semibold);
+    font-size: var(--text-sm);
+    transition: var(--transition-base);
+}
+
+.btn-message-hirer:hover {
+    background: var(--brand-primary-subtle);
+    transform: translateY(-1px);
+}
+
+.application-success {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: #059669;
+    font-weight: var(--font-bold);
+    font-size: var(--text-lg);
+    padding: var(--space-4) var(--space-8);
+    background: #ecfdf5;
+    border-radius: var(--radius-full);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
 @media (max-width: 640px) {
     .job-detail-header {
         flex-direction: column;

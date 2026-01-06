@@ -10,8 +10,8 @@ function MyJobs() {
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    // In a real app, we'd filter by user ID. For now, showing all for demo.
-    const myJobs = jobs;
+    // Filter to only show jobs created by this hirer
+    const myJobs = jobs.filter(j => j.hirerId === user?.id || (user?.id === 'demo-hirer-id' && !j.hirerId));
 
     return (
         <div className="dashboard-page-container">
@@ -29,7 +29,17 @@ function MyJobs() {
                 {myJobs.length > 0 ? (
                     <div className="jobs-grid">
                         {myJobs.map(job => (
-                            <JobCard key={job.id} job={job} />
+                            <div key={job.id} className="my-job-card-wrapper">
+                                <JobCard job={job} />
+                                <div className="my-job-footer-actions">
+                                    <button
+                                        className="btn-view-applicants"
+                                        onClick={() => navigate(`/dashboard/hirer/jobs/${job.id}/applicants`)}
+                                    >
+                                        <i className="fas fa-users"></i> View Applicants
+                                    </button>
+                                </div>
+                            </div>
                         ))}
                     </div>
                 ) : (

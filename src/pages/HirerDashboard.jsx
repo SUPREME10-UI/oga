@@ -12,14 +12,23 @@ function HirerDashboard() {
     const [jobToDelete, setJobToDelete] = useState(null);
 
     // Use data from context instead of local mock state
-    const { jobs: allJobs, addJob, updateJob, deleteJob } = useData();
-    // Filter to only show jobs created by this hirer (or for demo, maybe all jobs if we want simple testing, but better to simulate "My Jobs")
-    // For this simple demo without real user IDs linking, let's just show all jobs or assume they are mine since I just posted them. 
-    // To make it cleaner, let's filter by nothing for now or just show all.
-    // Actually, good practice: "My Jobs" should just be all jobs in this simple context.
-    const jobs = allJobs;
-
+    const { jobs: allJobs, addJob, updateJob, deleteJob, notifications, markNotificationAsRead, applications } = useData();
     const { user, logout } = useAuth();
+
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    // Filter to only show jobs created by this hirer
+    const jobs = allJobs.filter(j => j.hirerId === user?.id || !j.hirerId); // Fallback for initial mock data
+
+    // Filter notifications for this hirer
+    const myNotifications = notifications.filter(n => n.userId === user?.id);
+    const unreadCount = myNotifications.filter(n => !n.read).length;
+
+    // Calc dynamic stats
+    const activeJobsCount = jobs.filter(j => j.status === 'Active').length;
+    const totalAppsCount = applications.filter(app => jobs.some(j => j.id === app.jobId)).length;
+    const pendingAppsCount = applications.filter(app => jobs.some(j => j.id === app.jobId) && app.status === 'Pending').length;
+
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -29,10 +38,10 @@ function HirerDashboard() {
 
     const handleAddJob = (jobData) => {
         if (editingJob) {
-            updateJob(editingJob.id, jobData);
+            updateJob(editingJob.id, { ...jobData, hirerId: user.id, hirerName: user.name });
             setEditingJob(null);
         } else {
-            addJob(jobData);
+            addJob(jobData, user.id, user.name);
         }
     };
 
@@ -55,6 +64,11 @@ function HirerDashboard() {
     const handleCloseModal = () => {
         setIsPostJobValOpen(false);
         setEditingJob(null);
+    };
+
+    const handleNotificationClick = (notif) => {
+        markNotificationAsRead(notif.id);
+        // Maybe navigate to job or application details
     };
 
     const getCategoryIcon = (category) => {
@@ -89,16 +103,69 @@ function HirerDashboard() {
                     <Link to="/dashboard/hirer" className="active"><i className="fas fa-th-large"></i> Overview</Link>
                     <Link to="/dashboard/hirer/jobs"><i className="fas fa-briefcase"></i> My Jobs</Link>
                     <Link to="/explore"><i className="fas fa-search"></i> Explore</Link>
-                    <Link to="/dashboard/hirer/messages"><i className="fas fa-envelope"></i> Messages</Link>
+                    <Link to="/dashboard/hirer/messages" className="nav-messages-link">
+                        <i className="fas fa-envelope"></i> Messages
+                        {notifications.filter(n => n.userId === user?.id && n.type === 'message' && !n.read).length > 0 && (
+                            <span className="sidebar-msg-badge">
+                                {notifications.filter(n => n.userId === user?.id && n.type === 'message' && !n.read).length}
+                            </span>
+                        )}
+                    </Link>
                     <Link to="/dashboard/hirer/settings"><i className="fas fa-cog"></i> Settings</Link>
                 </nav>
             </div>
-
             <div className="hirer-dashboard-main">
                 <header className="dashboard-topbar">
                     <h1>Dashboard</h1>
                     <div className="topbar-actions">
-                        <button className="btn-icon-circle"><i className="fas fa-bell"></i></button>
+                        <div className="notification-wrapper">
+                            <button
+                                className={`btn-icon-circle ${unreadCount > 0 ? 'has-unread' : ''}`}
+                                onClick={() => setShowNotifications(!showNotifications)}
+                            >
+                                <i className="fas fa-bell"></i>
+                                {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
+                            </button>
+
+                            {showNotifications && (
+                                <div className="notification-dropdown">
+                                    <div className="dropdown-header">
+                                        <h3>Notifications</h3>
+                                        {unreadCount > 0 && <span>{unreadCount} new</span>}
+                                    </div>
+                                    <div className="notification-list">
+                                        {myNotifications.length > 0 ? (
+                                            myNotifications.map(notif => (
+                                                <div
+                                                    key={notif.id}
+                                                    className={`notification-item ${!notif.read ? 'unread' : ''}`}
+                                                    onClick={() => handleNotificationClick(notif)}
+                                                >
+                                                    <div className="notif-icon">
+                                                        <i className={notif.type === 'application' ? 'fas fa-file-alt' : 'fas fa-info-circle'}></i>
+                                                    </div>
+                                                    <div className="notif-content">
+                                                        <p>{notif.message}</p>
+                                                        <span className="notif-time">{notif.time}, {notif.date}</span>
+                                                    </div>
+                                                    {!notif.read && <div className="unread-dot"></div>}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <div className="no-notifications">
+                                                <i className="fas fa-bell-slash"></i>
+                                                <p>No notifications yet</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {myNotifications.length > 0 && (
+                                        <div className="dropdown-footer">
+                                            <button>View All Notifications</button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
                         <button
                             className="btn-post-job"
                             onClick={handleLogout}
@@ -116,15 +183,15 @@ function HirerDashboard() {
                     <section className="stats-grid">
                         <div className="stat-box">
                             <div className="stat-label">Active Jobs</div>
-                            <div className="stat-number">{jobs.length}</div>
+                            <div className="stat-number">{activeJobsCount}</div>
                         </div>
                         <div className="stat-box">
-                            <div className="stat-label">Applications</div>
-                            <div className="stat-number">12</div>
+                            <div className="stat-label">Total Applications</div>
+                            <div className="stat-number">{totalAppsCount}</div>
                         </div>
                         <div className="stat-box">
-                            <div className="stat-label">In Review</div>
-                            <div className="stat-number">5</div>
+                            <div className="stat-label">Pending Review</div>
+                            <div className="stat-number">{pendingAppsCount}</div>
                         </div>
                     </section>
 

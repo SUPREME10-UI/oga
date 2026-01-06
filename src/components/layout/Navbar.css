@@ -85,6 +85,12 @@
     width: 100%;
 }
 
+
+/* Mobile Buttons - hidden by default */
+.mobile-buttons {
+    display: none;
+}
+
 /* Buttons */
 .nav-buttons {
     display: flex;

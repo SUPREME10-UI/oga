@@ -23,7 +23,7 @@ function MainLayout({ onOpenAuth }) {
         <div className="app-container">
             {showNavbar && (
                 <Navbar
-                    onLoginClick={() => onOpenAuth('login')}
+                    onLoginClick={(tab) => onOpenAuth(tab || 'login')}
                     isFluid={isFluidNavbar}
                 />
             )}

@@ -314,6 +314,13 @@
     border-radius: 30px;
 }
 
+.btn-auth-medium {
+    max-width: 240px;
+    width: 60%;
+    display: block;
+    margin: 1rem auto;
+}
+
 .login-create-account {
     text-align: center;
     margin-top: 1.5rem;
