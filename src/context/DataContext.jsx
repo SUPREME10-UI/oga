@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 const DataContext = createContext();
 
@@ -76,15 +76,43 @@ export function DataProvider({ children }) {
     }, [globalChats]);
 
     // Data Repair: Migrate legacy jobs to stable demo IDs
+    const lastRepairedJobsRef = useRef(null);
     useEffect(() => {
-        const needsRepair = jobs.some(j => !j.hirerId || j.hirerId.startsWith('demo-') && !j.hirerId.includes('-99'));
-        if (needsRepair) {
-            setJobs(prev => prev.map(job => {
+        if (jobs.length === 0) return;
+        
+        // Check if we've already repaired this exact set of jobs
+        const jobsKey = jobs.map(j => `${j.id}-${j.hirerId}`).join(',');
+        if (lastRepairedJobsRef.current === jobsKey) return;
+        
+        const needsRepair = jobs.some(j => !j.hirerId || (j.hirerId.startsWith('demo-') && !j.hirerId.includes('-99')));
+        if (!needsRepair) {
+            lastRepairedJobsRef.current = jobsKey;
+            return;
+        }
+        
+        setJobs(prev => {
+            const repaired = prev.map(job => {
                 if (!job.hirerId && job.hirerName === 'Demo Hirer') return { ...job, hirerId: 'demo-hirer-99' };
                 if (job.hirerId?.startsWith('demo-') && !job.hirerId.includes('-99')) return { ...job, hirerId: 'demo-hirer-99' };
                 return job;
-            }));
-        }
+            });
+            
+            // Check if repair actually changed anything
+            const hasChanges = prev.some((job, index) => {
+                return job.hirerId !== repaired[index].hirerId;
+            });
+            
+            if (hasChanges) {
+                // Update ref with new jobs key after repair
+                const repairedKey = repaired.map(j => `${j.id}-${j.hirerId}`).join(',');
+                lastRepairedJobsRef.current = repairedKey;
+                return repaired;
+            }
+            
+            // No changes, mark as repaired
+            lastRepairedJobsRef.current = jobsKey;
+            return prev;
+        });
     }, [jobs]);
 
     const addJob = (job, hirerId, hirerName) => {

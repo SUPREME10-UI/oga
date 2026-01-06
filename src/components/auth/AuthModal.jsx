@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { useData } from '../../context/DataContext';
 import './AuthModal.css';
 
 function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
@@ -71,54 +70,62 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
     };
 
     const handleLogin = (e) => {
-        e.preventDefault();
+        // Keep submission simple: just prevent default and proceed
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+        console.log('handleLogin called with formData:', formData);
 
-        const idMap = {
-            'hirer@oga.com': 'demo-hirer-99',
-            'labourer@oga.com': 'demo-labourer-88'
-        };
-
-        let type = 'hirer';
-        let name = 'Demo User';
-        let id = idMap[formData.email] || ('demo-user-' + Date.now());
-
-        if (formData.email === 'hirer@oga.com') {
-            type = 'hirer';
-            name = 'Demo Hirer';
-        } else if (formData.email === 'labourer@oga.com') {
-            type = 'labourer';
-            name = 'Demo Labourer';
-        } else {
-            type = formData.email.includes('labour') ? 'labourer' : 'hirer';
+        // Validate form data
+        if (!formData.email || !formData.password) {
+            alert('Please fill in both email and password fields.');
+            return;
         }
 
-        const userData = { email: formData.email, name, type, id, location: 'Accra, Ghana' };
-        console.log('AuthModal: Logging in with:', userData);
-        login(userData);
+        try {
+            // Custom login credentials
+            const credentials = {
+                'hirer@oga.com': { password: 'hirer123', type: 'hirer', name: 'Hirer User', id: 'hirer-001' },
+                'labourer@oga.com': { password: 'labourer123', type: 'labourer', name: 'Labourer User', id: 'labourer-001' }
+            };
 
-        console.log('AuthModal: Navigating to dashboard in 300ms...');
-        setTimeout(() => {
-            console.log('AuthModal: Navigating now to', `/dashboard/${type}`);
+            // Check if email exists in credentials
+            const userCreds = credentials[formData.email];
+            
+            if (!userCreds) {
+                alert('Invalid email address. Please use hirer@oga.com or labourer@oga.com');
+                return;
+            }
+
+            // Validate password
+            if (formData.password !== userCreds.password) {
+                alert('Invalid password. Please check your credentials.');
+                return;
+            }
+
+            // Create user data
+            const userData = { 
+                email: formData.email, 
+                name: userCreds.name, 
+                type: userCreds.type, 
+                id: userCreds.id, 
+                location: 'Accra, Ghana' 
+            };
+            
+            console.log('AuthModal: Logging in with:', userData);
+            
+            // Call login function
+            login(userData);
+
+            console.log('AuthModal: Navigating now to', `/dashboard/${userCreds.type}`);
             // onClose() is handled by useEffect on location.pathname change
-            navigate(`/dashboard/${type}`);
-        }, 300);
-    };
-
-    const fillDemoCredentials = (role) => {
-        if (role === 'hirer') {
-            setFormData(prev => ({
-                ...prev,
-                email: 'hirer@oga.com',
-                password: 'password123'
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                email: 'labourer@oga.com',
-                password: 'password123'
-            }));
+            navigate(`/dashboard/${userCreds.type}`);
+        } catch (error) {
+            console.error('Error during login:', error);
+            alert('An error occurred during login. Please try again.');
         }
     };
+
 
     const handleSignup = (e) => {
         e.preventDefault();
@@ -157,7 +164,13 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
         <div className={`modal-overlay ${isOpen ? 'active' : ''}`} onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
         }}>
-            <div className="auth-modal-container">
+            <div 
+                className="auth-modal-container"
+                onClick={(e) => {
+                    // Prevent clicks inside modal from closing it
+                    e.stopPropagation();
+                }}
+            >
                 <button className="modal-close" onClick={onClose} aria-label="Close modal">
                     <i className="fas fa-times"></i>
                 </button>
@@ -213,7 +226,10 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                 <h2 className="auth-form-title">Welcome Back</h2>
                                 <p className="auth-form-subtitle">Sign in to continue to your account</p>
 
-                                <form className="auth-form" onSubmit={handleLogin}>
+                                <form 
+                                    className="auth-form" 
+                                    onSubmit={handleLogin}
+                                >
                                     <div className="form-group">
                                         <label htmlFor="email">Email</label>
                                         <input
@@ -246,7 +262,13 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <a href="#" className="forgot-password" onClick={(e) => { e.preventDefault(); setActiveTab('forgot-password'); }}>Forgot password?</a>
                                     </div>
 
-                                    <button type="submit" className="btn-auth btn-primary btn-auth-medium" style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem' }}>Sign In</button>
+                                    <button 
+                                        type="submit" 
+                                        className="btn-auth btn-primary btn-auth-medium" 
+                                        style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem', cursor: 'pointer', border: 'none' }}
+                                    >
+                                        Sign In
+                                    </button>
                                 </form>
 
                                 <p className="login-create-account">
@@ -271,38 +293,26 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                             </div>
                         )}
 
-                        {/* Demo Logins Section - Display Actual Credentials */}
+                        {/* Login Credentials Info */}
                         {activeTab === 'login' && (
-                            <div className="demo-login-section" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                                <p style={{ fontSize: '0.85rem', color: '#666', textAlign: 'center', marginBottom: '10px', fontWeight: '500' }}>Demo Credentials</p>
+                            <div className="login-credentials-info" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
+                                <p style={{ fontSize: '0.85rem', color: '#666', textAlign: 'center', marginBottom: '10px', fontWeight: '500' }}>Login Credentials</p>
 
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                                    <div style={{ padding: '8px 12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                                         <div style={{ fontSize: '0.8rem' }}>
-                                            <span style={{ fontWeight: '600', display: 'block', color: '#1a202c' }}>Hirer</span>
-                                            <span style={{ color: '#4a5568' }}>hirer@oga.com / password123</span>
+                                            <span style={{ fontWeight: '600', display: 'block', color: '#1a202c', marginBottom: '4px' }}>Hirer Account</span>
+                                            <span style={{ color: '#4a5568' }}>Email: hirer@oga.com</span><br />
+                                            <span style={{ color: '#4a5568' }}>Password: hirer123</span>
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => fillDemoCredentials('hirer')}
-                                            style={{ background: 'none', border: 'none', color: '#0066cc', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', padding: '4px' }}
-                                        >
-                                            Auto-fill
-                                        </button>
                                     </div>
 
-                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
+                                    <div style={{ padding: '8px 12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
                                         <div style={{ fontSize: '0.8rem' }}>
-                                            <span style={{ fontWeight: '600', display: 'block', color: '#1a202c' }}>Labourer</span>
-                                            <span style={{ color: '#4a5568' }}>labourer@oga.com / password123</span>
+                                            <span style={{ fontWeight: '600', display: 'block', color: '#1a202c', marginBottom: '4px' }}>Labourer Account</span>
+                                            <span style={{ color: '#4a5568' }}>Email: labourer@oga.com</span><br />
+                                            <span style={{ color: '#4a5568' }}>Password: labourer123</span>
                                         </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => fillDemoCredentials('labourer')}
-                                            style={{ background: 'none', border: 'none', color: '#0066cc', fontSize: '0.8rem', fontWeight: '600', cursor: 'pointer', padding: '4px' }}
-                                        >
-                                            Auto-fill
-                                        </button>
                                     </div>
                                 </div>
                             </div>
