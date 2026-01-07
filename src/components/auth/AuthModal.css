@@ -75,7 +75,7 @@
 /* Left Column - Branding */
 .auth-branding {
     flex: 1;
-    background: linear-gradient(135deg, #2c5282, #3182ce);
+    background: linear-gradient(135deg, #f97415, #ff5722);
     color: var(--color-white);
     padding: 3rem;
     display: flex;

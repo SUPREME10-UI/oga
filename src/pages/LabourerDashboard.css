@@ -168,7 +168,7 @@
 }
 
 .btn-search {
-    background: #3182ce;
+    background: #f97415;
     color: white;
     border: none;
     padding: 0.75rem 1.75rem;
@@ -179,7 +179,7 @@
 }
 
 .btn-search:hover {
-    background: #2b6cb0;
+    background: #e65100;
     transform: translateY(-1px);
 }
 
@@ -207,9 +207,9 @@
 
 .filter-tag:hover,
 .filter-tag.active {
-    background: #3182ce;
+    background: #f97415;
     color: white;
-    border-color: #3182ce;
+    border-color: #f97415;
     box-shadow: 0 4px 12px rgba(49, 130, 206, 0.2);
 }
 

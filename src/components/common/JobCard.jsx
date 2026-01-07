@@ -20,6 +20,13 @@ function JobCard({ job }) {
 
     return (
         <div className="job-card">
+            {/* Profile Header Section */}
+            <div className="job-card-profile-header">
+                <div className="hirer-avatar-placeholder">
+                    <i className="fas fa-user-tie"></i>
+                </div>
+            </div>
+
             <div className="job-card-main">
                 <div className="job-card-header">
                     <div className="job-category-tag">
@@ -39,21 +46,12 @@ function JobCard({ job }) {
                     </div>
                     <p className="job-description">{job.description || 'No description provided.'}</p>
 
-                    <div className="job-info-grid">
-                        <div className="info-item">
-                            <i className="fas fa-map-marker-alt"></i>
-                            <span>{job.location}</span>
-                        </div>
-                        <div className="info-item">
-                            <i className="fas fa-calendar-alt"></i>
-                            <span>{job.date}</span>
-                        </div>
-                        {job.urgency && (
-                            <div className={`info-item urgency-${job.urgency}`}>
-                                <i className="fas fa-exclamation-circle"></i>
-                                <span style={{ textTransform: 'capitalize' }}>{job.urgency} Urgency</span>
-                            </div>
-                        )}
+                    <div className="job-info-inline">
+                        <i className="fas fa-map-marker-alt"></i>
+                        <span>{job.location}</span>
+                        <span className="separator">•</span>
+                        <i className="fas fa-calendar-alt"></i>
+                        <span>{job.date}</span>
                     </div>
                 </div>
 

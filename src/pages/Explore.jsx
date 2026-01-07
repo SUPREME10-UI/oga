@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import LabourerCard from '../components/common/LabourerCard';
+
 import JobCard from '../components/common/JobCard';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +15,7 @@ function Explore() {
 
     const [activeTab, setActiveTab] = useState('labourers'); // 'labourers' or 'jobs'
     const [filteredLabourers, setFilteredLabourers] = useState(labourers);
+
     const [filteredJobs, setFilteredJobs] = useState(jobs);
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -29,20 +31,21 @@ function Explore() {
         // Filter Labourers
         const labResults = labourers.filter(labourer => {
             if (!labourer || !labourer.id) return false;
-            
+
             const nameMatch = labourer.name ? labourer.name.toLowerCase().includes(searchTerm.toLowerCase()) : false;
             const professionMatch = labourer.profession ? labourer.profession.toLowerCase().includes(searchTerm.toLowerCase()) : false;
             const matchesSearch = searchTerm === '' || nameMatch || professionMatch;
-            
-            const matchesProfession = selectedProfession === 'All' || 
+
+            const matchesProfession = selectedProfession === 'All' ||
                 (labourer.profession && labourer.profession === selectedProfession);
-            const matchesLocation = selectedLocation === 'All' || 
+            const matchesLocation = selectedLocation === 'All' ||
                 (labourer.location && labourer.location === selectedLocation);
 
             return matchesSearch && matchesProfession && matchesLocation;
         });
         setFilteredLabourers(labResults);
-        console.log('Filtered labourers:', labResults.length, 'out of', labourers.length);
+
+
 
         // Filter Jobs
         const jobResults = jobs.filter(job => {
@@ -151,9 +154,14 @@ function Explore() {
 
             <section className="results-section">
                 <div className="container">
+
+
+
                     <div className="results-count">
                         Showing {activeTab === 'labourers' ? filteredLabourers.length : filteredJobs.length} {activeTab === 'labourers' ? 'labourers' : 'jobs'} found
                     </div>
+
+
 
                     {activeTab === 'labourers' ? (
                         filteredLabourers.length > 0 ? (

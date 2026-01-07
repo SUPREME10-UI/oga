@@ -11,6 +11,7 @@ export const labourers = [
         skills: ["Furniture Repair", "Cabinet Making", "Roofing"],
         verified: true,
         experience: "5+ years",
+        completedJobs: 87,
         bio: "Experienced carpenter specializing in custom furniture and home renovations. I take pride in delivering high-quality craftsmanship and ensuring customer satisfaction.",
         reviewsList: [
             { id: 101, user: "Abena K.", rating: 5, comment: "Kwame did an excellent job fixing my kitchen cabinets. Very professional!", date: "2 days ago" },
@@ -29,6 +30,7 @@ export const labourers = [
         skills: ["Wiring", "Appliance Repair", "Solar Installation"],
         verified: true,
         experience: "8 years",
+        completedJobs: 124,
         bio: "Certified electrician with a focus on safety and efficiency. I handle everything from simple repairs to complex solar installations.",
         reviewsList: [
             { id: 201, user: "Yaw D.", rating: 5, comment: "Fixed my electrical fault in minutes. highly recommended.", date: "3 weeks ago" }
@@ -46,6 +48,7 @@ export const labourers = [
         skills: ["Pipe Fitting", "Leak Repair", "Bathroom Installation"],
         verified: true,
         experience: "4 years",
+        completedJobs: 56,
         bio: "Professional plumber available for emergency repairs and installations. I ensure your plumbing systems run smoothly.",
         reviewsList: []
     },

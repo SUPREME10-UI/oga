@@ -5,10 +5,14 @@ import './LabourerCard.css';
 
 function LabourerCard({ labourer }) {
     const [imgError, setImgError] = useState(false);
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    const isHirer = user?.type === 'hirer';
+    const profileImg = labourer.photo || labourer.image;
 
     const formatStatusTime = (timestamp) => {
         if (!timestamp) return 'Just now';
-
         const now = new Date();
         const updateTime = new Date(timestamp);
         const diffInSeconds = Math.floor((now - updateTime) / 1000);
@@ -25,11 +29,6 @@ function LabourerCard({ labourer }) {
         const days = Math.floor(diffInSeconds / 86400);
         return `${days} ${days === 1 ? 'day' : 'days'} ago`;
     };
-    const { user } = useAuth();
-    const navigate = useNavigate();
-
-    const isHirer = user?.type === 'hirer';
-    const profileImg = labourer.photo || labourer.image;
 
     return (
         <div className="labourer-card">
@@ -62,36 +61,22 @@ function LabourerCard({ labourer }) {
                     <span className="labourer-profession">{labourer.profession}</span>
                 </div>
 
-                {/* Professional Status Update Section - Simplified & Integrated */}
+                {/* Integrated Status Section */}
                 {labourer.availabilityStatus && (
-                    <div className="status-highlight-section">
-                        <div className="status-header-row">
-                            <div className="status-avatar-mini">
-                                {profileImg ? (
-                                    <img src={profileImg} alt={labourer.name} />
-                                ) : (
-                                    <i className="fas fa-user-circle"></i>
-                                )}
-                            </div>
-                            <div className={`status-badge-pill ${labourer.availabilityStatus.toLowerCase()}`}>
-                                <i className={`fas fa-${labourer.availabilityStatus === 'Available' ? 'check-circle' : labourer.availabilityStatus === 'Busy' ? 'clock' : 'moon'}`}></i>
-                                {labourer.availabilityStatus}
-                            </div>
-                            <span className="status-time">
-                                <i className="fas fa-history"></i>
-                                {labourer.statusUpdateTime ? formatStatusTime(labourer.statusUpdateTime) : 'Recent'}
-                            </span>
+                    <div className="card-status-section">
+                        <div className={`status-pill-card ${labourer.availabilityStatus.toLowerCase()}`}>
+                            <i className={`fas fa-${labourer.availabilityStatus === 'Available' ? 'check-circle' : labourer.availabilityStatus === 'Busy' ? 'clock' : 'moon'}`}></i>
+                            <span>{labourer.availabilityStatus}</span>
+                            {labourer.statusUpdateTime && (
+                                <span className="status-dot-separator">• {formatStatusTime(labourer.statusUpdateTime)}</span>
+                            )}
                         </div>
-
                         {labourer.availabilityNote && (
-                            <div className="status-note-content">
-                                <p>{labourer.availabilityNote}</p>
-                            </div>
+                            <p className="status-note-text">"{labourer.availabilityNote}"</p>
                         )}
                     </div>
                 )}
 
-                {/* Meta data - Always visible now for consistency */}
                 <div className="labourer-meta">
                     <div className="meta-item">
                         <i className="fas fa-map-marker-alt"></i>
@@ -100,23 +85,12 @@ function LabourerCard({ labourer }) {
                     <div className="meta-item rating">
                         <i className="fas fa-star"></i>
                         <span>{labourer.rating || 0}</span>
-                        <span className="review-count">({labourer.reviewCount || labourer.reviews || 0} reviews)</span>
+                        <span className="review-count">({labourer.reviewCount || labourer.reviews || 0})</span>
                     </div>
-                </div>
-
-                <div className="labourer-skills">
-                    {(labourer.skills || []).slice(0, 3).map((skill, index) => (
-                        <span key={index} className="skill-tag">{skill}</span>
-                    ))}
                 </div>
 
                 <div className="card-footer">
-                    <div className="hourly-rate">
-                        <span className="currency">GH₵</span>
-                        <span className="amount">{labourer.hourlyRate}</span>
-                        <span className="period">/hr</span>
-                    </div>
-                    <div className="card-actions">
+                    <div className="card-actions-full">
                         {isHirer && (
                             <button
                                 className="btn-card-action primary"
@@ -131,7 +105,7 @@ function LabourerCard({ labourer }) {
                                     }
                                 })}
                             >
-                                <i className="fas fa-comment-dots"></i>
+                                <i className="fas fa-envelope"></i>
                                 Message
                             </button>
                         )}

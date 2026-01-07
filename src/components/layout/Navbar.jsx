@@ -76,7 +76,6 @@ function Navbar({ onLoginClick, isFluid }) {
 
                 <div className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
                     <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Home</Link>
-                    <Link to="/explore" className={`nav-link ${isActive('/explore') ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Explore</Link>
 
                     {/* Hash Links */}
                     {location.pathname === '/' ? (

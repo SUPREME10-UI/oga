@@ -1,10 +1,12 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { labourers } from '../services/mockData';
+import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
 function Profile({ onOpenAuth }) {
     const { id } = useParams();
+    const { user } = useAuth();
     const [labourer, setLabourer] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -70,6 +72,10 @@ function Profile({ onOpenAuth }) {
                                         <span className="stat-value">{labourer.experience || 'N/A'}</span>
                                     </div>
                                     <div className="stat-item">
+                                        <span className="stat-label">Jobs Completed</span>
+                                        <span className="stat-value">{labourer.completedJobs || 0}</span>
+                                    </div>
+                                    <div className="stat-item">
                                         <span className="stat-label">Rating</span>
                                         <span className="stat-value">
                                             <i className="fas fa-star" style={{ color: '#ffc107', marginRight: '4px' }}></i>
@@ -88,7 +94,16 @@ function Profile({ onOpenAuth }) {
                                 >
                                     Hire {labourer.name.split(' ')[0]}
                                 </button>
-                                <button className="btn btn-white btn-block">Message</button>
+                                {user?.type === 'hirer' && (
+                                    <Link
+                                        to="/dashboard/hirer/messages"
+                                        state={{ chatWith: { id: labourer.id, name: labourer.name, photo: labourer.image || labourer.photo } }}
+                                        className="btn btn-white btn-block"
+                                        style={{ textAlign: 'center', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                    >
+                                        Message
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </aside>

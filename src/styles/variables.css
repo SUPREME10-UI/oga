@@ -7,10 +7,10 @@
       Color Palette 
       Primary: Azure Blue #3182ce
    */
-   --brand-primary: #3182ce;
-   --brand-primary-hover: #2b6cb0;
-   --brand-primary-active: #2c5282;
-   --brand-primary-subtle: #ebf8ff;
+   --brand-primary: #f97415;
+   --brand-primary-hover: #e65100;
+   --brand-primary-active: #c2410c;
+   --brand-primary-subtle: #fff7ed;
 
    --brand-secondary: hsl(220, 15%, 20%);
    /* Charcoal for secondary actions */

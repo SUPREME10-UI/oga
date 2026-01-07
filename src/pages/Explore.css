@@ -319,7 +319,7 @@
 }
 
 .btn-text {
-    background: #3182ce;
+    background: #f97415;
     border: none;
     color: white;
     padding: 10px 24px;
@@ -330,7 +330,7 @@
 }
 
 .btn-text:hover {
-    background: #2b6cb0;
+    background: #e65100;
     transform: translateY(-1px);
 }
 

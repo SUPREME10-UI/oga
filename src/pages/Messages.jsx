@@ -47,15 +47,11 @@ function Messages() {
 
             if (existingChat) {
                 setSelectedChatId(existingChat.id);
-            } else {
-                // Initialize a new conversation via sendGlobalMessage
-                // This will create the chat in global storage
-                sendGlobalMessage(user.id, contact.id, "Conversation started...", user.name, contact.name);
             }
             // Clear state so it doesn't re-trigger
             navigate(location.pathname, { replace: true, state: {} });
         }
-    }, [location.state, navigate, location.pathname, globalChats, user?.id, user?.name, sendGlobalMessage]);
+    }, [location.state, navigate, location.pathname, globalChats, user?.id]);
 
     const handleSendMessage = (e) => {
         e.preventDefault();
@@ -132,20 +128,21 @@ function Messages() {
                                 </div>
                                 <div className="header-chat-actions">
                                     <button className="btn-chat-action"><i className="fas fa-phone-alt"></i></button>
-                                    <button className="btn-chat-action"><i className="fas fa-video"></i></button>
                                     <button className="btn-chat-action"><i className="fas fa-info-circle"></i></button>
                                 </div>
                             </div>
 
                             <div className="chat-body-scroller">
-                                {selectedChat.messages.length > 0 ? selectedChat.messages.map(msg => (
-                                    <div key={msg.id} className={`message-bundle ${msg.senderId === user?.id ? 'is-mine' : 'is-theirs'}`}>
-                                        <div className="message-content-box">
-                                            <p>{msg.text}</p>
-                                            <span className="msg-time-stamp">{msg.time}</span>
+                                {selectedChat.messages.length > 0 ? selectedChat.messages
+                                    .filter(msg => msg.text !== "Conversation started...")
+                                    .map(msg => (
+                                        <div key={msg.id} className={`message-bundle ${msg.senderId === user?.id ? 'is-mine' : 'is-theirs'}`}>
+                                            <div className="message-content-box">
+                                                <p>{msg.text}</p>
+                                                <span className="msg-time-stamp">{msg.time}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                )) : (
+                                    )) : (
                                     <div className="empty-chat-pulse">
                                         <div className="pulse-icon small">
                                             <i className="fas fa-paper-plane"></i>

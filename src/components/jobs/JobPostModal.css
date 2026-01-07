@@ -79,7 +79,7 @@
 }
 
 .progress-step.active {
-    background: #3182ce;
+    background: #f97415;
     /* Professional Blue */
     color: white;
 }
@@ -123,7 +123,7 @@
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-    border-color: #3182ce;
+    border-color: #f97415;
     background: white;
     box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
 }
@@ -131,7 +131,7 @@
 .btn-next,
 .btn-submit {
     width: 100%;
-    background: #3182ce;
+    background: #f97415;
     color: white;
     border: none;
     padding: 0.85rem;
@@ -145,7 +145,7 @@
 
 .btn-next:hover,
 .btn-submit:hover {
-    background: #2b6cb0;
+    background: #e65100;
     transform: translateY(-1px);
     box-shadow: 0 6px 12px rgba(49, 130, 206, 0.2);
 }

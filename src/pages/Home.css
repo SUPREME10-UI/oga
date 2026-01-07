@@ -183,14 +183,14 @@
 .feature-card:hover {
     transform: translateY(-8px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    border-color: #bee3f8;
+    border-color: #fed7aa;
 }
 
 .feature-icon {
     width: 70px;
     height: 70px;
     background: #ebf8ff;
-    color: #3182ce;
+    color: #f97415;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -201,7 +201,7 @@
 }
 
 .feature-card:hover .feature-icon {
-    background: #3182ce;
+    background: #f97415;
     color: #fff;
     transform: rotate(5deg);
 }
