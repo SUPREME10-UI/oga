@@ -20,6 +20,17 @@ function HirerDashboard() {
     // Filter to only show jobs created by this hirer
     const jobs = allJobs.filter(j => j.hirerId === user?.id || !j.hirerId); // Fallback for initial mock data
 
+    // Pagination state for recent listings
+    const pageSize = 3; // show 3 recent listings per page
+    const [currentPage, setCurrentPage] = useState(1);
+    const totalPages = Math.max(1, Math.ceil(jobs.length / pageSize));
+    const paginatedJobs = jobs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+    // Ensure currentPage resets if jobs length changes and currentPage becomes out-of-range
+    if (currentPage > totalPages) {
+        setCurrentPage(1);
+    }
+
     // Filter notifications for this hirer
     const myNotifications = notifications.filter(n => n.userId === user?.id);
     const unreadCount = myNotifications.filter(n => !n.read).length;
@@ -81,6 +92,15 @@ function HirerDashboard() {
             default: return 'fas fa-briefcase';
         }
     };
+
+    // Pagination helpers
+    const goToPage = (page) => {
+        const p = Math.max(1, Math.min(totalPages, page));
+        setCurrentPage(p);
+    };
+
+    const handlePrev = () => goToPage(currentPage - 1);
+    const handleNext = () => goToPage(currentPage + 1);
 
     return (
         <div className="hirer-dashboard-wrapper">
@@ -201,7 +221,7 @@ function HirerDashboard() {
                             <a href="#" className="view-all">View All</a>
                         </div>
                         <div className="listings-list">
-                            {jobs.map(job => (
+                            {paginatedJobs.length > 0 ? paginatedJobs.map(job => (
                                 <div className="listing-item" key={job.id}>
                                     <div className="listing-img">
                                         <i className={getCategoryIcon(job.category)}></i>
@@ -229,14 +249,36 @@ function HirerDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
-
-                            {jobs.length === 0 && (
+                            )) : (
                                 <div className="no-listings">
-                                    <p>No active jobs. Post a job to get started!</p>
+                                    <p>No recent listings found.</p>
                                 </div>
                             )}
                         </div>
+
+                        {/* Pagination controls */}
+                        {jobs.length > pageSize && (
+                            <div className="pagination-wrapper">
+                                <button className="pagination-btn" onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
+
+                                <div className="pagination-pages">
+                                    {Array.from({ length: totalPages }).map((_, i) => {
+                                        const p = i + 1;
+                                        return (
+                                            <button
+                                                key={p}
+                                                className={`pagination-page ${p === currentPage ? 'active' : ''}`}
+                                                onClick={() => goToPage(p)}
+                                            >
+                                                {p}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <button className="pagination-btn" onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
+                            </div>
+                        )}
                     </section>
 
                     <section className="dashboard-section">
