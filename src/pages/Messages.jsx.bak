@@ -265,7 +265,27 @@ function Messages() {
                     )}
                 </div>
 
-                </header>
+                <div className="header-right">
+                
+                    {selectedChat && (
+                        <div className="header-actions" ref={moreRef}>
+                            <button className="btn-chat-action" title="More" onClick={() => setMoreOpen(s => !s)}>
+                                <i className="fas fa-ellipsis-v"></i>
+                            </button>
+
+                            {moreOpen && (
+                                <div className="more-menu" role="menu" aria-label="Chat options">
+                                    <button className="more-menu-item" onClick={onViewProfile} role="menuitem">View profile</button>
+                                    <button className="more-menu-item" onClick={onToggleMute} role="menuitem">{muteLabel}</button>
+                                    <button className="more-menu-item" onClick={onClearChat} role="menuitem">Clear chat</button>
+                                    <button className="more-menu-item" onClick={onDeleteChat} role="menuitem">Delete chat</button>
+                                    <button className="more-menu-item dangerous" onClick={onBlockUser} role="menuitem">Block user</button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            </header>
 
             <div className="messages-layout-box">
                 <div className="chat-sidebar-container">
@@ -320,22 +340,12 @@ function Messages() {
                                     <div>
                                         <h3>{getPartnerName(selectedChat)}</h3>
                                         <span className="user-status-text">Active Now</span>
-                                    </div>    </div>
-                                
-                                <div className="header-actions" ref={moreRef}>
-        <button className="btn-chat-action" title="More" onClick={() => setMoreOpen(s => !s)}>
-            <i className="fas fa-ellipsis-v"></i>
-        </button>
-        {moreOpen && (
-            <div className="more-menu" role="menu" aria-label="Chat options">
-                <button className="more-menu-item" onClick={onViewProfile} role="menuitem">View profile</button>
-                <button className="more-menu-item" onClick={onToggleMute} role="menuitem">{muteLabel}</button>
-                <button className="more-menu-item" onClick={onClearChat} role="menuitem">Clear chat</button>
-                <button className="more-menu-item" onClick={onDeleteChat} role="menuitem">Delete chat</button>
-                <button className="more-menu-item dangerous" onClick={onBlockUser} role="menuitem">Block user</button>
-            </div>
-        )}
+                                    </div>    <div className="header-status-indicator">
+        <span className="online-dot"></span>
+        <span className="system-online-text">System Online</span>
     </div></div>
+                                
+                            </div>
 
                             <div className="chat-body-scroller" ref={chatBodyRef}>
                                 {selectedChat?.messages && selectedChat.messages.length > 0 ? selectedChat.messages
@@ -452,5 +462,3 @@ function Messages() {
 }
 
 export default Messages;
-
-

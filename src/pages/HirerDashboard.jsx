@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import JobPostModal from '../components/jobs/JobPostModal';
 import ConfirmModal from '../components/common/ConfirmModal';
+import DashboardSidebar from '../components/layout/DashboardSidebar';
 import './HirerDashboard.css';
 
 function HirerDashboard() {
@@ -11,31 +12,16 @@ function HirerDashboard() {
     const [editingJob, setEditingJob] = useState(null);
     const [jobToDelete, setJobToDelete] = useState(null);
 
-    // Use data from context instead of local mock state
     const { jobs: allJobs, addJob, updateJob, deleteJob, notifications, markNotificationAsRead, applications } = useData();
     const { user, logout } = useAuth();
 
     const [showNotifications, setShowNotifications] = useState(false);
 
-    // Filter to only show jobs created by this hirer
     const jobs = allJobs.filter(j => j.hirerId === user?.id || !j.hirerId); // Fallback for initial mock data
 
-    // Pagination state for recent listings
-    const pageSize = 3; // show 3 recent listings per page
-    const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.max(1, Math.ceil(jobs.length / pageSize));
-    const paginatedJobs = jobs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
-    // Ensure currentPage resets if jobs length changes and currentPage becomes out-of-range
-    if (currentPage > totalPages) {
-        setCurrentPage(1);
-    }
-
-    // Filter notifications for this hirer
     const myNotifications = notifications.filter(n => n.userId === user?.id);
     const unreadCount = myNotifications.filter(n => !n.read).length;
 
-    // Calc dynamic stats
     const activeJobsCount = jobs.filter(j => j.status === 'Active').length;
     const totalAppsCount = applications.filter(app => jobs.some(j => j.id === app.jobId)).length;
     const pendingAppsCount = applications.filter(app => jobs.some(j => j.id === app.jobId) && app.status === 'Pending').length;
@@ -79,7 +65,6 @@ function HirerDashboard() {
 
     const handleNotificationClick = (notif) => {
         markNotificationAsRead(notif.id);
-        // Maybe navigate to job or application details
     };
 
     const getCategoryIcon = (category) => {
@@ -93,47 +78,10 @@ function HirerDashboard() {
         }
     };
 
-    // Pagination helpers
-    const goToPage = (page) => {
-        const p = Math.max(1, Math.min(totalPages, page));
-        setCurrentPage(p);
-    };
-
-    const handlePrev = () => goToPage(currentPage - 1);
-    const handleNext = () => goToPage(currentPage + 1);
-
     return (
         <div className="hirer-dashboard-wrapper">
-            <div className="dashboard-sidebar">
-                <div className="sidebar-logo">
-                    <i className="fas fa-wrench"></i> Oga
-                </div>
-                <div className="sidebar-profile">
-                    <div className="profile-img-placeholder">
-                        {user?.photo ? (
-                            <img src={user.photo} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                        ) : (
-                            <i className="fas fa-user-tie"></i>
-                        )}
-                    </div>
-                    <h3>{user?.name || 'Hirer'}</h3>
-                    <p>Hirer Account</p>
-                </div>
-                <nav className="sidebar-nav">
-                    <Link to="/dashboard/hirer" className="active"><i className="fas fa-th-large"></i> Overview</Link>
-                    <Link to="/dashboard/hirer/jobs"><i className="fas fa-briefcase"></i> My Jobs</Link>
-                    <Link to="/explore"><i className="fas fa-search"></i> Explore</Link>
-                    <Link to="/dashboard/hirer/messages" className="nav-messages-link">
-                        <i className="fas fa-envelope"></i> Messages
-                        {notifications.filter(n => n.userId === user?.id && n.type === 'message' && !n.read).length > 0 && (
-                            <span className="sidebar-msg-badge">
-                                {notifications.filter(n => n.userId === user?.id && n.type === 'message' && !n.read).length}
-                            </span>
-                        )}
-                    </Link>
-                    <Link to="/dashboard/hirer/settings"><i className="fas fa-cog"></i> Settings</Link>
-                </nav>
-            </div>
+            <DashboardSidebar />
+
             <div className="hirer-dashboard-main">
                 <header className="dashboard-topbar">
                     <h1>Dashboard</h1>
@@ -200,6 +148,7 @@ function HirerDashboard() {
                 </header>
 
                 <div className="dashboard-content-container">
+                    {/* Stats, Recent listings, Quick actions unchanged */}
                     <section className="stats-grid">
                         <div className="stat-box">
                             <div className="stat-label">Active Jobs</div>
@@ -221,7 +170,7 @@ function HirerDashboard() {
                             <a href="#" className="view-all">View All</a>
                         </div>
                         <div className="listings-list">
-                            {paginatedJobs.length > 0 ? paginatedJobs.map(job => (
+                            {jobs.map(job => (
                                 <div className="listing-item" key={job.id}>
                                     <div className="listing-img">
                                         <i className={getCategoryIcon(job.category)}></i>
@@ -249,36 +198,14 @@ function HirerDashboard() {
                                         </div>
                                     </div>
                                 </div>
-                            )) : (
+                            ))}
+
+                            {jobs.length === 0 && (
                                 <div className="no-listings">
-                                    <p>No recent listings found.</p>
+                                    <p>No active jobs. Post a job to get started!</p>
                                 </div>
                             )}
                         </div>
-
-                        {/* Pagination controls */}
-                        {jobs.length > pageSize && (
-                            <div className="pagination-wrapper">
-                                <button className="pagination-btn" onClick={handlePrev} disabled={currentPage === 1}>Prev</button>
-
-                                <div className="pagination-pages">
-                                    {Array.from({ length: totalPages }).map((_, i) => {
-                                        const p = i + 1;
-                                        return (
-                                            <button
-                                                key={p}
-                                                className={`pagination-page ${p === currentPage ? 'active' : ''}`}
-                                                onClick={() => goToPage(p)}
-                                            >
-                                                {p}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-
-                                <button className="pagination-btn" onClick={handleNext} disabled={currentPage === totalPages}>Next</button>
-                            </div>
-                        )}
                     </section>
 
                     <section className="dashboard-section">

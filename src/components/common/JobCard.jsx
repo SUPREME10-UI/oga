@@ -5,7 +5,8 @@ import './JobCard.css';
 
 function JobCard({ job }) {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const authCtx = useAuth() || {};
+    const user = authCtx.user;
     const isLabourer = user?.type === 'labourer';
     const getCategoryIcon = (category) => {
         switch (category?.toLowerCase()) {

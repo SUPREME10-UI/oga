@@ -222,5 +222,7 @@ export function DataProvider({ children }) {
 }
 
 export function useData() {
-    return useContext(DataContext);
+    const ctx = useContext(DataContext);
+    if (!ctx) throw new Error('useData must be used within a DataProvider');
+    return ctx;
 }

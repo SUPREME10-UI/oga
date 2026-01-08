@@ -1,4 +1,4 @@
-.settings-grid {
+﻿.settings-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     gap: var(--space-8);
@@ -11,6 +11,13 @@
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
     border: 1px solid var(--neutral-100);
+}
+
+/* Make the profile card on the Settings page static (override profile page sticky rule) */
+.settings-section.card.profile-card,
+.settings-section.profile-card {
+  position: static !important;
+  top: auto !important;
 }
 
 .settings-section h2 {
@@ -70,3 +77,205 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Settings page additional styles */
+.settings-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+}
+
+.settings-save-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.settings-msg {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin: 0 0 1rem 0;
+    max-width: 900px;
+}
+.settings-msg.success { background: #f0fff4; color: #2f855a; border: 1px solid rgba(46, 204, 113, 0.12); }
+.settings-msg.error { background: #fff5f5; color: #c53030; border: 1px solid rgba(220, 38, 38, 0.08); }
+.settings-msg.info { background: #f0f9ff; color: #0369a1; border: 1px solid rgba(3, 105, 161, 0.08); }
+
+.profile-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.avatar-column {
+    width: 170px;
+    text-align: center;
+}
+
+.avatar-preview {
+    width: 140px;
+    height: 140px;
+    border-radius: 12px;
+    background: #f7fafc;
+    border: 1px solid #e6edf0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.avatar-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-initial { font-size: 3rem; color: #1f2937; font-weight: 700; }
+.avatar-hint { margin-top: 0.5rem; color: #6b7280; font-size: 0.85rem; }
+
+.profile-fields { flex: 1; }
+
+.form-row { display: flex; gap: 12px; }
+.form-row .half { flex: 1; }
+
+.form-group textarea { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #e6edf0; resize: vertical; }
+
+.password-row {
+    display: inline;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 10px;
+    align-items: center;
+}
+
+.password-row input {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #e6edf0;
+}
+
+.password-row .btn-primary.small { padding: 8px 10px; font-size: 0.85rem; }
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px dashed #eef2f7;
+}
+
+.hint { color: #6b7280; font-size: 0.85rem; margin-top: 6px; }
+
+ /* Settings form layout — block-level form groups with spacing and responsive halves */
+.settings-section .form-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* Each half column (avatar column remains separate) */
+.settings-section .form-row .half {
+  flex: 1 1 calc(50% - 12px);
+  min-width: 0;
+  display: block;
+}
+
+/* Make form-group block-level (full width inside its half) */
+/* Force Settings page form groups to be block-level */
+.settings-section .form-group {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  margin-bottom: var(--space-4);
+}
+
+/* Inputs and textareas fill the group */
+.settings-section .form-group input,
+.settings-section .form-group textarea,
+.settings-section .form-group select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Password row: grid layout for aligned inputs and button */
+/* Password row — stack inputs vertically (block) */
+.settings-section .password-row {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: var(--space-4);
+}
+
+.settings-section .password-row input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--neutral-200);
+  margin-bottom: 10px;
+}
+
+.settings-section .password-row .btn-primary.small {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+.settings-section .password-row .hint {
+  margin-top: 6px;
+}
+
+/* Keep avatar column fixed and out of the flow */
+.profile-row .avatar-column {
+  width: 170px;
+  flex: 0 0 170px;
+}
+
+/* Responsive fallback: stack everything on smaller screens */
+@media (max-width: 700px) {
+  .settings-section .form-row .half {
+    flex-basis: 100%;
+  }
+
+  /* Force Settings page form groups to be block-level */
+.settings-section .form-group {
+  display: block !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  margin-bottom: var(--space-4);
+}
+
+  /* Password row — stack inputs vertically (block) */
+.settings-section .password-row {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: var(--space-4);
+}
+
+.settings-section .password-row input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--neutral-200);
+  margin-bottom: 10px;
+}
+
+.settings-section .password-row .btn-primary.small {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+.settings-section .password-row .hint {
+  margin-top: 6px;
+}
+}
+
+
