@@ -67,7 +67,13 @@
    --color-warning: #ca8a04;
    /* Yellow-600 */
 
-   /* Typography */
+   /* Breakpoints */
+   --break-sm: 640px;
+   --break-md: 768px;
+   --break-lg: 1024px;
+   --break-xl: 1280px;
+
+   /* Typography (Fluid) */
    --font-sans: 'Inter',
       -apple-system,
       BlinkMacSystemFont,
@@ -89,21 +95,21 @@
    /* 18px */
    --text-xl: 1.25rem;
    /* 20px */
-   --text-2xl: 1.5rem;
-   /* 24px */
-   --text-3xl: 2rem;
-   /* 32px */
-   --text-4xl: 2.5rem;
-   /* 40px */
-   --text-5xl: 3rem;
-   /* 48px */
+   --text-2xl: clamp(1.25rem, 3.5vw, 1.5rem);
+   /* 20-24px */
+   --text-3xl: clamp(1.5rem, 4vw, 2rem);
+   /* 24-32px */
+   --text-4xl: clamp(1.75rem, 4.5vw, 2.5rem);
+   /* 28-40px */
+   --text-5xl: clamp(2rem, 5vw, 3rem);
+   /* 32-48px */
 
    --font-regular: 400;
    --font-medium: 500;
    --font-semibold: 600;
    --font-bold: 700;
 
-   /* Spacing System (4px baseline) */
+   /* Spacing System (4px baseline, fluid for larger spaces) */
    --space-1: 0.25rem;
    /* 4px */
    --space-2: 0.5rem;
@@ -116,18 +122,18 @@
    /* 20px */
    --space-6: 1.5rem;
    /* 24px */
-   --space-8: 2rem;
-   /* 32px */
-   --space-10: 2.5rem;
-   /* 40px */
-   --space-12: 3rem;
-   /* 48px */
-   --space-16: 4rem;
-   /* 64px */
-   --space-20: 5rem;
-   /* 80px */
-   --space-24: 6rem;
-   /* 96px */
+   --space-8: clamp(1.5rem, 3vw, 2rem);
+   /* 24-32px */
+   --space-10: clamp(1.75rem, 4vw, 2.5rem);
+   /* 28-40px */
+   --space-12: clamp(2rem, 5vw, 3rem);
+   /* 32-48px */
+   --space-16: clamp(2.5rem, 6vw, 4rem);
+   /* 40-64px */
+   --space-20: clamp(3rem, 8vw, 5rem);
+   /* 48-80px */
+   --space-24: clamp(4rem, 10vw, 6rem);
+   /* 64-96px */
 
    /* Layout */
    --container-max: 1280px;

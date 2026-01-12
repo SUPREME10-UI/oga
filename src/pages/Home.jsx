@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import DownloadModal from '../components/common/DownloadModal';
 import './Home.css';
 
 function Home({ onOpenAuth }) {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [downloadModal, setDownloadModal] = useState({ isOpen: false, store: null });
     const location = useLocation();
 
     // Handle scroll to hash from navigation
@@ -13,9 +15,6 @@ function Home({ onOpenAuth }) {
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
             }
-            // Clear state to avoid scrolling on refresh? React Router handles this well usually.
-            // But we might want to manually clear it if it sticks. 
-            // For now, this is sufficient.
         }
     }, [location]);
 
@@ -39,7 +38,7 @@ function Home({ onOpenAuth }) {
             for (let i = 0; i < reveals.length; i++) {
                 const windowHeight = window.innerHeight;
                 const elementTop = reveals[i].getBoundingClientRect().top;
-                const elementVisible = 150;
+                const elementVisible = 100;
                 if (elementTop < windowHeight - elementVisible) {
                     reveals[i].classList.add('active');
                 }
@@ -49,6 +48,14 @@ function Home({ onOpenAuth }) {
         reveal(); // Trigger once on load
         return () => window.removeEventListener('scroll', reveal);
     }, []);
+
+    const openDownloadModal = (store) => {
+        setDownloadModal({ isOpen: true, store });
+    };
+
+    const closeDownloadModal = () => {
+        setDownloadModal({ isOpen: false, store: null });
+    };
 
     return (
         <>
@@ -157,7 +164,6 @@ function Home({ onOpenAuth }) {
                     </div>
 
                     <div className="steps-grid">
-                        {/* Simplified flow for visual clarity */}
                         <div className="step-card scroll-reveal">
                             <div className="step-number">01</div>
                             <h3 className="step-title">Create Account</h3>
@@ -212,26 +218,40 @@ function Home({ onOpenAuth }) {
                         <button className="hero-btn primary" onClick={() => onOpenAuth('signup')}>Sign Up as Labourer</button>
                     </div>
                     <div className="cta-download-section">
-                        <p style={{ marginBottom: 'var(--space-4)', fontSize: 'var(--text-lg)', color: 'var(--neutral-400)' }}>Or download our mobile app</p>
+                        <p className="cta-download-text">Or download our mobile app</p>
                         <div className="app-download-links">
-                            <a href="#" className="app-download-btn" aria-label="Download on Google Play Store">
+                            <button
+                                className="app-download-btn"
+                                aria-label="Download on Google Play Store"
+                                onClick={() => openDownloadModal('google')}
+                            >
                                 <i className="fab fa-google-play"></i>
                                 <div className="app-btn-text">
                                     <span className="app-btn-label">Get it on</span>
                                     <span className="app-btn-name">Google Play</span>
                                 </div>
-                            </a>
-                            <a href="#" className="app-download-btn" aria-label="Download on Apple App Store">
+                            </button>
+                            <button
+                                className="app-download-btn"
+                                aria-label="Download on Apple App Store"
+                                onClick={() => openDownloadModal('apple')}
+                            >
                                 <i className="fab fa-apple"></i>
                                 <div className="app-btn-text">
                                     <span className="app-btn-label">Download on the</span>
                                     <span className="app-btn-name">App Store</span>
                                 </div>
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </section>
             </div>
+
+            <DownloadModal
+                isOpen={downloadModal.isOpen}
+                onClose={closeDownloadModal}
+                store={downloadModal.store}
+            />
         </>
     );
 }

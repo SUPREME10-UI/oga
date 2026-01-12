@@ -340,37 +340,61 @@
         padding: 1rem 1.5rem;
     }
 
+    .explore-hero {
+        padding: 2rem 1rem 1.5rem;
+    }
+
     .explore-hero h1 {
-        font-size: 2.25rem;
+        font-size: 2rem;
     }
 
     .search-filter-container {
         flex-direction: column;
         border-radius: 20px;
         padding: 1rem;
+        gap: 12px;
     }
 
     .search-box,
     .filter-select,
     .btn-search-submit {
         width: 100%;
+        min-width: 0;
+    }
+
+    .filter-select select {
+        border-radius: var(--radius-lg);
+    }
+
+    .btn-search-submit {
+        border-radius: var(--radius-lg);
+        justify-content: center;
+        padding: 0.75rem 1.5rem;
     }
 
     .explore-tabs {
         flex-direction: column;
         gap: 10px;
+        margin-top: 1.5rem;
     }
 
     .tab-btn {
         width: 100%;
         justify-content: center;
+        padding: 0.75rem 1.5rem;
     }
 
     .results-section {
-        padding: 2rem 1.5rem;
+        padding: 2rem 1rem;
     }
 
     .labourers-grid {
         grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .results-count {
+        text-align: center;
+        margin-bottom: 1.5rem;
     }
 }

@@ -1,5 +1,4 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 import './DashboardSidebar.css';
@@ -29,16 +28,35 @@ export default function DashboardSidebar() {
             </div>
 
             <nav className="sidebar-nav">
-                <Link to="/dashboard/hirer" className="active"><i className="fas fa-th-large"></i> Overview</Link>
-                <Link to="/dashboard/hirer/jobs"><i className="fas fa-briefcase"></i> My Jobs</Link>
-                <Link to="/explore"><i className="fas fa-search"></i> Explore</Link>
-                <Link to="/dashboard/hirer/messages" className="nav-messages-link">
-                    <i className="fas fa-envelope"></i> Messages
+                <NavLink to={`/dashboard/${user?.type}`} end>
+                    <i className="fas fa-th-large"></i> <span>Overview</span>
+                </NavLink>
+                {user?.type === 'hirer' ? (
+                    <NavLink to="/dashboard/hirer/jobs">
+                        <i className="fas fa-briefcase"></i> <span>My Jobs</span>
+                    </NavLink>
+                ) : (
+                    <>
+                        <NavLink to="/dashboard/labourer/applications">
+                            <i className="fas fa-file-alt"></i> <span>Applications</span>
+                        </NavLink>
+                        <NavLink to="/dashboard/labourer/earnings">
+                            <i className="fas fa-wallet"></i> <span>Earnings</span>
+                        </NavLink>
+                    </>
+                )}
+                <NavLink to="/explore">
+                    <i className="fas fa-search"></i> <span>Explore</span>
+                </NavLink>
+                <NavLink to={`/dashboard/${user?.type}/messages`} className="nav-messages-link">
+                    <i className="fas fa-envelope"></i> <span>Messages</span>
                     {unreadCount > 0 && (
                         <span className="sidebar-msg-badge">{unreadCount}</span>
                     )}
-                </Link>
-                <Link to="/dashboard/hirer/settings"><i className="fas fa-cog"></i> Settings</Link>
+                </NavLink>
+                <NavLink to={`/dashboard/${user?.type}/settings`}>
+                    <i className="fas fa-cog"></i> <span>Settings</span>
+                </NavLink>
             </nav>
         </aside>
     );

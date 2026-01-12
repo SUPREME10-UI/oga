@@ -231,21 +231,31 @@ function Messages() {
 
     const muteLabel = selectedChat && selectedChat.muted ? 'Unmute notifications' : 'Mute notifications';
 
+    const handleBack = () => {
+        if (selectedChatId) {
+            setSelectedChatId(null);
+        } else {
+            navigate(-1);
+        }
+    };
+
     return (
         <div className="dashboard-page-container messages-page-wrapper">
             <header className="page-header messages-header">
                 <div className="header-left">
                     <button
                         className="btn-back"
-                        onClick={() => navigate(-1)}
+                        onClick={handleBack}
                         aria-label="Back"
                         title="Back"
                     >
-                        <i className="fas fa-arrow-left"></i>
+                        <i className="fas fa-arrow-left"></i> Back
                     </button>
+                </div>
 
+                <div className="header-center">
                     {selectedChat ? (
-                        <div className="chat-header-main" onClick={() => {}}>
+                        <div className="chat-header-main" onClick={() => { }}>
                             <div className="partner-avatar" aria-hidden="true">
                                 {getPartnerName(selectedChat).charAt(0)}
                             </div>
@@ -265,9 +275,12 @@ function Messages() {
                     )}
                 </div>
 
-                </header>
+                <div className="header-right">
+                    {/* Placeholder for symmetry or status indicator */}
+                </div>
+            </header>
 
-            <div className="messages-layout-box">
+            <div className={`messages-layout-box ${selectedChatId ? 'has-selection' : ''}`}>
                 <div className="chat-sidebar-container">
                     <div className="sidebar-search">
                         <i className="fas fa-search"></i>
@@ -321,21 +334,21 @@ function Messages() {
                                         <h3>{getPartnerName(selectedChat)}</h3>
                                         <span className="user-status-text">Active Now</span>
                                     </div>    </div>
-                                
+
                                 <div className="header-actions" ref={moreRef}>
-        <button className="btn-chat-action" title="More" onClick={() => setMoreOpen(s => !s)}>
-            <i className="fas fa-ellipsis-v"></i>
-        </button>
-        {moreOpen && (
-            <div className="more-menu" role="menu" aria-label="Chat options">
-                <button className="more-menu-item" onClick={onViewProfile} role="menuitem">View profile</button>
-                <button className="more-menu-item" onClick={onToggleMute} role="menuitem">{muteLabel}</button>
-                <button className="more-menu-item" onClick={onClearChat} role="menuitem">Clear chat</button>
-                <button className="more-menu-item" onClick={onDeleteChat} role="menuitem">Delete chat</button>
-                <button className="more-menu-item dangerous" onClick={onBlockUser} role="menuitem">Block user</button>
-            </div>
-        )}
-    </div></div>
+                                    <button className="btn-chat-action" title="More" onClick={() => setMoreOpen(s => !s)}>
+                                        <i className="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    {moreOpen && (
+                                        <div className="more-menu" role="menu" aria-label="Chat options">
+                                            <button className="more-menu-item" onClick={onViewProfile} role="menuitem">View profile</button>
+                                            <button className="more-menu-item" onClick={onToggleMute} role="menuitem">{muteLabel}</button>
+                                            <button className="more-menu-item" onClick={onClearChat} role="menuitem">Clear chat</button>
+                                            <button className="more-menu-item" onClick={onDeleteChat} role="menuitem">Delete chat</button>
+                                            <button className="more-menu-item dangerous" onClick={onBlockUser} role="menuitem">Block user</button>
+                                        </div>
+                                    )}
+                                </div></div>
 
                             <div className="chat-body-scroller" ref={chatBodyRef}>
                                 {selectedChat?.messages && selectedChat.messages.length > 0 ? selectedChat.messages
@@ -452,5 +465,3 @@ function Messages() {
 }
 
 export default Messages;
-
-

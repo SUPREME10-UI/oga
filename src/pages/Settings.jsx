@@ -180,6 +180,7 @@ function Settings() {
 
             <div className="hirer-dashboard-main">
                 <header className="page-header settings-topbar">
+                    <div className="header-side-left" />
                     <div className="header-left">
                         <h1>Account Settings</h1>
                         <p>Manage your profile, security, and notifications</p>

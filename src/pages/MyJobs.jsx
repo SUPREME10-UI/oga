@@ -25,13 +25,16 @@ function MyJobs() {
 
             <div className="hirer-dashboard-main">
                 <header className="page-header">
-                    <div className="header-left">
+                    <div className="header-side-left" />
+                    <div className="header-title-group">
                         <h1>My Job Postings</h1>
                         <p>Manage and track your active job listings</p>
                     </div>
-                    <button className="btn-primary" onClick={() => navigate('/dashboard/hirer')}>
-                        <i className="fas fa-plus"></i> Post New Job
-                    </button>
+                    <div className="header-side-right">
+                        <button className="btn-primary" onClick={() => navigate('/dashboard/hirer')}>
+                            <i className="fas fa-plus"></i> Post New Job
+                        </button>
+                    </div>
                 </header>
 
                 <div className="page-content">

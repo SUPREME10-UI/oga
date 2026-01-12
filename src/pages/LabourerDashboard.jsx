@@ -4,13 +4,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import JobCard from '../components/common/JobCard';
+import DashboardSidebar from '../components/layout/DashboardSidebar';
 import './LabourerDashboard.css';
 
 function LabourerDashboard() {
     const [activeTab, setActiveTab] = useState('jobs'); // 'jobs' or 'applications'
     const { user, updateUser, logout } = useAuth();
     const { jobs, applications, updateLabourerProfile, notifications, labourers } = useData();
-    
+
     // Ensure labourer is in the global list when they access dashboard
     useEffect(() => {
         if (user && user.type === 'labourer' && user.id) {
@@ -52,7 +53,7 @@ function LabourerDashboard() {
 
     const handleSaveAvailability = () => {
         const statusUpdateTime = new Date().toISOString();
-        
+
         // Ensure labourer is added to the global list with all required fields
         const labourerData = {
             id: user.id,
@@ -70,18 +71,18 @@ function LabourerDashboard() {
             skills: user.skills || [],
             verified: user.verified || false
         };
-        
+
         // Update global labourers list for Explore page
         updateLabourerProfile(user.id, labourerData);
 
         // Update local user state
-        updateUser({ 
-            availabilityStatus: availStatus, 
+        updateUser({
+            availabilityStatus: availStatus,
             availabilityNote: availNote,
             statusUpdateTime: statusUpdateTime
         });
         setIsAvailabilityEditing(false);
-        
+
         console.log('Status update saved:', labourerData);
     };
 
@@ -98,50 +99,7 @@ function LabourerDashboard() {
 
     return (
         <div className="hirer-dashboard-wrapper">
-            <div className="dashboard-sidebar">
-                <div className="sidebar-logo">
-                    <i className="fas fa-wrench"></i> Oga
-                </div>
-                <div className="sidebar-profile">
-                    <div className="profile-img-placeholder">
-                        {user?.photo ? (
-                            <img src={user.photo} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
-                        ) : (
-                            <i className="fas fa-user-circle"></i>
-                        )}
-                    </div>
-                    <h3>{user?.formattedName || user?.name || 'User'}</h3>
-                    <p>{user?.profession || 'Labourer'}</p>
-                    <div className="profile-rating">
-                        <i className="fas fa-star" style={{ color: '#ecc94b' }}></i> {user?.rating || 'New'} ({user?.reviewCount || 0} reviews)
-                    </div>
-                </div>
-                <nav className="sidebar-nav">
-                    <button
-                        className={activeTab === 'jobs' ? 'active' : ''}
-                        onClick={() => setActiveTab('jobs')}
-                    >
-                        <i className="fas fa-briefcase"></i> Find Jobs
-                    </button>
-                    <button
-                        className={activeTab === 'applications' ? 'active' : ''}
-                        onClick={() => setActiveTab('applications')}
-                    >
-                        <i className="fas fa-check-circle"></i> My Applications
-                    </button>
-                    <Link to="/explore"><i className="fas fa-search"></i> Explore</Link>
-                    <Link to="/dashboard/labourer/earnings"><i className="fas fa-wallet"></i> Earnings</Link>
-                    <Link to="/dashboard/labourer/messages" className="nav-messages-link">
-                        <i className="fas fa-envelope"></i> Messages
-                        {notifications.filter(n => n.userId === user?.id && n.type === 'message' && !n.read).length > 0 && (
-                            <span className="sidebar-msg-badge">
-                                {notifications.filter(n => n.userId === user?.id && n.type === 'message' && !n.read).length}
-                            </span>
-                        )}
-                    </Link>
-                    <Link to="/dashboard/labourer/settings"><i className="fas fa-cog"></i> Settings</Link>
-                </nav>
-            </div>
+            <DashboardSidebar />
             <div className="hirer-dashboard-main">
                 <header className="dashboard-topbar">
                     <div className="topbar-left">

@@ -1,119 +1,16 @@
-/* HirerDashboard.css */
+/* Main Dashboard Layout */
 .hirer-dashboard-wrapper {
     display: flex;
     min-height: 100vh;
     background-color: var(--bg-body);
-    padding-top: 0;
 }
 
-/* Sidebar */
-.dashboard-sidebar {
-    width: 220px;
-    background: var(--bg-surface);
-    border-right: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    padding: 0 0 2rem;
-    flex-shrink: 0;
-}
-
-/* Sidebar Logo */
-.sidebar-logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--neutral-900);
-    padding: 0 1.25rem;
-    border-bottom: 1px solid var(--neutral-100);
-    margin-bottom: 1rem;
-    height: 60px;
-    box-sizing: border-box;
-}
-
-.sidebar-logo i {
-    color: var(--brand-primary);
-}
-
-.sidebar-profile {
-    text-align: center;
-    padding: 0 1rem 1.5rem;
-    border-bottom: 1px solid var(--neutral-100);
-    margin-bottom: 1rem;
-}
-
-.profile-img-placeholder {
-    width: 60px;
-    height: 60px;
-    background: var(--neutral-900);
-    color: var(--color-white);
-    border-radius: 50%;
-    margin: 0 auto 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-}
-
-.sidebar-profile h3 {
-    font-size: 1rem;
-    font-weight: var(--font-semibold);
-    margin: 0;
-    color: var(--text-main);
-}
-
-.sidebar-profile p {
-    color: var(--text-secondary);
-    font-size: var(--text-sm);
-}
-
-.sidebar-nav a {
-    display: flex;
-    align-items: center;
-    padding: 0.7rem 1.5rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    transition: var(--transition-base);
-    border-left: 3px solid transparent;
-    font-size: 0.95rem;
-}
-
-.sidebar-nav a:hover,
-.sidebar-nav a.active {
-    background: var(--brand-primary-subtle);
-    color: var(--brand-primary);
-    border-left-color: var(--brand-primary);
-}
-
-.sidebar-nav a i {
-    width: 20px;
-    margin-right: 8px;
-    font-size: 0.9rem;
-}
-
-.nav-messages-link {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.sidebar-msg-badge {
-    background: #e53e3e;
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 800;
-    min-width: 18px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 10px;
-    padding: 0 5px;
-    margin-left: auto;
-    margin-right: 1rem;
-    box-shadow: 0 2px 4px rgba(229, 62, 62, 0.3);
+@media (max-width: 768px) {
+    .hirer-dashboard-wrapper {
+        flex-direction: column;
+        padding-bottom: 64px;
+        /* Space for bottom nav */
+    }
 }
 
 /* Main Content */
@@ -121,7 +18,8 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 0;
+    min-width: 0;
+    /* Prevent overflow */
 }
 
 /* New Flush Topbar */
@@ -130,13 +28,15 @@
     justify-content: space-between;
     align-items: center;
     background: var(--bg-surface);
-    padding: 0 1.5rem;
-    height: 60px;
+    padding: 0 var(--space-6);
+    height: var(--header-height);
     box-shadow: var(--shadow-sm);
     border-bottom: 1px solid var(--border-color);
-    margin-bottom: 1.5rem;
+    margin-bottom: var(--space-6);
     width: 100%;
-    margin-top: 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
 }
 
 .dashboard-topbar h1 {

@@ -49,6 +49,20 @@ function Footer() {
                         <Link to="/terms">Terms of Service</Link>
                     </div>
 
+                    <div className="footer-section apps-section">
+                        <h3>Get the App</h3>
+                        <div className="footer-app-links">
+                            <a href="/#home" className="footer-app-btn">
+                                <i className="fab fa-google-play"></i>
+                                <span>Google Play</span>
+                            </a>
+                            <a href="/#home" className="footer-app-btn">
+                                <i className="fab fa-apple"></i>
+                                <span>App Store</span>
+                            </a>
+                        </div>
+                    </div>
+
 
                 </div>
             </div>
