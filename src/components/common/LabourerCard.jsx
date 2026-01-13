@@ -91,11 +91,11 @@ function LabourerCard({ labourer }) {
 
                 <div className="card-footer">
                     <div className="card-actions-full">
-                        {isHirer && (
+                        {user && user.id !== labourer.id && (
                             <button
                                 className="btn-card-action primary"
-                                title="Message Labourer"
-                                onClick={() => navigate('/dashboard/hirer/messages', {
+                                title="Message"
+                                onClick={() => navigate(`/dashboard/${user.type}/messages`, {
                                     state: {
                                         chatWith: {
                                             id: labourer.id,

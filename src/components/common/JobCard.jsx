@@ -43,7 +43,7 @@ function JobCard({ job }) {
                     <h3 className="job-title">{job.title}</h3>
                     <div className="job-hirer-summary">
                         <i className="fas fa-user-circle"></i>
-                        <span>Posted by <strong>{job.hirerName || 'Oga Hirer'}</strong></span>
+                        <span>Posted by <strong>{job.hirerName || 'Anonymous Hirer'}</strong></span>
                     </div>
                     <p className="job-description">{job.description || 'No description provided.'}</p>
 
@@ -79,7 +79,7 @@ function JobCard({ job }) {
                             navigate('/dashboard/labourer/messages', {
                                 state: {
                                     chatWith: {
-                                        name: job.hirerName || 'Oga Hirer',
+                                        name: job.hirerName || 'Anonymous Hirer',
                                         id: job.hirerId
                                     }
                                 }

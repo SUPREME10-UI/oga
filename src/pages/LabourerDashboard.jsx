@@ -14,29 +14,32 @@ function LabourerDashboard() {
 
     // Ensure labourer is in the global list when they access dashboard
     useEffect(() => {
-        if (user && user.type === 'labourer' && user.id) {
-            const existsInList = labourers.find(l => l.id === user.id);
-            if (!existsInList) {
-                // Add labourer to the list if they don't exist
-                updateLabourerProfile(user.id, {
-                    id: user.id,
-                    name: user.name || 'Labourer',
-                    profession: user.profession || 'Labourer',
-                    location: user.location || 'Accra, Ghana',
-                    photo: user.photo || null,
-                    email: user.email || '',
-                    availabilityStatus: user.availabilityStatus || 'Available',
-                    availabilityNote: user.availabilityNote || '',
-                    statusUpdateTime: user.statusUpdateTime || null,
-                    rating: user.rating || 0,
-                    reviewCount: user.reviewCount || 0,
-                    hourlyRate: user.hourlyRate || 50,
-                    skills: user.skills || [],
-                    verified: user.verified || false
-                });
-                console.log('Added labourer to global list on dashboard load:', user.id);
+        const syncProfile = async () => {
+            if (user && user.type === 'labourer' && user.id) {
+                const existsInList = labourers.find(l => String(l.id) === String(user.id));
+                if (!existsInList) {
+                    // Add labourer to the list if they don't exist
+                    await updateLabourerProfile(user.id, {
+                        id: user.id,
+                        name: user.name || 'Labourer',
+                        profession: user.profession || 'Labourer',
+                        location: user.location || 'Accra, Ghana',
+                        photo: user.photo || null,
+                        email: user.email || '',
+                        availabilityStatus: user.availabilityStatus || 'Available',
+                        availabilityNote: user.availabilityNote || '',
+                        statusUpdateTime: user.statusUpdateTime || null,
+                        rating: user.rating || 0,
+                        reviewCount: user.reviewCount || 0,
+                        hourlyRate: user.hourlyRate || 50,
+                        skills: user.skills || [],
+                        verified: user.verified || false
+                    });
+                    console.log('Added labourer to global list on dashboard load:', user.id);
+                }
             }
-        }
+        };
+        syncProfile();
     }, [user, labourers, updateLabourerProfile]);
 
     const [isAvailabilityEditing, setIsAvailabilityEditing] = useState(false);
@@ -51,12 +54,13 @@ function LabourerDashboard() {
         navigate('/');
     };
 
-    const handleSaveAvailability = () => {
+    const handleSaveAvailability = async () => {
         const statusUpdateTime = new Date().toISOString();
 
         // Ensure labourer is added to the global list with all required fields
         const labourerData = {
             id: user.id,
+            uid: user.id,
             name: user.name || 'Labourer',
             profession: user.profession || 'Labourer',
             location: user.location || 'Accra, Ghana',
@@ -73,17 +77,22 @@ function LabourerDashboard() {
         };
 
         // Update global labourers list for Explore page
-        updateLabourerProfile(user.id, labourerData);
+        await updateLabourerProfile(user.id, labourerData);
 
-        // Update local user state
-        updateUser({
-            availabilityStatus: availStatus,
-            availabilityNote: availNote,
-            statusUpdateTime: statusUpdateTime
-        });
-        setIsAvailabilityEditing(false);
-
-        console.log('Status update saved:', labourerData);
+        // Update local user state AND Firestore
+        try {
+            await updateUser({
+                availabilityStatus: availStatus,
+                availabilityNote: availNote,
+                statusUpdateTime: statusUpdateTime
+            });
+            setIsAvailabilityEditing(false);
+            console.log('Status update saved to Firestore and Context:', labourerData);
+        } catch (err) {
+            console.error('Failed to update status in Firestore:', err);
+            alert('Status update failed to sync with server, but updated locally.');
+            setIsAvailabilityEditing(false);
+        }
     };
 
     const getCategoryIconClass = (category) => {
@@ -102,6 +111,7 @@ function LabourerDashboard() {
             <DashboardSidebar />
             <div className="hirer-dashboard-main">
                 <header className="dashboard-topbar">
+                    <div className="topbar-side-left" />
                     <div className="topbar-left">
                         <h1>{activeTab === 'jobs' ? 'Opportunities for You' : 'Application Tracker'}</h1>
                         <p className="topbar-subtitle">
@@ -111,17 +121,15 @@ function LabourerDashboard() {
                         </p>
                     </div>
                     <div className="topbar-actions">
-                        <button className="btn-icon-circle" title="Notifications">
+                        <button className="btn-icon-circle">
                             <i className="fas fa-bell"></i>
-                            <span className="unread-dot-badge"></span>
                         </button>
                         <button
-                            className="btn-logout-text"
+                            className="btn-post-job"
                             onClick={handleLogout}
-                            title="Logout"
+                            style={{ backgroundColor: '#fff', color: '#e53e3e', border: '1px solid #fee2e2' }}
                         >
-                            <i className="fas fa-sign-out-alt"></i>
-                            <span>Logout</span>
+                            <i className="fas fa-sign-out-alt"></i> Logout
                         </button>
                     </div>
                 </header>
@@ -198,22 +206,6 @@ function LabourerDashboard() {
 
                     {activeTab === 'jobs' ? (
                         <>
-                            <section className="dashboard-section">
-                                <div className="search-bar-container">
-                                    <i className="fas fa-search"></i>
-                                    <input type="text" placeholder="Search for jobs (e.g. Plumbing in Accra)..." />
-                                    <button className="btn-search">Search</button>
-                                </div>
-
-                                <div className="filter-tags">
-                                    <button className="filter-tag active">All</button>
-                                    <button className="filter-tag">Plumbing</button>
-                                    <button className="filter-tag">Electrical</button>
-                                    <button className="filter-tag">Masonry</button>
-                                    <button className="filter-tag">Painting</button>
-                                </div>
-                            </section>
-
                             <section className="job-feed">
                                 {jobs.length > 0 ? (
                                     <div className="labourers-grid">

@@ -123,7 +123,6 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                             </div>
 
                             <div className="form-actions-row">
-                                <button type="button" className="btn-back" onClick={handleBack}>Back</button>
                                 <button type="submit" className="btn-submit">
                                     {initialData ? 'Update Job' : 'Post Job'}
                                 </button>

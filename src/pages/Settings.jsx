@@ -168,7 +168,7 @@ function Settings() {
             // no existing password — allow set new
         }
 
-        // Save password to user (demo only)
+        // Update password in user profile
         updateUser({ password: passwordState.newPass });
         setMessage({ type: 'success', text: 'Password updated.' });
         setPasswordState({ current: '', newPass: '', confirm: '' });

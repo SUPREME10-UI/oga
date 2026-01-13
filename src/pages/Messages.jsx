@@ -23,6 +23,7 @@ function Messages() {
     } = useData();
 
     const [selectedChatId, setSelectedChatId] = useState(null);
+    const [tempChat, setTempChat] = useState(null);
     const [messageInput, setMessageInput] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -38,7 +39,7 @@ function Messages() {
     const chatBodyRef = useRef(null);
     const moreRef = useRef(null);
 
-    const selectedChat = globalChats.find(c => c.id === selectedChatId);
+    const selectedChat = globalChats.find(c => c.id === selectedChatId) || tempChat;
 
     const getPartnerId = (chat) => chat.participants.find(id => id !== user?.id);
     const getPartnerName = (chat) => {
@@ -81,8 +82,31 @@ function Messages() {
             const existingChat = globalChats.find(c =>
                 c.participants.includes(user?.id) && c.participants.includes(contact.id)
             );
+
             if (existingChat) {
                 setSelectedChatId(existingChat.id);
+                setTempChat(null);
+            } else {
+                // Create temporary chat structure
+                const newTempChat = {
+                    id: 'temp_chat_new',
+                    participants: [user?.id, contact.id],
+                    names: {
+                        [user?.id]: user?.name || 'Me',
+                        [contact.id]: contact.name || 'User'
+                    },
+                    messages: [{
+                        id: 'system_init',
+                        text: "Conversation started...",
+                        senderId: 'system',
+                        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        system: true
+                    }],
+                    lastMsg: '',
+                    muted: false
+                };
+                setTempChat(newTempChat);
+                setSelectedChatId('temp_chat_new');
             }
             navigate(location.pathname, { replace: true, state: {} });
         }
@@ -234,6 +258,7 @@ function Messages() {
     const handleBack = () => {
         if (selectedChatId) {
             setSelectedChatId(null);
+            setTempChat(null);
         } else {
             navigate(-1);
         }

@@ -14,16 +14,23 @@
 .btn-back {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    color: var(--neutral-600);
-    font-weight: var(--font-medium);
-    margin-bottom: var(--space-6);
-    transition: var(--transition-base);
+    gap: 0.4rem;
+    color: #4a5568;
+    background: #edf2f7;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
 .btn-back:hover {
-    color: var(--brand-primary);
-    transform: translateX(-4px);
+    background: #e2e8f0;
+    color: #1a202c;
+    transform: translateX(-2px);
 }
 
 .job-detail-card {

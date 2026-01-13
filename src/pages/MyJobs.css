@@ -11,32 +11,30 @@
     margin-bottom: var(--space-8);
 }
 
-.header-title-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.header-side-right {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.header-title-group h1 {
+.header-left h1 {
     font-size: var(--text-3xl);
     color: var(--neutral-900);
     margin-bottom: var(--space-1);
 }
 
-.header-title-group p {
-    color: var(--neutral-500);
+.page-header .btn-primary,
+.header-side-right {
+    grid-column: 3;
+    justify-self: end;
 }
 
 .jobs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: var(--space-6);
+}
+
+.my-job-card-wr.header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    grid-column: 2;
 }
 
 .my-job-card-wrapper {

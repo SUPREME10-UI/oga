@@ -49,7 +49,7 @@ function JobDetail() {
     };
 
     const confirmApply = () => {
-        applyForJob(job.id, user.id, user.name, job.hirerId || 'demo-hirer-id', job.title);
+        applyForJob(job.id, user.id, user.name, job.hirerId, job.title);
         setIsApplyModalOpen(false);
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 3000);
@@ -131,14 +131,24 @@ function JobDetail() {
                                     <i className="fas fa-user-tie"></i>
                                 </div>
                                 <div className="hirer-info">
-                                    <h3>{job.hirerName || 'Oga User'}</h3>
-                                    <p className="hirer-meta">Verified Hirer • 5.0 <i className="fas fa-star" style={{ color: '#ecc94b' }}></i></p>
-                                    <button
-                                        className="btn-message-hirer"
-                                        onClick={() => navigate('/dashboard/labourer/messages')}
-                                    >
-                                        <i className="fas fa-comment-alt"></i> Message Hirer
-                                    </button>
+                                    <h3>{job.hirerName || 'User'}</h3>
+                                    <p className="hirer-meta">Community Member • Verified Account</p>
+                                    {user && user.id !== job.hirerId && (
+                                        <button
+                                            className="btn-message-hirer"
+                                            onClick={() => navigate(`/dashboard/${user.type}/messages`, {
+                                                state: {
+                                                    chatWith: {
+                                                        id: job.hirerId,
+                                                        name: job.hirerName || 'Hirer',
+                                                        photo: null // We might not have photo here, that's okay
+                                                    }
+                                                }
+                                            })}
+                                        >
+                                            <i className="fas fa-comment-alt"></i> Message Hirer
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </section>

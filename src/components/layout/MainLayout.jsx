@@ -9,9 +9,10 @@ function MainLayout({ onOpenAuth }) {
     const isHirerDashboard = location.pathname.startsWith('/dashboard/hirer');
     const isLabourerDashboard = location.pathname.startsWith('/dashboard/labourer');
     const isExplorePage = location.pathname.startsWith('/explore');
+    const isProfilePage = location.pathname.startsWith('/profile');
 
-    // Hide Navbar for dashboards and explore page
-    const showNavbar = !isHirerDashboard && !isLabourerDashboard && !isExplorePage;
+    // Hide Navbar for dashboards, explore page, and profile page
+    const showNavbar = !isHirerDashboard && !isLabourerDashboard && !isExplorePage && !isProfilePage;
 
     // Hide Footer for dashboards and explore page
     const showFooter = !isHirerDashboard && !isLabourerDashboard && !isExplorePage;

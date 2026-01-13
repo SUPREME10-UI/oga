@@ -14,10 +14,7 @@ function MyJobs() {
     const jobs = Array.isArray(dataCtx.jobs) ? dataCtx.jobs : [];
     const navigate = useNavigate();
 
-    // Show jobs that belong to this user.
-    // For demo users, also include jobs without a hirerId (legacy demo data).
-    const isDemo = typeof user?.id === 'string' && user.id.toLowerCase().startsWith('demo');
-    const myJobs = jobs.filter(j => j.hirerId === user?.id || (isDemo && !j.hirerId));
+    const myJobs = jobs.filter(j => j.hirerId === user?.id);
 
     return (
         <div className="hirer-dashboard-wrapper">
@@ -26,7 +23,7 @@ function MyJobs() {
             <div className="hirer-dashboard-main">
                 <header className="page-header">
                     <div className="header-side-left" />
-                    <div className="header-title-group">
+                    <div className="header-left">
                         <h1>My Job Postings</h1>
                         <p>Manage and track your active job listings</p>
                     </div>

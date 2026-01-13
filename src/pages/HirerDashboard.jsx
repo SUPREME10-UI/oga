@@ -17,7 +17,7 @@ function HirerDashboard() {
 
     const [showNotifications, setShowNotifications] = useState(false);
 
-    const jobs = allJobs.filter(j => j.hirerId === user?.id || !j.hirerId); // Fallback for initial mock data
+    const jobs = allJobs.filter(j => j.hirerId === user?.id);
 
     const myNotifications = notifications.filter(n => n.userId === user?.id);
     const unreadCount = myNotifications.filter(n => !n.read).length;
@@ -33,12 +33,12 @@ function HirerDashboard() {
         navigate('/');
     };
 
-    const handleAddJob = (jobData) => {
+    const handleAddJob = async (jobData) => {
         if (editingJob) {
-            updateJob(editingJob.id, { ...jobData, hirerId: user.id, hirerName: user.name });
+            await updateJob(editingJob.id, { ...jobData, hirerId: user.id || user.uid, hirerName: user.name });
             setEditingJob(null);
         } else {
-            addJob(jobData, user.id, user.name);
+            await addJob(jobData, user.id || user.uid, user.name);
         }
     };
 
@@ -46,9 +46,9 @@ function HirerDashboard() {
         setJobToDelete(id);
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (jobToDelete) {
-            deleteJob(jobToDelete);
+            await deleteJob(jobToDelete);
             setJobToDelete(null);
         }
     };
@@ -63,8 +63,8 @@ function HirerDashboard() {
         setEditingJob(null);
     };
 
-    const handleNotificationClick = (notif) => {
-        markNotificationAsRead(notif.id);
+    const handleNotificationClick = async (notif) => {
+        await markNotificationAsRead(notif.id);
     };
 
     const getCategoryIcon = (category) => {
@@ -84,7 +84,10 @@ function HirerDashboard() {
 
             <div className="hirer-dashboard-main">
                 <header className="dashboard-topbar">
-                    <h1>Dashboard</h1>
+                    <div className="topbar-side-left" />
+                    <div className="topbar-left">
+                        <h1>Dashboard</h1>
+                    </div>
                     <div className="topbar-actions">
                         <div className="notification-wrapper">
                             <button

@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { useAuth } from '../context/AuthContext';
 import './Applicants.css';
 
 function Applicants() {
     const { jobId } = useParams();
     const { applications, jobs, updateApplicationStatus } = useData();
+    const { user } = useAuth();
     const navigate = useNavigate();
 
     const job = jobs.find(j => j.id === parseInt(jobId));

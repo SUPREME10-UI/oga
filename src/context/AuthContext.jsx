@@ -1,56 +1,121 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
+import {
+    onAuthStateChanged,
+    signInWithEmailAndPassword,
+    signOut,
+    createUserWithEmailAndPassword
+} from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../services/firebase';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(() => {
-        try {
-            const savedUser = localStorage.getItem('oga_user');
-            console.log('AuthContext: Initializing user from localStorage:', savedUser);
-            return savedUser ? JSON.parse(savedUser) : null;
-        } catch (error) {
-            console.error('Error parsing user data:', error);
-            localStorage.removeItem('oga_user');
-            return null;
-        }
-    });
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const login = (userData) => {
-        // userData should include { name, email, type ('hirer' | 'labourer'), ... }
-        console.log('AuthContext: login called with:', userData);
-        setUser(userData);
-        localStorage.setItem('oga_user', JSON.stringify(userData));
-        console.log('AuthContext: user state updated and saved to localStorage');
-    };
-
-    const updateUser = (updates) => {
-        setUser(prev => {
-            if (!prev) return null;
-            const updated = { ...prev, ...updates };
-            localStorage.setItem('oga_user', JSON.stringify(updated));
-            return updated;
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+            try {
+                if (firebaseUser) {
+                    // Get user profile from Firestore
+                    const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
+                    if (userDoc.exists()) {
+                        setUser({
+                            uid: firebaseUser.uid,
+                            id: firebaseUser.uid, // Add id for compatibility
+                            email: firebaseUser.email,
+                            ...userDoc.data()
+                        });
+                    } else {
+                        // Fallback if doc doesn't exist yet but user is authenticated
+                        setUser({
+                            uid: firebaseUser.uid,
+                            id: firebaseUser.uid, // Add id for compatibility
+                            email: firebaseUser.email
+                        });
+                    }
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                console.error('Auth state observer error:', error);
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
         });
+
+        return unsubscribe;
+    }, []);
+
+    const login = async (email, password) => {
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            // Fetch user profile immediately for redirection purposes
+            const userDoc = await getDoc(doc(db, 'users', userCredential.user.uid));
+            let userData = {
+                uid: userCredential.user.uid,
+                email: userCredential.user.email
+            };
+
+            if (userDoc.exists()) {
+                userData = { ...userData, ...userDoc.data() };
+            }
+
+            // Optimistically update user state
+            setUser(userData);
+            return userData;
+        } catch (error) {
+            console.error('Login error:', error);
+            throw error;
+        }
     };
 
-    const demoLogin = (role) => {
-        const demoUser = {
-            name: role === 'hirer' ? 'Demo Hirer' : 'Demo Labourer',
-            email: role === 'hirer' ? 'hirer@demo.com' : 'labourer@demo.com',
-            type: role,
-            id: 'demo-123',
-            location: 'Accra, Ghana'
-        };
-        login(demoUser);
+    const signup = async (email, password, profileData) => {
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            const user = userCredential.user;
+            const fullUserData = { ...user, ...profileData, email };
+
+            // Save additional profile data to Firestore
+            await setDoc(doc(db, 'users', user.uid), {
+                ...profileData,
+                email,
+                createdAt: new Date().toISOString()
+            });
+
+            // Optimistically update user state
+            setUser(fullUserData);
+            return fullUserData;
+        } catch (error) {
+            console.error('Signup error:', error);
+            throw error;
+        }
     };
 
-    const logout = () => {
-        setUser(null);
-        localStorage.removeItem('oga_user');
+    const logout = async () => {
+        try {
+            await signOut(auth);
+            setUser(null);
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    };
+
+    const updateUser = async (updates) => {
+        if (!user) return;
+        try {
+            await setDoc(doc(db, 'users', user.uid), updates, { merge: true });
+            setUser(prev => ({ ...prev, ...updates }));
+        } catch (error) {
+            console.error('Update user error:', error);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, demoLogin, logout, updateUser }}>
-            {children}
+        <AuthContext.Provider value={{ user, login, signup, logout, updateUser, loading }}>
+            {!loading && children}
         </AuthContext.Provider>
     );
 }

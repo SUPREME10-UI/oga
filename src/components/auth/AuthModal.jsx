@@ -17,8 +17,11 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
         bio: '',
         confirmPassword: ''
     });
+    const [isLoading, setIsLoading] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const [newUserName, setNewUserName] = useState('');
 
-    const { login, demoLogin } = useAuth();
+    const { login, signup } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -69,88 +72,88 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
         }
     };
 
-    const handleLogin = (e) => {
-        // Keep submission simple: just prevent default and proceed
+    const handleLogin = async (e) => {
         if (e && e.preventDefault) {
             e.preventDefault();
         }
-        console.log('handleLogin called with formData:', formData);
 
-        // Validate form data
         if (!formData.email || !formData.password) {
             alert('Please fill in both email and password fields.');
             return;
         }
 
+        setIsLoading(true);
         try {
-            // Custom login credentials
-            const credentials = {
-                'hirer@oga.com': { password: 'hirer123', type: 'hirer', name: 'Hirer User', id: 'hirer-001' },
-                'labourer@oga.com': { password: 'labourer123', type: 'labourer', name: 'Labourer User', id: 'labourer-001' }
-            };
+            console.log('AuthModal: Logging in with Firebase');
+            const userData = await login(formData.email, formData.password);
 
-            // Check if email exists in credentials
-            const userCreds = credentials[formData.email];
-            
-            if (!userCreds) {
-                alert('Invalid email address. Please use hirer@oga.com or labourer@oga.com');
-                return;
+            if (userData && userData.type) {
+                navigate(`/dashboard/${userData.type}`);
+            } else {
+                navigate('/dashboard');
             }
-
-            // Validate password
-            if (formData.password !== userCreds.password) {
-                alert('Invalid password. Please check your credentials.');
-                return;
-            }
-
-            // Create user data
-            const userData = { 
-                email: formData.email, 
-                name: userCreds.name, 
-                type: userCreds.type, 
-                id: userCreds.id, 
-                location: 'Accra, Ghana' 
-            };
-            
-            console.log('AuthModal: Logging in with:', userData);
-            
-            // Call login function
-            login(userData);
-
-            console.log('AuthModal: Navigating now to', `/dashboard/${userCreds.type}`);
-            // onClose() is handled by useEffect on location.pathname change
-            navigate(`/dashboard/${userCreds.type}`);
         } catch (error) {
             console.error('Error during login:', error);
-            alert('An error occurred during login. Please try again.');
+            alert('Failed to sign in: ' + error.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
 
-        const userData = {
-            id: 'user-' + Date.now(),
+        if (formData.password !== formData.confirmPassword) {
+            alert('Passwords do not match');
+            return;
+        }
+
+        if (accountType === 'labourer') {
+            if (!formData.profession || !formData.experience || !formData.bio) {
+                alert('Please fill in all labourer details (profession, experience, and bio).');
+                return;
+            }
+        }
+
+        if (!formData.photo) {
+            alert('Please upload a profile photo.');
+            return;
+        }
+
+        const profileData = {
             name: formData.fullName,
-            email: formData.email,
             phoneNumber: formData.phoneNumber,
             location: formData.location,
-            profession: formData.profession || '',
-            experience: formData.experience || '',
-            bio: formData.bio || '',
-            photo: formData.photo || null,
+            profession: formData.profession,
+            experience: formData.experience,
+            bio: formData.bio,
+            photo: formData.photo,
             type: accountType,
             rating: 'New',
             reviewCount: 0
         };
 
-        login(userData);
+        setIsLoading(true);
+        try {
+            console.log('AuthModal: Creating account with Firebase');
+            const userData = await signup(formData.email, formData.password, profileData);
 
-        setTimeout(() => {
-            // onClose() is handled by useEffect on location.pathname change
-            navigate(`/dashboard/${accountType}`);
-        }, 300);
+            // Show Success UI
+            setNewUserName(formData.fullName);
+            setShowSuccess(true);
+
+            // Auto-redirect after 4 seconds
+            setTimeout(() => {
+                setShowSuccess(false);
+                navigate(`/dashboard/${userData.type}`);
+            }, 4000);
+        } catch (error) {
+            console.error('Error during signup:', error);
+            alert('Failed to create account: ' + error.message);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleLegalClick = (path) => {
@@ -164,7 +167,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
         <div className={`modal-overlay ${isOpen ? 'active' : ''}`} onClick={(e) => {
             if (e.target === e.currentTarget) onClose();
         }}>
-            <div 
+            <div
                 className="auth-modal-container"
                 onClick={(e) => {
                     // Prevent clicks inside modal from closing it
@@ -226,8 +229,8 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                 <h2 className="auth-form-title">Welcome Back</h2>
                                 <p className="auth-form-subtitle">Sign in to continue to your account</p>
 
-                                <form 
-                                    className="auth-form" 
+                                <form
+                                    className="auth-form"
                                     onSubmit={handleLogin}
                                 >
                                     <div className="form-group">
@@ -262,12 +265,13 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <a href="#" className="forgot-password" onClick={(e) => { e.preventDefault(); setActiveTab('forgot-password'); }}>Forgot password?</a>
                                     </div>
 
-                                    <button 
-                                        type="submit" 
-                                        className="btn-auth btn-primary btn-auth-medium" 
-                                        style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem', cursor: 'pointer', border: 'none' }}
+                                    <button
+                                        type="submit"
+                                        className={`btn-auth btn-primary btn-auth-medium ${isLoading ? 'loading' : ''}`}
+                                        style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem', cursor: isLoading ? 'not-allowed' : 'pointer', border: 'none' }}
+                                        disabled={isLoading}
                                     >
-                                        Sign In
+                                        {isLoading ? 'Signing In...' : 'Sign In'}
                                     </button>
                                 </form>
 
@@ -293,30 +297,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                             </div>
                         )}
 
-                        {/* Login Credentials Info */}
-                        {activeTab === 'login' && (
-                            <div className="login-credentials-info" style={{ marginTop: '20px', borderTop: '1px solid #eee', paddingTop: '15px' }}>
-                                <p style={{ fontSize: '0.85rem', color: '#666', textAlign: 'center', marginBottom: '10px', fontWeight: '500' }}>Login Credentials</p>
 
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                    <div style={{ padding: '8px 12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                                        <div style={{ fontSize: '0.8rem' }}>
-                                            <span style={{ fontWeight: '600', display: 'block', color: '#1a202c', marginBottom: '4px' }}>Hirer Account</span>
-                                            <span style={{ color: '#4a5568' }}>Email: hirer@oga.com</span><br />
-                                            <span style={{ color: '#4a5568' }}>Password: hirer123</span>
-                                        </div>
-                                    </div>
-
-                                    <div style={{ padding: '8px 12px', background: '#f8fafc', borderRadius: '6px', border: '1px solid #e2e8f0' }}>
-                                        <div style={{ fontSize: '0.8rem' }}>
-                                            <span style={{ fontWeight: '600', display: 'block', color: '#1a202c', marginBottom: '4px' }}>Labourer Account</span>
-                                            <span style={{ color: '#4a5568' }}>Email: labourer@oga.com</span><br />
-                                            <span style={{ color: '#4a5568' }}>Password: labourer123</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
 
                         {/* Forgot Password Tab Content */}
                         {activeTab === 'forgot-password' && (
@@ -386,7 +367,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                             </div>
                         )}
                         {/* Signup Tab Content */}
-                        {activeTab === 'signup' && (
+                        {activeTab === 'signup' && !showSuccess && (
                             <div className="auth-tab-content active">
                                 <h2 className="auth-form-title">Create Account</h2>
                                 <p className="auth-form-subtitle">Join Oga and start connecting today</p>
@@ -427,7 +408,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="fullName">Full Name</label>
+                                        <label htmlFor="fullName">Full Name <span className="required-asterisk">*</span></label>
                                         <input
                                             type="text"
                                             id="fullName"
@@ -439,7 +420,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="signupEmail">Email Address</label>
+                                        <label htmlFor="signupEmail">Email Address <span className="required-asterisk">*</span></label>
                                         <input
                                             type="email"
                                             id="email"
@@ -451,7 +432,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="phoneNumber">Phone Number</label>
+                                        <label htmlFor="phoneNumber">Phone Number <span className="required-asterisk">*</span></label>
                                         <input
                                             type="tel"
                                             id="phoneNumber"
@@ -463,7 +444,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="location">Location</label>
+                                        <label htmlFor="location">Location <span className="required-asterisk">*</span></label>
                                         <input
                                             type="text"
                                             id="location"
@@ -476,7 +457,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
 
                                     {/* Photo upload for all users */}
                                     <div className="form-group">
-                                        <label htmlFor="photo">Profile Photo</label>
+                                        <label htmlFor="photo">Profile Photo <span className="required-asterisk">*</span></label>
                                         <div className="photo-upload-container" style={{ border: '1px dashed #ccc', padding: '1rem', borderRadius: '8px', textAlign: 'center', cursor: 'pointer' }}>
                                             <input
                                                 type="file"
@@ -484,6 +465,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                                 accept="image/*"
                                                 onChange={handleFileChange}
                                                 style={{ display: 'none' }}
+                                                required
                                             />
                                             <label htmlFor="photo" style={{ cursor: 'pointer', display: 'block' }}>
                                                 {formData.photo ? (
@@ -503,12 +485,13 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     {accountType === 'labourer' && (
                                         <>
                                             <div className="form-group" id="professionField">
-                                                <label htmlFor="profession">What kind of work do you do?</label>
+                                                <label htmlFor="profession">What kind of work do you do? <span className="required-asterisk">*</span></label>
                                                 <select
                                                     id="profession"
                                                     className="form-select"
                                                     value={formData.profession}
                                                     onChange={handleInputChange}
+                                                    required
                                                 >
                                                     <option value="">Select your profession</option>
                                                     <option value="Carpenter">Carpenter</option>
@@ -524,12 +507,13 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                                 </select>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="experience">Years of Experience</label>
+                                                <label htmlFor="experience">Years of Experience <span className="required-asterisk">*</span></label>
                                                 <select
                                                     id="experience"
                                                     className="form-select"
                                                     value={formData.experience}
                                                     onChange={handleInputChange}
+                                                    required
                                                 >
                                                     <option value="">Select experience level</option>
                                                     <option value="0-1">Less than 1 year</option>
@@ -539,7 +523,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                                 </select>
                                             </div>
                                             <div className="form-group">
-                                                <label htmlFor="bio">About You (Bio)</label>
+                                                <label htmlFor="bio">About You (Bio) <span className="required-asterisk">*</span></label>
                                                 <textarea
                                                     id="bio"
                                                     placeholder="Briefly describe your skills and work ethic..."
@@ -547,13 +531,14 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                                     style={{ width: '100%', padding: 'var(--space-3)', border: '1px solid var(--neutral-300)', borderRadius: 'var(--radius-md)', outline: 'none', backgroundColor: 'var(--neutral-50)', fontSize: 'var(--text-base)', fontFamily: 'inherit' }}
                                                     value={formData.bio}
                                                     onChange={handleInputChange}
+                                                    required
                                                 ></textarea>
                                             </div>
                                         </>
                                     )}
 
                                     <div className="form-group">
-                                        <label htmlFor="signupPassword">Password</label>
+                                        <label htmlFor="signupPassword">Password <span className="required-asterisk">*</span></label>
                                         <input
                                             type="password"
                                             id="password"
@@ -565,7 +550,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="confirmPassword">Confirm Password</label>
+                                        <label htmlFor="confirmPassword">Confirm Password <span className="required-asterisk">*</span></label>
                                         <input
                                             type="password"
                                             id="confirmPassword"
@@ -583,7 +568,14 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         </label>
                                     </div>
 
-                                    <button type="submit" className="btn-auth btn-primary btn-auth-medium" style={{ margin: '0 auto', display: 'block' }}>Create Account</button>
+                                    <button
+                                        type="submit"
+                                        className={`btn-auth btn-primary btn-auth-medium ${isLoading ? 'loading' : ''}`}
+                                        style={{ margin: '0 auto', display: 'block' }}
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? 'Creating Account...' : 'Create Account'}
+                                    </button>
                                 </form>
 
                                 <div className="auth-divider">
@@ -600,6 +592,21 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <span>Facebook</span>
                                     </button>
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Success State View */}
+                        {showSuccess && (
+                            <div className="auth-success-view">
+                                <div className="success-icon-container">
+                                    <div className="success-checkmark">
+                                        <i className="fas fa-check"></i>
+                                    </div>
+                                </div>
+                                <h1 className="success-title">Welcome to Oga, {newUserName.split(' ')[0]}!</h1>
+                                <p className="success-message">
+                                    Your account as a <strong>{accountType}</strong> has been created successfully.
+                                </p>
                             </div>
                         )}
                     </div>

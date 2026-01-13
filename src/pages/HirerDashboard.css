@@ -24,8 +24,8 @@
 
 /* New Flush Topbar */
 .dashboard-topbar {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     background: var(--bg-surface);
     padding: 0 var(--space-6);
@@ -39,6 +39,14 @@
     z-index: 50;
 }
 
+.topbar-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    grid-column: 2;
+}
+
 .dashboard-topbar h1 {
     font-size: 1.25rem;
     color: var(--text-main);
@@ -50,6 +58,8 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    grid-column: 3;
+    justify-self: end;
 }
 
 /* Content Container for Inner Padding */
