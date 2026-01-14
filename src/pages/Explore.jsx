@@ -49,8 +49,13 @@ function Explore() {
 
         // Filter Jobs
         const jobResults = jobs.filter(job => {
-            const matchesSearch = (job.title && job.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-                (job.description && job.description.toLowerCase().includes(searchTerm.toLowerCase()));
+            if (!job) return false;
+
+            const title = job.title ? job.title.toLowerCase() : '';
+            const desc = job.description ? job.description.toLowerCase() : '';
+            const searchLower = searchTerm.toLowerCase();
+
+            const matchesSearch = searchTerm === '' || title.includes(searchLower) || desc.includes(searchLower);
 
             // Handle case-insensitive profession/category matching
             const matchesProfession = selectedProfession === 'All' ||

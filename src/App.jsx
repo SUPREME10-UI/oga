@@ -15,6 +15,7 @@ import Earnings from './pages/Earnings';
 import Messages from './pages/Messages';
 import Settings from './pages/Settings';
 import Applicants from './pages/Applicants';
+import AllApplicants from './pages/AllApplicants';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import MainLayout from './components/layout/MainLayout';
@@ -58,6 +59,7 @@ function App() {
             <Route path="/dashboard/hirer" element={<HirerDashboard />} />
             <Route path="/dashboard/hirer/jobs" element={<MyJobs />} />
             <Route path="/dashboard/hirer/jobs/:jobId/applicants" element={<Applicants />} />
+            <Route path="/dashboard/hirer/applicants" element={<AllApplicants />} />
             <Route path="/dashboard/hirer/messages" element={<Messages />} />
             <Route path="/dashboard/hirer/settings" element={<Settings />} />
           </Route>

@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
@@ -11,6 +11,7 @@ function Profile({ onOpenAuth }) {
     const { id } = useParams();
     const { user } = useAuth();
     const { labourers } = useData();
+    const navigate = useNavigate();
     const [labourer, setLabourer] = useState(null);
     const [loading, setLoading] = useState(true);
     const [reviews, setReviews] = useState([]);
@@ -70,13 +71,23 @@ function Profile({ onOpenAuth }) {
             {/* Custom Profile Navigation */}
             <nav className="profile-nav">
                 <div className="container profile-nav-content">
+                    {user?.type === 'hirer' && (
+                        <button
+                            onClick={() => navigate('/dashboard/hirer')}
+                            className="btn-back"
+                        >
+                            <i className="fas fa-arrow-left"></i> Back to Dashboard
+                        </button>
+                    )}
                     <Link to="/" className="brand-logo">
                         <i className="fas fa-wrench"></i>
                         <span>Oga</span>
                     </Link>
-                    <Link to="/explore" className="btn-back">
-                        <i className="fas fa-arrow-left"></i> Back
-                    </Link>
+                    {user?.type !== 'hirer' && (
+                        <Link to="/explore" className="btn-back">
+                            <i className="fas fa-arrow-left"></i> Back
+                        </Link>
+                    )}
                 </div>
             </nav>
 

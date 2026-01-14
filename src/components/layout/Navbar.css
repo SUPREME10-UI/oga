@@ -10,26 +10,18 @@
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     transition: var(--transition-base);
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 0 var(--container-padding);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .navbar.scrolled {
     background-color: rgba(255, 255, 255, 0.95);
     box-shadow: var(--shadow-sm);
     border-bottom: 1px solid var(--neutral-200);
-}
-
-.nav-container {
-    max-width: var(--container-max);
-    margin: 0 auto;
-    padding: 0 var(--container-padding);
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.nav-container.fluid {
-    max-width: 100%;
 }
 
 /* Logo */

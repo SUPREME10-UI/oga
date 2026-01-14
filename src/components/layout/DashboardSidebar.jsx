@@ -32,16 +32,18 @@ export default function DashboardSidebar() {
                     <i className="fas fa-th-large"></i> <span>Overview</span>
                 </NavLink>
                 {user?.type === 'hirer' ? (
-                    <NavLink to="/dashboard/hirer/jobs">
-                        <i className="fas fa-briefcase"></i> <span>My Jobs</span>
-                    </NavLink>
+                    <>
+                        <NavLink to="/dashboard/hirer/jobs">
+                            <i className="fas fa-briefcase"></i> <span>My Jobs</span>
+                        </NavLink>
+                        <NavLink to="/dashboard/hirer/applicants">
+                            <i className="fas fa-users"></i> <span>Applicants</span>
+                        </NavLink>
+                    </>
                 ) : (
                     <>
                         <NavLink to="/dashboard/labourer/applications">
                             <i className="fas fa-file-alt"></i> <span>Applications</span>
-                        </NavLink>
-                        <NavLink to="/dashboard/labourer/earnings">
-                            <i className="fas fa-wallet"></i> <span>Earnings</span>
                         </NavLink>
                     </>
                 )}

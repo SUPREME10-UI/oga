@@ -1,18 +1,32 @@
 import { useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
+import DashboardSidebar from '../components/layout/DashboardSidebar';
 import './Applications.css';
 
 function Applications() {
-    const { applications, updateApplicationStatus, jobs } = useData();
+    const { applications, updateApplicationStatus, jobs, labourers } = useData();
     const { user } = useAuth();
     const navigate = useNavigate();
 
     // Filter applications for the current labourer
     const myApps = applications.filter(app => app.labourerId === user?.id).map(app => {
         const job = jobs.find(j => j.id === app.jobId);
-        return { ...app, jobTitle: job?.title || `Job #${app.jobId}` };
+        const hirer = labourers.find(l => l.id === job?.hirerId); // Get hirer info
+        return { ...app, jobTitle: job?.title || `Job #${app.jobId}`, hirerId: job?.hirerId, hirerName: hirer?.name || 'Unknown' };
     });
+
+    const handleMessageHirer = (app) => {
+        navigate('/dashboard/labourer/messages', {
+            state: {
+                chatWith: {
+                    id: app.hirerId,
+                    name: app.hirerName,
+                    photo: null
+                }
+            }
+        });
+    };
 
     return (
         <div className="dashboard-page-container">
@@ -76,6 +90,13 @@ function Applications() {
                                                     <i className="fas fa-check"></i> Done
                                                 </button>
                                             )}
+                                            <button
+                                                className="btn-message"
+                                                onClick={() => handleMessageHirer(app)}
+                                                title="Message Hirer"
+                                            >
+                                                <i className="fas fa-envelope"></i> Message
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}

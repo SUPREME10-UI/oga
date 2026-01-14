@@ -36,9 +36,18 @@ export function DataProvider({ children }) {
 
     // Initialize Firestore Listeners
     useEffect(() => {
-        const qJobs = query(collection(db, 'jobs'), orderBy('createdAt', 'desc'));
+        const qJobs = query(collection(db, 'jobs'));
         const unsubJobs = onSnapshot(qJobs, (snapshot) => {
-            setJobs(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            const jobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Sort by createdAt descending, handling missing dates
+            jobsData.sort((a, b) => {
+                const aTime = a.createdAt?.toMillis?.() || a.createdAt || 0;
+                const bTime = b.createdAt?.toMillis?.() || b.createdAt || 0;
+                return bTime - aTime;
+            });
+            setJobs(jobsData);
+        }, (error) => {
+            console.error("Error loading jobs:", error);
         });
 
         const qLabs = query(collection(db, 'users'), where('type', '==', 'labourer'));
@@ -46,19 +55,50 @@ export function DataProvider({ children }) {
             setLabourers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         });
 
-        const qApps = query(collection(db, 'applications'), orderBy('createdAt', 'desc'));
+        const qApps = query(collection(db, 'applications'));
         const unsubApps = onSnapshot(qApps, (snapshot) => {
-            setApplications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            const appsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            appsData.sort((a, b) => {
+                const aTime = a.createdAt?.toMillis?.() || a.createdAt || 0;
+                const bTime = b.createdAt?.toMillis?.() || b.createdAt || 0;
+                return bTime - aTime;
+            });
+            setApplications(appsData);
+        }, (error) => {
+            console.error("Error loading applications:", error);
         });
 
-        const qNotifs = query(collection(db, 'notifications'), orderBy('createdAt', 'desc'));
+        const qNotifs = query(collection(db, 'notifications'));
         const unsubNotifs = onSnapshot(qNotifs, (snapshot) => {
-            setNotifications(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            const notifsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            notifsData.sort((a, b) => {
+                const aTime = a.createdAt?.toMillis?.() || a.createdAt || 0;
+                const bTime = b.createdAt?.toMillis?.() || b.createdAt || 0;
+                return bTime - aTime;
+            });
+            setNotifications(notifsData);
+        }, (error) => {
+            console.error("Error loading notifications:", error);
         });
 
-        const qChats = query(collection(db, 'chats'), orderBy('updatedAt', 'desc'));
+        const qChats = query(collection(db, 'chats'));
         const unsubChats = onSnapshot(qChats, (snapshot) => {
-            setGlobalChats(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            const chatsData = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    ...data,
+                    messages: data.messages || []
+                };
+            });
+            chatsData.sort((a, b) => {
+                const aTime = a.updatedAt?.toMillis?.() || a.updatedAt || 0;
+                const bTime = b.updatedAt?.toMillis?.() || b.updatedAt || 0;
+                return bTime - aTime;
+            });
+            setGlobalChats(chatsData);
+        }, (error) => {
+            console.error("Error loading chats:", error);
         });
 
         return () => {
@@ -184,6 +224,7 @@ export function DataProvider({ children }) {
     const sendGlobalMessage = async (senderId, recipientId, messageText = '', senderName = '', recipientName = '', messageType = 'text', attachment = null) => {
         try {
             const newMessage = {
+                id: `msg_${Date.now()}_${Math.random()}`,
                 text: messageText,
                 senderId,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -198,13 +239,14 @@ export function DataProvider({ children }) {
 
             if (chat) {
                 const chatRef = doc(db, 'chats', chat.id);
-                const updatedMessages = [...chat.messages, newMessage];
+                const updatedMessages = [...(chat.messages || []), newMessage];
                 await updateDoc(chatRef, {
                     messages: updatedMessages,
                     lastMsg: messageType === 'text' ? messageText : (messageType === 'image' ? 'Image' : 'Attachment'),
                     updatedAt: serverTimestamp(),
                     time: "Just now"
                 });
+                console.log('Message sent to existing chat:', chat.id, newMessage);
             } else {
                 const newChat = {
                     participants: [senderId, recipientId],
@@ -215,7 +257,8 @@ export function DataProvider({ children }) {
                     updatedAt: serverTimestamp(),
                     time: "Just now"
                 };
-                await addDoc(collection(db, 'chats'), newChat);
+                const docRef = await addDoc(collection(db, 'chats'), newChat);
+                console.log('New chat created:', docRef.id, newMessage);
             }
 
             await addNotification(recipientId, 'message', `New message from ${senderName}`, { senderId, type: 'message' });

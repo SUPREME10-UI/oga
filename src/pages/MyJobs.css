@@ -11,6 +11,14 @@
     margin-bottom: var(--space-8);
 }
 
+.header-left {
+    grid-column: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .header-left h1 {
     font-size: var(--text-3xl);
     color: var(--neutral-900);

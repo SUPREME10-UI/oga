@@ -43,64 +43,62 @@ function Navbar({ onLoginClick, isFluid }) {
 
     return (
         <nav className={`navbar ${scrolled ? 'scrolled' : ''}`}>
-            <div className={`nav-container ${isFluid ? 'fluid' : ''}`}>
-                <Link to="/" className="logo">
-                    <i className="fas fa-wrench"></i>
-                    <span>Oga</span>
-                </Link>
+            <Link to="/" className="logo">
+                <i className="fas fa-wrench"></i>
+                <span>Oga</span>
+            </Link>
 
-                {/* Mobile Toggle */}
-                <button
-                    className={`mobile-toggle ${mobileMenuOpen ? 'open' : ''}`}
+            {/* Mobile Toggle */}
+            <button
+                className={`mobile-toggle ${mobileMenuOpen ? 'open' : ''}`}
+                onClick={toggleMobileMenu}
+                aria-label="Toggle navigation"
+            >
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            {/* Overlay for mobile */}
+            {mobileMenuOpen && (
+                <div
+                    className="mobile-overlay"
                     onClick={toggleMobileMenu}
-                    aria-label="Toggle navigation"
-                >
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
+                    style={{
+                        position: 'fixed',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0.3)',
+                        zIndex: 1000
+                    }}
+                ></div>
+            )}
 
-                {/* Overlay for mobile */}
-                {mobileMenuOpen && (
-                    <div
-                        className="mobile-overlay"
-                        onClick={toggleMobileMenu}
-                        style={{
-                            position: 'fixed',
-                            inset: 0,
-                            background: 'rgba(0,0,0,0.3)',
-                            zIndex: 1000
-                        }}
-                    ></div>
+            <div className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
+                <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Home</Link>
+
+                {/* Hash Links */}
+                {location.pathname === '/' ? (
+                    <>
+                        <a href="#features" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('features'); }}>Features</a>
+                        <a href="#how-it-works" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('how-it-works'); }}>How It Works</a>
+                        <a href="#about" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }}>About</a>
+                    </>
+                ) : (
+                    <>
+                        <Link to="/#features" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Features</Link>
+                        <Link to="/#how-it-works" className="nav-link" onClick={() => setMobileMenuOpen(false)}>How It Works</Link>
+                        <Link to="/#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>About</Link>
+                    </>
                 )}
 
-                <div className={`nav-menu ${mobileMenuOpen ? 'active' : ''}`}>
-                    <Link to="/" className={`nav-link ${isActive('/') ? 'active' : ''}`} onClick={() => setMobileMenuOpen(false)}>Home</Link>
-
-                    {/* Hash Links */}
-                    {location.pathname === '/' ? (
-                        <>
-                            <a href="#features" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('features'); }}>Features</a>
-                            <a href="#how-it-works" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('how-it-works'); }}>How It Works</a>
-                            <a href="#about" className="nav-link" onClick={(e) => { e.preventDefault(); handleNavClick('about'); }}>About</a>
-                        </>
-                    ) : (
-                        <>
-                            <Link to="/#features" className="nav-link" onClick={() => setMobileMenuOpen(false)}>Features</Link>
-                            <Link to="/#how-it-works" className="nav-link" onClick={() => setMobileMenuOpen(false)}>How It Works</Link>
-                            <Link to="/#about" className="nav-link" onClick={() => setMobileMenuOpen(false)}>About</Link>
-                        </>
-                    )}
-
-                    {/* Mobile Only Buttons */}
-                    <div className="mobile-buttons">
-                        <button className="btn-nav btn-signup" onClick={() => { onLoginClick('signup'); setMobileMenuOpen(false); }}>Get Started</button>
-                    </div>
+                {/* Mobile Only Buttons */}
+                <div className="mobile-buttons">
+                    <button className="btn-nav btn-signup" onClick={() => { onLoginClick('signup'); setMobileMenuOpen(false); }}>Get Started</button>
                 </div>
+            </div>
 
-                <div className="nav-buttons">
-                    <button className="btn-nav btn-signup" onClick={() => onLoginClick('signup')}>Get Started</button>
-                </div>
+            <div className="nav-buttons">
+                <button className="btn-nav btn-signup" onClick={() => onLoginClick('signup')}>Get Started</button>
             </div>
         </nav>
     );

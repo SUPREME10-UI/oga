@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import ConfirmModal from '../components/common/ConfirmModal';
+import DashboardSidebar from '../components/layout/DashboardSidebar';
 import './Messages.css';
 
 function Messages() {
@@ -41,13 +42,26 @@ function Messages() {
 
     const selectedChat = globalChats.find(c => c.id === selectedChatId) || tempChat;
 
-    const getPartnerId = (chat) => chat.participants.find(id => id !== user?.id);
-    const getPartnerName = (chat) => {
-        const partnerId = getPartnerId(chat);
-        return (chat.names && chat.names[partnerId]) || "Unknown User";
+    const getPartnerId = (chat) => {
+        if (!chat || !chat.participants) return null;
+        return chat.participants.find(id => id !== user?.id);
     };
 
-    const myChats = globalChats.filter(chat => chat.participants.includes(user?.id));
+    const getPartnerName = (chat) => {
+        if (!chat || !chat.names) return "Unknown User";
+        const partnerId = getPartnerId(chat);
+        return (partnerId && chat.names[partnerId]) || "Unknown User";
+    };
+
+    const myChats = globalChats.filter(chat => chat && chat.participants && chat.participants.includes(user?.id));
+
+    // Debug logging
+    useEffect(() => {
+        if (myChats.length > 0) {
+            console.log('My Chats loaded:', myChats);
+            console.log('GlobalChats:', globalChats);
+        }
+    }, [myChats, globalChats]);
 
     const filteredChats = myChats.filter(chat => {
         const name = getPartnerName(chat).toLowerCase();
@@ -265,17 +279,12 @@ function Messages() {
     };
 
     return (
-        <div className="dashboard-page-container messages-page-wrapper">
+        <div className="hirer-dashboard-wrapper">
+            <DashboardSidebar />
+            <div className="hirer-dashboard-main">
+                <div className="dashboard-page-container messages-page-wrapper">
             <header className="page-header messages-header">
                 <div className="header-left">
-                    <button
-                        className="btn-back"
-                        onClick={handleBack}
-                        aria-label="Back"
-                        title="Back"
-                    >
-                        <i className="fas fa-arrow-left"></i> Back
-                    </button>
                 </div>
 
                 <div className="header-center">
@@ -301,7 +310,6 @@ function Messages() {
                 </div>
 
                 <div className="header-right">
-                    {/* Placeholder for symmetry or status indicator */}
                 </div>
             </header>
 
@@ -485,6 +493,8 @@ function Messages() {
                 cancelText="Cancel"
                 type="danger"
             />
+                </div>
+            </div>
         </div>
     );
 }

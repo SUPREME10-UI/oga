@@ -5,6 +5,35 @@
     margin-bottom: var(--space-10);
 }
 
+.page-header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin-bottom: var(--space-8);
+    width: 100%;
+}
+
+.header-left {
+    grid-column: 2;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header-left h1 {
+    margin: 0;
+}
+
+.header-left p {
+    margin-top: 4px;
+}
+
+.page-header .btn-primary {
+    grid-column: 3;
+    justify-self: end;
+}
+
 .econ-stat-box {
     background: #fff;
     padding: var(--space-6);

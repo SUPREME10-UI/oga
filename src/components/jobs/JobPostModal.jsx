@@ -69,12 +69,13 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                                     onChange={handleChange}
                                     placeholder="e.g. Need a professional plumber"
                                     autoFocus
+                                    required
                                 />
                             </div>
 
                             <div className="form-group">
                                 <label>Category</label>
-                                <select name="category" value={formData.category} onChange={handleChange}>
+                                <select name="category" value={formData.category} onChange={handleChange} required>
                                     <option value="">Select Category</option>
                                     <option value="Plumbing">Plumbing</option>
                                     <option value="Electrical">Electrical</option>
@@ -91,6 +92,7 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                                     value={formData.location}
                                     onChange={handleChange}
                                     placeholder="City, Area"
+                                    required
                                 />
                             </div>
 
@@ -108,6 +110,7 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                                     value={formData.budget}
                                     onChange={handleChange}
                                     placeholder="Enter amount"
+                                    required
                                 />
                             </div>
 
@@ -119,6 +122,7 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                                     onChange={handleChange}
                                     placeholder="Describe the work in detail..."
                                     rows="4"
+                                    required
                                 ></textarea>
                             </div>
 

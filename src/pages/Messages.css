@@ -6,7 +6,9 @@
     height: calc(100vh - 80px);
     overflow: hidden;
     padding-bottom: 0 !important;
-    background: #f0f2f5;
+    background: var(--bg-body);
+    padding-left: 0;
+    padding-right: 0;
 }
 
 .header-status-indicator {
@@ -29,25 +31,25 @@
 .messages-layout-box {
     display: flex;
     flex: 1;
-    background: #fff;
+    background: var(--bg-surface);
     border-radius: 0;
     overflow: hidden;
     margin-top: 0;
-    box-shadow: 0 1px 3px rgba(11, 20, 26, 0.08);
+    box-shadow: none;
 }
 
 /* Sidebar - WhatsApp Style */
 .chat-sidebar-container {
     width: 400px;
-    border-right: 1px solid #e9edef;
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    background: #fff;
+    background: var(--bg-surface);
 }
 
 .sidebar-search {
     padding: 10px;
-    background: #f0f2f5;
+    background: var(--bg-body);
     position: relative;
 }
 
@@ -66,7 +68,7 @@
     padding: 8px 16px 8px 40px;
     border-radius: 8px;
     border: none;
-    background: #fff;
+    background: var(--bg-body);
     font-size: 0.875rem;
     outline: none;
 }
@@ -74,7 +76,7 @@
 .chat-items-list {
     flex: 1;
     overflow-y: auto;
-    background: #fff;
+    background: var(--bg-surface);
 }
 
 .chat-items-list::-webkit-scrollbar {
@@ -96,11 +98,11 @@
 }
 
 .chat-item-link:hover {
-    background: #f5f6f6;
+    background: var(--neutral-50);
 }
 
 .chat-item-link.is-active {
-    background: #f0f2f5;
+    background: var(--brand-primary-subtle);
 }
 
 .user-avatar-circle {
@@ -178,7 +180,7 @@
 /* Chat Window - WhatsApp Style */
 .chat-main-window {
     flex: 1;
-    background: #efeae2;
+    background: var(--bg-body);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -207,11 +209,11 @@
 
 .active-chat-header {
     padding: 10px 16px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #f0f2f5;
+    background: var(--bg-surface);
 }
 
 .header-user-info {
@@ -331,7 +333,7 @@
 /* Composer - WhatsApp Style */
 .chat-composer {
     padding: 10px 16px;
-    background: #f0f2f5;
+    background: var(--bg-surface);
     display: flex;
     gap: 10px;
     align-items: center;
@@ -365,8 +367,8 @@
     flex: 1;
     padding: 9px 12px;
     border-radius: 8px;
-    border: none;
-    background: #fff;
+    border: 1px solid var(--border-color);
+    background: var(--bg-body);
     outline: none;
     font-size: 0.9375rem;
 }
@@ -464,34 +466,54 @@
 
 /* Enhanced Messages Header */
 .messages-header {
+    position: relative;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    gap: 12px;
-    padding: 8px 16px;
-    border-bottom: 1px solid rgba(11, 20, 26, 0.04);
-    background: #fff;
-    min-height: 60px;
+    padding: 0 var(--space-6);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-surface);
+    min-height: var(--header-height);
+    box-shadow: var(--shadow-sm);
 }
 
 .header-left {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    justify-self: start;
-    min-width: 0;
+    z-index: 20;
     grid-column: 1;
 }
 
+/* Absolute Center Pattern */
 .header-center {
-    grid-column: 2;
     display: flex;
     justify-content: center;
-    min-width: 0;
+    align-items: center;
+    z-index: 10;
+    pointer-events: auto;
+    grid-column: 2;
+}
+
+.header-center>* {
+    pointer-events: auto;
+    /* To allow clicking the profile info */
 }
 
 .header-title {
     text-align: center;
+}
+
+.header-title h1 {
+    font-size: var(--text-2xl);
+    color: var(--text-main);
+    font-weight: var(--font-bold);
+    margin: 0;
+}
+
+.header-title .header-sub {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+    margin: 4px 0 0;
 }
 
 .btn-back {
@@ -548,6 +570,8 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
+    align-items: flex-start;
+    /* Ensure name/status align left in the flex col */
 }
 
 .partner-name {
@@ -581,19 +605,13 @@
     color: #111b21;
 }
 
-.header-title .header-sub {
-    margin: 0;
-    color: #667781;
-    font-size: 0.85rem;
-}
-
-/* Right section */
 .header-right {
     display: flex;
     align-items: center;
     gap: 12px;
+    z-index: 20;
+    margin-left: auto;
     grid-column: 3;
-    justify-self: end;
 }
 
 .header-status-indicator {

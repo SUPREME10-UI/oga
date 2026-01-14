@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
+import DashboardSidebar from '../components/layout/DashboardSidebar';
 import './Applicants.css';
 
 function Applicants() {
@@ -19,12 +20,12 @@ function Applicants() {
     if (!job) return <div className="applicants-page">Job not found.</div>;
 
     return (
-        <div className="dashboard-page-container applicants-page">
+        <div className="hirer-dashboard-wrapper">
+            <DashboardSidebar />
+            <div className="hirer-dashboard-main">
+                <div className="dashboard-page-container applicants-page">
             <header className="page-header">
                 <div className="header-left">
-                    <button className="btn-back" onClick={() => navigate(-1)}>
-                        <i className="fas fa-arrow-left"></i> Back
-                    </button>
                     <h1>Applicants for "{job.title}"</h1>
                     <p>{jobApplicants.length} people have applied for this position</p>
                 </div>
@@ -74,6 +75,8 @@ function Applicants() {
                             <p>Once labourers apply for this job, they will appear here.</p>
                         </div>
                     )}
+                </div>
+            </div>
                 </div>
             </div>
         </div>
