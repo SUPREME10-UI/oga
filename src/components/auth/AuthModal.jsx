@@ -20,8 +20,9 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
     const [isLoading, setIsLoading] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [newUserName, setNewUserName] = useState('');
+    const [loginError, setLoginError] = useState('');
 
-    const { login, signup } = useAuth();
+    const { login, signup, resetPassword } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -78,11 +79,12 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
         }
 
         if (!formData.email || !formData.password) {
-            alert('Please fill in both email and password fields.');
+            setLoginError('Please fill in both email and password fields.');
             return;
         }
 
         setIsLoading(true);
+        setLoginError(''); // Clear previous errors
         try {
             console.log('AuthModal: Logging in with Firebase');
             const userData = await login(formData.email, formData.password);
@@ -94,7 +96,20 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             }
         } catch (error) {
             console.error('Error during login:', error);
-            alert('Failed to sign in: ' + error.message);
+
+            // Provide user-friendly error messages
+            let errorMessage = 'Failed to sign in. ';
+            if (error.code === 'auth/invalid-credential' || error.code === 'auth/wrong-password' || error.code === 'auth/user-not-found') {
+                errorMessage = 'Invalid email or password. Please try again.';
+            } else if (error.code === 'auth/too-many-requests') {
+                errorMessage = 'Too many failed attempts. Please try again later.';
+            } else if (error.code === 'auth/network-request-failed') {
+                errorMessage = 'Network error. Please check your connection.';
+            } else {
+                errorMessage += error.message;
+            }
+
+            setLoginError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -245,6 +260,24 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         />
                                     </div>
 
+                                    {loginError && (
+                                        <div style={{
+                                            padding: '0.75rem 1rem',
+                                            backgroundColor: '#fee',
+                                            border: '1px solid #fcc',
+                                            borderRadius: '8px',
+                                            color: '#c33',
+                                            fontSize: '0.9rem',
+                                            marginBottom: '1rem',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.5rem'
+                                        }}>
+                                            <i className="fas fa-exclamation-circle"></i>
+                                            <span>{loginError}</span>
+                                        </div>
+                                    )}
+
                                     <div className="form-group">
                                         <label htmlFor="password">Password</label>
                                         <input
@@ -305,10 +338,31 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                 <h2 className="auth-form-title">Reset Password</h2>
                                 <p className="auth-form-subtitle">Enter your email and we'll send you a link to reset your password.</p>
 
-                                <form className="auth-form" onSubmit={(e) => {
+                                <form className="auth-form" onSubmit={async (e) => {
                                     e.preventDefault();
-                                    setActiveTab('email-sent');
-                                    alert(`SIMULATED EMAIL SENT TO: ${formData.email}\n\nReset Link: http://localhost:5173/reset-password?token=simulated-token-123\n\n(This is a simulation for development purposes)`);
+                                    if (!formData.email) {
+                                        alert('Please enter your email address.');
+                                        return;
+                                    }
+
+                                    setIsLoading(true);
+                                    try {
+                                        await resetPassword(formData.email);
+                                        setActiveTab('email-sent');
+                                    } catch (error) {
+                                        console.error('Password reset error:', error);
+                                        let errorMessage = 'Failed to send reset email. ';
+                                        if (error.code === 'auth/user-not-found') {
+                                            errorMessage = 'No account found with this email address.';
+                                        } else if (error.code === 'auth/invalid-email') {
+                                            errorMessage = 'Invalid email address.';
+                                        } else {
+                                            errorMessage += error.message;
+                                        }
+                                        alert(errorMessage);
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
                                 }}>
                                     <div className="form-group">
                                         <label htmlFor="reset-email">Email</label>
@@ -322,7 +376,14 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         />
                                     </div>
 
-                                    <button type="submit" className="btn-auth btn-primary btn-auth-medium" style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem' }}>Send Reset Link</button>
+                                    <button
+                                        type="submit"
+                                        className={`btn-auth btn-primary btn-auth-medium ${isLoading ? 'loading' : ''}`}
+                                        style={{ margin: '0 auto', display: 'block', padding: '0.8rem 2rem' }}
+                                        disabled={isLoading}
+                                    >
+                                        {isLoading ? 'Sending...' : 'Send Reset Link'}
+                                    </button>
                                 </form>
 
                                 <p className="login-create-account">
@@ -351,8 +412,13 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                 <button
                                     className="btn-auth btn-outline btn-auth-medium"
                                     style={{ margin: '0 auto 1.5rem', display: 'block', padding: '0.6rem 1.5rem', border: '1px solid var(--neutral-300)' }}
-                                    onClick={() => {
-                                        alert('Reset email resent to ' + formData.email);
+                                    onClick={async () => {
+                                        try {
+                                            await resetPassword(formData.email);
+                                            alert('Reset email resent to ' + formData.email);
+                                        } catch (error) {
+                                            alert('Failed to resend email. Please try again.');
+                                        }
                                     }}
                                 >
                                     Resend Email

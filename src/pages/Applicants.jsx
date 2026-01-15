@@ -61,7 +61,10 @@ function Applicants() {
                                         </div>
                                     )}
                                     {app.status !== 'Pending' && (
-                                        <button className="btn-message" onClick={() => navigate('/dashboard/hirer/messages')}>
+                                        <button
+                                            className="btn-message"
+                                            onClick={() => navigate('/dashboard/hirer/messages', { state: { chatWith: { id: app.labourerId, name: app.labourerName } } })}
+                                        >
                                             Send Message
                                         </button>
                                     )}

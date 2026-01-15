@@ -45,6 +45,7 @@ function LabourerDashboard() {
     const [isAvailabilityEditing, setIsAvailabilityEditing] = useState(false);
     const [availStatus, setAvailStatus] = useState(user?.availabilityStatus || 'Available');
     const [availNote, setAvailNote] = useState(user?.availabilityNote || '');
+    const [showNotifications, setShowNotifications] = useState(false);
 
     const myApplications = applications.filter(app => app.labourerId === user?.id);
     const navigate = useNavigate();
@@ -121,8 +122,24 @@ function LabourerDashboard() {
                         </p>
                     </div>
                     <div className="topbar-actions">
-                        <button className="btn-icon-circle">
+                        <button
+                            className="btn-icon-circle"
+                            onClick={() => setShowNotifications(!showNotifications)}
+                            style={{ position: 'relative' }}
+                        >
                             <i className="fas fa-bell"></i>
+                            {notifications.filter(n => !n.read && n.userId === user?.id).length > 0 && (
+                                <span style={{
+                                    position: 'absolute',
+                                    top: '8px',
+                                    right: '8px',
+                                    width: '8px',
+                                    height: '8px',
+                                    backgroundColor: '#ef4444',
+                                    borderRadius: '50%',
+                                    border: '2px solid white'
+                                }}></span>
+                            )}
                         </button>
                         <button
                             className="btn-post-job"
@@ -133,6 +150,81 @@ function LabourerDashboard() {
                         </button>
                     </div>
                 </header>
+
+                {/* Notification Panel */}
+                {showNotifications && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '80px',
+                        right: '20px',
+                        width: '350px',
+                        maxHeight: '400px',
+                        backgroundColor: 'white',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+                        zIndex: 1000,
+                        overflow: 'hidden'
+                    }}>
+                        <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Notifications</h3>
+                            <button onClick={() => setShowNotifications(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280' }}>
+                                <i className="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div style={{ maxHeight: '340px', overflowY: 'auto' }}>
+                            {notifications.filter(n => n.userId === user?.id).length > 0 ? (
+                                notifications
+                                    .filter(n => n.userId === user?.id)
+                                    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+                                    .slice(0, 10)
+                                    .map(notif => (
+                                        <div
+                                            key={notif.id}
+                                            style={{
+                                                padding: '1rem',
+                                                borderBottom: '1px solid #f3f4f6',
+                                                backgroundColor: notif.read ? 'white' : '#f0f9ff',
+                                                cursor: 'pointer'
+                                            }}
+                                            onClick={() => {
+                                                if (notif.type === 'message') {
+                                                    navigate('/dashboard/labourer/messages');
+                                                }
+                                                setShowNotifications(false);
+                                            }}
+                                        >
+                                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                                <div style={{
+                                                    width: '40px',
+                                                    height: '40px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: notif.type === 'message' ? '#dbeafe' : '#fef3c7',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    flexShrink: 0
+                                                }}>
+                                                    <i className={`fas fa-${notif.type === 'message' ? 'envelope' : 'bell'}`} style={{ color: notif.type === 'message' ? '#3b82f6' : '#f59e0b' }}></i>
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <p style={{ margin: 0, fontSize: '0.875rem', color: '#111827', fontWeight: notif.read ? 400 : 600 }}>{notif.message}</p>
+                                                    <p style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
+                                                        {new Date(notif.createdAt).toLocaleString()}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                            ) : (
+                                <div style={{ padding: '2rem', textAlign: 'center', color: '#9ca3af' }}>
+                                    <i className="fas fa-bell-slash" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}></i>
+                                    <p style={{ margin: 0 }}>No notifications yet</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
 
                 <div className="dashboard-content-container">
                     <section className="status-posting-area">

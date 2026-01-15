@@ -85,16 +85,32 @@ export function DataProvider({ children }) {
         const unsubChats = onSnapshot(qChats, (snapshot) => {
             const chatsData = snapshot.docs.map(doc => {
                 const data = doc.data();
+                // Normalize participant and message IDs to strings to avoid type mismatches
+                const participants = (data.participants || []).map(id => String(id));
+                const namesRaw = data.names || {};
+                const names = Object.keys(namesRaw).reduce((acc, k) => { acc[String(k)] = namesRaw[k]; return acc; }, {});
+                const messages = (data.messages || []).map(m => ({
+                    ...m,
+                    senderId: m.senderId != null ? String(m.senderId) : m.senderId,
+                    readBy: (m.readBy || []).map(rb => String(rb))
+                }));
+
                 return {
                     id: doc.id,
                     ...data,
-                    messages: data.messages || []
+                    participants,
+                    names,
+                    messages
                 };
             });
             chatsData.sort((a, b) => {
                 const aTime = a.updatedAt?.toMillis?.() || a.updatedAt || 0;
                 const bTime = b.updatedAt?.toMillis?.() || b.updatedAt || 0;
                 return bTime - aTime;
+            });
+            console.log('Firestore chats updated. Total chats:', chatsData.length);
+            chatsData.forEach((c, i) => {
+                if (i < 3) console.log(`  Chat ${i}: id=${c.id}, parts=${JSON.stringify(c.participants)}, msgs=${c.messages?.length || 0}`);
             });
             setGlobalChats(chatsData);
         }, (error) => {
@@ -223,45 +239,73 @@ export function DataProvider({ children }) {
 
     const sendGlobalMessage = async (senderId, recipientId, messageText = '', senderName = '', recipientName = '', messageType = 'text', attachment = null) => {
         try {
+            // Normalize ids to strings for consistent comparisons/storing
+            const sId = String(senderId);
+            const rId = recipientId != null ? String(recipientId) : sId;
+
             const newMessage = {
                 id: `msg_${Date.now()}_${Math.random()}`,
                 text: messageText,
-                senderId,
+                senderId: sId,
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 timestamp: new Date().toISOString(),
-                createdAt: serverTimestamp(),
+                createdAt: new Date().toISOString(), // Use ISO string instead of serverTimestamp() since it's in an array
                 type: messageType,
                 attachment: attachment || null,
-                readBy: [senderId]
+                readBy: [sId]
             };
 
-            const chat = globalChats.find(c => c.participants.includes(senderId) && c.participants.includes(recipientId));
+            const safeRecipientId = rId;
 
+            console.log('sendGlobalMessage: Sending from', sId, 'to', safeRecipientId);
+            console.log('sendGlobalMessage: Current GlobalChats:', globalChats.map(c => ({ id: c.id, parts: c.participants })));
+
+            const chat = globalChats.find(c => (c.participants || []).map(String).includes(sId) && (c.participants || []).map(String).includes(safeRecipientId));
+
+            let resultingChatId = null;
             if (chat) {
                 const chatRef = doc(db, 'chats', chat.id);
                 const updatedMessages = [...(chat.messages || []), newMessage];
+
+                // Optimistic local update so UI shows the message immediately
+                setGlobalChats(prev => prev.map(c => c.id === chat.id ? { ...c, messages: updatedMessages, lastMsg: messageType === 'text' ? messageText : (messageType === 'image' ? 'Image' : 'Attachment'), updatedAt: new Date().toISOString(), time: 'Just now', participants: (c.participants || []).map(String) } : c));
+
                 await updateDoc(chatRef, {
                     messages: updatedMessages,
                     lastMsg: messageType === 'text' ? messageText : (messageType === 'image' ? 'Image' : 'Attachment'),
                     updatedAt: serverTimestamp(),
                     time: "Just now"
                 });
+
                 console.log('Message sent to existing chat:', chat.id, newMessage);
+                resultingChatId = chat.id;
             } else {
+                const safeRecipient = safeRecipientId;
                 const newChat = {
-                    participants: [senderId, recipientId],
-                    names: { [senderId]: senderName, [recipientId]: recipientName },
+                    participants: sId === safeRecipientId ? [sId] : [sId, safeRecipientId],
+                    names: { [sId]: senderName, [safeRecipientId]: recipientName || senderName },
                     messages: [newMessage],
                     lastMsg: messageType === 'text' ? messageText : (messageType === 'image' ? 'Image' : 'Attachment'),
                     createdAt: serverTimestamp(),
                     updatedAt: serverTimestamp(),
                     time: "Just now"
                 };
+
+                // Add locally with a temporary id so sender sees the chat immediately
+                const tempId = `local_${Date.now()}_${Math.random()}`;
+                setGlobalChats(prev => [{ id: tempId, ...newChat, participants: newChat.participants.map(String) }, ...prev]);
+
                 const docRef = await addDoc(collection(db, 'chats'), newChat);
                 console.log('New chat created:', docRef.id, newMessage);
+                resultingChatId = docRef.id;
+
+                // Replace temp chat with real id when available
+                setGlobalChats(prev => prev.map(c => c.id === tempId ? { id: docRef.id, ...newChat, participants: newChat.participants.map(String) } : c));
             }
 
-            await addNotification(recipientId, 'message', `New message from ${senderName}`, { senderId, type: 'message' });
+            // Notify recipient (if not self); for self messages, still add a notification to the user
+            await addNotification(safeRecipientId, 'message', `New message from ${senderName}`, { senderId, type: 'message' });
+            return resultingChatId;
         } catch (error) {
             console.error("Error sending message:", error);
         }
@@ -269,12 +313,18 @@ export function DataProvider({ children }) {
 
     const markChatAsRead = async (chatId, userId) => {
         try {
+            // Skip if this is a temporary or local chat ID
+            if (String(chatId).startsWith('temp') || String(chatId).startsWith('local')) {
+                return;
+            }
+
             const chat = globalChats.find(c => c.id === chatId);
             if (!chat) return;
 
+            const uId = String(userId);
             const updatedMessages = chat.messages.map(m => {
-                const readBy = m.readBy || [];
-                if (!readBy.includes(userId)) return { ...m, readBy: [...readBy, userId] };
+                const readBy = (m.readBy || []).map(String);
+                if (!readBy.includes(uId)) return { ...m, readBy: [...readBy, uId] };
                 return m;
             });
 

@@ -3,6 +3,7 @@
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     width: 100%;
     height: var(--header-height);
     z-index: 1000;
@@ -10,8 +11,8 @@
     backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     transition: var(--transition-base);
-    max-width: var(--container-max);
-    margin: 0 auto;
+    max-width: none;
+    margin: 0;
     padding: 0 var(--container-padding);
     display: flex;
     align-items: center;

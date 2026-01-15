@@ -522,25 +522,26 @@
     color: #667781;
     font-weight: 600;
     cursor: pointer;
-    display: flex;
+    display: none;
+    /* Hidden by default on desktop */
     align-items: center;
     gap: 8px;
-    padding: 0;
+    padding: 8px;
+    margin-right: 8px;
     height: auto;
     box-shadow: none;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
+    border-radius: 50%;
 }
 
 .btn-back:hover {
     color: var(--brand-primary);
-    background: none;
-    border: none;
-    transform: translateX(-4px);
-    box-shadow: none;
+    background: rgba(0, 0, 0, 0.05);
+    transform: none;
 }
 
 .btn-back i {
-    font-size: 1rem;
+    font-size: 1.1rem;
 }
 
 .chat-header-main {
@@ -791,4 +792,33 @@
 
     /* optionally hide sidebar on very small screens */
     /* .chat-sidebar-container { display: none; } */
+}
+
+/* Toasts */
+.toast-container {
+    position: fixed;
+    top: calc(var(--header-height) + 12px);
+    right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 2000;
+}
+
+.toast {
+    background: var(--neutral-900);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    font-size: 0.95rem;
+    min-width: 160px;
+}
+
+.toast.error {
+    background: #b91c1c;
+}
+
+.toast.success {
+    background: #059669;
 }

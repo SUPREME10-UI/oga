@@ -65,6 +65,10 @@ function HirerDashboard() {
 
     const handleNotificationClick = async (notif) => {
         await markNotificationAsRead(notif.id);
+        if (notif.type === 'message') {
+            navigate('/dashboard/hirer/messages');
+            setShowNotifications(false);
+        }
     };
 
     const getCategoryIcon = (category) => {
@@ -113,11 +117,11 @@ function HirerDashboard() {
                                                     onClick={() => handleNotificationClick(notif)}
                                                 >
                                                     <div className="notif-icon">
-                                                        <i className={notif.type === 'application' ? 'fas fa-file-alt' : 'fas fa-info-circle'}></i>
+                                                        <i className={notif.type === 'application' ? 'fas fa-file-alt' : notif.type === 'message' ? 'fas fa-envelope' : 'fas fa-info-circle'}></i>
                                                     </div>
                                                     <div className="notif-content">
                                                         <p>{notif.message}</p>
-                                                        <span className="notif-time">{notif.time}, {notif.date}</span>
+                                                        <span className="notif-time">{notif.createdAt ? new Date(notif.createdAt).toLocaleString() : `${notif.time}, ${notif.date}`}</span>
                                                     </div>
                                                     {!notif.read && <div className="unread-dot"></div>}
                                                 </div>

@@ -7,7 +7,7 @@ export default function DashboardSidebar() {
     const { user } = useAuth();
     const { notifications } = useData();
 
-    const unreadCount = notifications.filter(n => n.userId === user?.id && n.type === 'message' && !n.read).length;
+    const unreadCount = notifications.filter(n => String(n.userId) === String(user?.id) && n.type === 'message' && !n.read).length;
 
     return (
         <aside className="dashboard-sidebar">
