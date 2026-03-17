@@ -1,0 +1,198 @@
+.applications-table-card {
+    background: var(--bg-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.apps-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    text-align: left;
+}
+
+.page-header {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    margin-bottom: var(--space-8);
+    width: 100% !important;
+}
+
+.header-side-left {
+    grid-column: 1;
+}
+
+.header-left {
+    grid-column: 2 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+.header-left h1 {
+    font-size: var(--text-2xl);
+    color: var(--neutral-900);
+    margin: 0;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+.header-left p {
+    color: var(--neutral-500);
+    font-size: 0.95rem;
+    margin-top: 4px;
+}
+
+.header-side-right {
+    grid-column: 3 !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+.btn-sm {
+    padding: var(--space-2) var(--space-4) !important;
+    font-size: var(--text-sm) !important;
+}
+
+.apps-table th {
+    background: var(--neutral-50);
+    padding: var(--space-4) var(--space-6);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--neutral-500);
+    border-bottom: 1px solid var(--neutral-200);
+}
+
+.apps-table td {
+    padding: var(--space-5) var(--space-6);
+    border-bottom: 1px solid var(--neutral-100);
+    color: var(--neutral-700);
+    vertical-align: middle;
+}
+
+.apps-table tr:last-child td {
+    border-bottom: none;
+}
+
+.apps-table tr:hover {
+    background: var(--neutral-50);
+}
+
+.job-title-cell {
+    font-weight: var(--font-bold);
+    color: var(--neutral-900) !important;
+}
+
+.status-pill {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: var(--text-xs);
+    font-weight: var(--font-bold);
+}
+
+.status-pill.pending {
+    background-color: #fffbeb;
+    color: #92400e;
+    border: 1px solid #fef3c7;
+}
+
+.status-pill.accepted {
+    background-color: #ecfdf5;
+    color: #065f46;
+    border: 1px solid #d1fae5;
+}
+
+.status-pill.rejected {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fee2e2;
+}
+
+.status-pill.completed {
+    background-color: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #dbeafe;
+}
+
+.btn-view {
+    color: var(--brand-primary);
+    font-weight: 600;
+    font-size: var(--text-sm);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-lg);
+}
+
+.btn-view:hover {
+    background: var(--brand-primary-subtle);
+    color: var(--brand-primary-dark);
+}
+
+.actions-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.btn-complete {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-lg);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-complete:hover {
+    background: #059669;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+}
+
+.no-apps-state {
+    padding: 5rem 2rem;
+    text-align: center;
+    color: var(--neutral-500);
+}
+
+.no-apps-state i {
+    font-size: 3.5rem;
+    color: var(--neutral-200);
+    margin-bottom: 1.5rem;
+}
+
+.no-apps-state h3 {
+    color: var(--neutral-800);
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.no-apps-state p {
+    margin-bottom: 2rem;
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .apps-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
