@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import {
     collection,
     onSnapshot,
@@ -8,9 +8,7 @@ import {
     doc,
     query,
     where,
-    orderBy,
     serverTimestamp,
-    setDoc,
     getDoc
 } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -280,7 +278,6 @@ export function DataProvider({ children }) {
                 console.log('Message sent to existing chat:', chat.id, newMessage);
                 resultingChatId = chat.id;
             } else {
-                const safeRecipient = safeRecipientId;
                 const newChat = {
                     participants: sId === safeRecipientId ? [sId] : [sId, safeRecipientId],
                     names: { [sId]: senderName, [safeRecipientId]: recipientName || senderName },
@@ -441,6 +438,7 @@ export function DataProvider({ children }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useData() {
     const ctx = useContext(DataContext);
     if (!ctx) throw new Error('useData must be used within a DataProvider');

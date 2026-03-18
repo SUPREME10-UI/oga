@@ -80,7 +80,11 @@ export function AuthProvider({ children }) {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
-            const fullUserData = { ...user, ...profileData, email };
+            const fullUserData = { 
+                uid: user.uid,
+                email: user.email,
+                ...profileData 
+            };
 
             // Save additional profile data to Firestore
             await setDoc(doc(db, 'users', user.uid), {
@@ -122,7 +126,7 @@ export function AuthProvider({ children }) {
                     createdAt: new Date().toISOString()
                 };
                 await setDoc(doc(db, 'users', user.uid), newProfile);
-                userData = newProfile;
+                userData = { ...newProfile, isNewUser: true };
             } else {
                 userData = { ...userData, ...userDoc.data() };
             }
@@ -180,6 +184,7 @@ export function AuthProvider({ children }) {
     );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error('useAuth must be used within an AuthProvider');

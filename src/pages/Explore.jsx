@@ -43,6 +43,7 @@ function Explore() {
 
             return matchesSearch && matchesProfession && matchesLocation;
         });
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFilteredLabourers(labResults);
 
 
@@ -66,6 +67,7 @@ function Explore() {
 
             return matchesSearch && matchesProfession && matchesLocation;
         });
+         
         setFilteredJobs(jobResults);
     }, [searchTerm, selectedProfession, selectedLocation, labourers, jobs]);
 

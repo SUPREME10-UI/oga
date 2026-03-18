@@ -19,6 +19,7 @@ function Profile({ onOpenAuth }) {
 
     // 1. Fetch Labourer Details
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setLoading(true);
         const found = labourers.find(l => String(l.id) === String(id));
 

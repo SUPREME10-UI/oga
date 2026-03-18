@@ -48,30 +48,7 @@ function Settings() {
         setAvatarPreview(user.photo || null);
     }, [user]);
 
-    const onChange = (key) => (e) => {
-        const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-        setForm(prev => {
-            // nested settings toggles
-            if (key.startsWith('settings.')) {
-                const [, sKey, sub] = key.split('.');
-                if (sub) {
-                    return {
-                        ...prev,
-                        settings: {
-                            ...prev.settings,
-                            [sKey]: {
-                                ...prev.settings[sKey],
-                                [sub]: value
-                            }
-                        }
-                    };
-                } else {
-                    return { ...prev, settings: { ...prev.settings, [sKey]: value } };
-                }
-            }
-            return { ...prev, [key]: value };
-        });
-    };
+
 
     const handleAvatarClick = () => {
         if (fileRef.current) fileRef.current.click();
@@ -240,23 +217,23 @@ function Settings() {
 
                                 <div className="profile-fields">
                                     <div className="form-group">
-                                        <label>Full Name</label>
-                                        <input value={form.name} onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))} />
+                                        <label htmlFor="settings-name">Full Name</label>
+                                        <input id="settings-name" name="name" autoComplete="name" value={form.name} onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))} />
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Email Address</label>
-                                        <input value={form.email} onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))} />
+                                        <label htmlFor="settings-email">Email Address</label>
+                                        <input id="settings-email" name="email" autoComplete="email" type="email" value={form.email} onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))} />
                                     </div>
 
                                     <div className="form-row">
                                         <div className="form-group half">
-                                            <label>Phone</label>
-                                            <input value={form.phone} onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))} />
+                                            <label htmlFor="settings-phone">Phone</label>
+                                            <input id="settings-phone" name="phone" autoComplete="tel" type="tel" value={form.phone} onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))} />
                                         </div>
                                         <div className="form-group half">
-                                            <label>Location</label>
-                                            <input value={form.location} onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))} />
+                                            <label htmlFor="settings-location">Location</label>
+                                            <input id="settings-location" name="location" autoComplete="address-level2" type="text" value={form.location} onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))} />
                                         </div>
                                     </div>
 

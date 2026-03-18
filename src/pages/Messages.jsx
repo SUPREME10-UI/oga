@@ -1,10 +1,12 @@
-﻿import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useData } from '../context/DataContext';
 import ConfirmModal from '../components/common/ConfirmModal';
 import DashboardSidebar from '../components/layout/DashboardSidebar';
 import './Messages.css';
+
+let globalToastCounter = 0;
 
 function Messages() {
     const location = useLocation();
@@ -27,14 +29,14 @@ function Messages() {
     const [tempChat, setTempChat] = useState(null);
     const [messageInput, setMessageInput] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
+
     const [attachmentPreview, setAttachmentPreview] = useState(null);
     const [moreOpen, setMoreOpen] = useState(false);
 
     // Toast notifications for quick UI feedback
     const [toasts, setToasts] = useState([]);
     const showToast = (message, type = 'success') => {
-        const id = `toast_${Date.now()}_${Math.random()}`;
+        const id = `toast_${globalToastCounter++}`;
         setToasts(prev => [...prev, { id, message, type }]);
         setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3500);
     };
@@ -160,7 +162,7 @@ function Messages() {
             }
             navigate(location.pathname, { replace: true, state: {} });
         }
-    }, [location.state, navigate, location.pathname, globalChats, user?.id]);
+    }, [location.state, navigate, location.pathname, globalChats, user?.id, user?.name]);
 
     // Mark messages as read when selecting chat
     useEffect(() => {
@@ -476,11 +478,7 @@ function Messages() {
                                             placeholder="Write a message..."
                                             ref={composerRef}
                                             value={messageInput}
-                                            onChange={(e) => {
-                                                setMessageInput(e.target.value);
-                                                setIsTyping(true);
-                                                setTimeout(() => setIsTyping(false), 1200);
-                                            }}
+                                            onChange={(e) => setMessageInput(e.target.value)}
                                             onKeyDown={handleComposerKeyDown}
                                             rows={1}
                                         />

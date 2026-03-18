@@ -150,7 +150,14 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
             }
         } catch (error) {
             console.error(`${provider} login error:`, error);
-            const errorMessage = `Failed to sign in with ${provider}. Please try again.`;
+            let errorMessage = `Failed to sign in with ${provider}. `;
+            if (error.code === 'auth/popup-closed-by-user') {
+                 errorMessage += 'Sign-in popup was closed before completing.';
+            } else if (error.code === 'auth/operation-not-allowed') {
+                 errorMessage += 'This sign-in provider is not enabled in Firebase.';
+            } else {
+                 errorMessage += error.message;
+            }
             if (activeTab === 'login') {
                 setLoginError(errorMessage);
             } else {
@@ -312,6 +319,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <input
                                             type="email"
                                             id="email"
+                                            autoComplete="email"
                                             placeholder="Enter your email"
                                             required
                                             value={formData.email}
@@ -342,6 +350,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <input
                                             type="password"
                                             id="password"
+                                            autoComplete="current-password"
                                             placeholder="Enter your password"
                                             required
                                             value={formData.password}
@@ -429,6 +438,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <input
                                             type="email"
                                             id="reset-email"
+                                            autoComplete="email"
                                             placeholder="Enter your email"
                                             required
                                             value={formData.email}
@@ -477,6 +487,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                             await resetPassword(formData.email);
                                             alert('Reset email resent to ' + formData.email);
                                         } catch (error) {
+                                            console.error('Resend error:', error);
                                             alert('Failed to resend email. Please try again.');
                                         }
                                     }}
@@ -500,7 +511,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
 
                                 <form className="auth-form" onSubmit={handleSignup}>
                                     <div className="form-group">
-                                        <label htmlFor="accountType">I am a</label>
+                                        <label>I am a</label>
                                         <div className="account-type-selector">
                                             <label className="account-type-option">
                                                 <input
@@ -538,6 +549,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <input
                                             type="text"
                                             id="fullName"
+                                            autoComplete="name"
                                             placeholder="Enter your full name"
                                             required
                                             value={formData.fullName}
@@ -546,10 +558,11 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="signupEmail">Email Address <span className="required-asterisk">*</span></label>
+                                        <label htmlFor="email">Email Address <span className="required-asterisk">*</span></label>
                                         <input
                                             type="email"
                                             id="email"
+                                            autoComplete="email"
                                             placeholder="Enter your email"
                                             required
                                             value={formData.email}
@@ -562,6 +575,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <input
                                             type="tel"
                                             id="phoneNumber"
+                                            autoComplete="tel"
                                             placeholder="Enter your phone number"
                                             required
                                             value={formData.phoneNumber}
@@ -574,6 +588,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <input
                                             type="text"
                                             id="location"
+                                            autoComplete="address-level2"
                                             placeholder="City, Region (e.g., Accra, Greater Accra)"
                                             required
                                             value={formData.location}
@@ -664,10 +679,11 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                     )}
 
                                     <div className="form-group">
-                                        <label htmlFor="signupPassword">Password <span className="required-asterisk">*</span></label>
+                                        <label htmlFor="password">Password <span className="required-asterisk">*</span></label>
                                         <input
                                             type="password"
                                             id="password"
+                                            autoComplete="new-password"
                                             placeholder="Create a password"
                                             required
                                             value={formData.password}
@@ -680,6 +696,7 @@ function AuthModal({ isOpen, onClose, initialTab = 'login' }) {
                                         <input
                                             type="password"
                                             id="confirmPassword"
+                                            autoComplete="new-password"
                                             placeholder="Confirm your password"
                                             required
                                             value={formData.confirmPassword}

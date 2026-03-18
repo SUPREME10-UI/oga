@@ -14,8 +14,10 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
 
     useEffect(() => {
         if (initialData) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setFormData(initialData);
         } else {
+             
             setFormData({ title: '', category: '', location: '', budget: '', description: '', urgency: 'normal' });
         }
     }, [initialData, isOpen]);
@@ -26,7 +28,6 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
     };
 
     const handleNext = () => setStep(step + 1);
-    const handleBack = () => setStep(step - 1);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -61,9 +62,10 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                     {step === 1 && (
                         <div className="form-step">
                             <div className="form-group">
-                                <label>Job Title</label>
+                                <label htmlFor="title">Job Title</label>
                                 <input
                                     type="text"
+                                    id="title"
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
@@ -74,8 +76,8 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                             </div>
 
                             <div className="form-group">
-                                <label>Category</label>
-                                <select name="category" value={formData.category} onChange={handleChange} required>
+                                <label htmlFor="category">Category</label>
+                                <select id="category" name="category" value={formData.category} onChange={handleChange} required>
                                     <option value="">Select Category</option>
                                     <option value="Plumbing">Plumbing</option>
                                     <option value="Electrical">Electrical</option>
@@ -85,9 +87,10 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                             </div>
 
                             <div className="form-group">
-                                <label>Location</label>
+                                <label htmlFor="location">Location</label>
                                 <input
                                     type="text"
+                                    id="location"
                                     name="location"
                                     value={formData.location}
                                     onChange={handleChange}
@@ -103,9 +106,10 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                     {step === 2 && (
                         <div className="form-step">
                             <div className="form-group">
-                                <label>Budget (₵)</label>
+                                <label htmlFor="budget">Budget (₵)</label>
                                 <input
                                     type="number"
+                                    id="budget"
                                     name="budget"
                                     value={formData.budget}
                                     onChange={handleChange}
@@ -115,8 +119,9 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                             </div>
 
                             <div className="form-group">
-                                <label>Description</label>
+                                <label htmlFor="description">Description</label>
                                 <textarea
+                                    id="description"
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}
