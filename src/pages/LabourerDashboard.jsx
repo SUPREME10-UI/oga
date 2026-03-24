@@ -96,16 +96,7 @@ function LabourerDashboard() {
         }
     };
 
-    const getCategoryIconClass = (category) => {
-        switch (category?.toLowerCase()) {
-            case 'plumbing': return 'fa-wrench';
-            case 'electrical': return 'fa-bolt';
-            case 'masonry': return 'fa-trowel';
-            case 'painting': return 'fa-paint-roller';
-            case 'carpentry': return 'fa-hammer';
-            default: return 'fa-briefcase';
-        }
-    };
+
 
     return (
         <div className="hirer-dashboard-wrapper">

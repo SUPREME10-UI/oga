@@ -1,3 +1,4 @@
+/* global process */
 import { chromium } from 'playwright';
 
 (async () => {

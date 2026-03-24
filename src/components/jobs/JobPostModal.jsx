@@ -14,8 +14,15 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
 
     useEffect(() => {
         if (initialData) {
+<<<<<<< HEAD
             setFormData(initialData);
         } else {
+=======
+            // eslint-disable-next-line react-hooks/set-state-in-effect
+            setFormData(initialData);
+        } else {
+             
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
             setFormData({ title: '', category: '', location: '', budget: '', description: '', urgency: 'normal' });
         }
     }, [initialData, isOpen]);
@@ -26,7 +33,10 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
     };
 
     const handleNext = () => setStep(step + 1);
+<<<<<<< HEAD
     const handleBack = () => setStep(step - 1);
+=======
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -61,9 +71,16 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                     {step === 1 && (
                         <div className="form-step">
                             <div className="form-group">
+<<<<<<< HEAD
                                 <label>Job Title</label>
                                 <input
                                     type="text"
+=======
+                                <label htmlFor="title">Job Title</label>
+                                <input
+                                    type="text"
+                                    id="title"
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
                                     name="title"
                                     value={formData.title}
                                     onChange={handleChange}
@@ -74,8 +91,13 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                             </div>
 
                             <div className="form-group">
+<<<<<<< HEAD
                                 <label>Category</label>
                                 <select name="category" value={formData.category} onChange={handleChange} required>
+=======
+                                <label htmlFor="category">Category</label>
+                                <select id="category" name="category" value={formData.category} onChange={handleChange} required>
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
                                     <option value="">Select Category</option>
                                     <option value="Plumbing">Plumbing</option>
                                     <option value="Electrical">Electrical</option>
@@ -85,9 +107,16 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                             </div>
 
                             <div className="form-group">
+<<<<<<< HEAD
                                 <label>Location</label>
                                 <input
                                     type="text"
+=======
+                                <label htmlFor="location">Location</label>
+                                <input
+                                    type="text"
+                                    id="location"
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
                                     name="location"
                                     value={formData.location}
                                     onChange={handleChange}
@@ -103,9 +132,16 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                     {step === 2 && (
                         <div className="form-step">
                             <div className="form-group">
+<<<<<<< HEAD
                                 <label>Budget (₵)</label>
                                 <input
                                     type="number"
+=======
+                                <label htmlFor="budget">Budget (₵)</label>
+                                <input
+                                    type="number"
+                                    id="budget"
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
                                     name="budget"
                                     value={formData.budget}
                                     onChange={handleChange}
@@ -115,8 +151,14 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
                             </div>
 
                             <div className="form-group">
+<<<<<<< HEAD
                                 <label>Description</label>
                                 <textarea
+=======
+                                <label htmlFor="description">Description</label>
+                                <textarea
+                                    id="description"
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
                                     name="description"
                                     value={formData.description}
                                     onChange={handleChange}

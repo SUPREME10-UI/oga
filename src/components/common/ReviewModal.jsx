@@ -30,6 +30,7 @@ function ReviewModal({ isOpen, onClose, labourerId, reviewerId, reviewerName }) 
             setRating(0);
             setComment('');
         } catch (error) {
+            console.error('Review submission error:', error);
             alert("Failed to submit review. Please try again.");
         } finally {
             setIsSubmitting(false);

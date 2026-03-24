@@ -80,7 +80,15 @@ export function AuthProvider({ children }) {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
+<<<<<<< HEAD
             const fullUserData = { ...user, ...profileData, email };
+=======
+            const fullUserData = { 
+                uid: user.uid,
+                email: user.email,
+                ...profileData 
+            };
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
 
             // Save additional profile data to Firestore
             await setDoc(doc(db, 'users', user.uid), {
@@ -180,6 +188,10 @@ export function AuthProvider({ children }) {
     );
 }
 
+<<<<<<< HEAD
+=======
+// eslint-disable-next-line react-refresh/only-export-components
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
 export function useAuth() {
     const ctx = useContext(AuthContext);
     if (!ctx) throw new Error('useAuth must be used within an AuthProvider');

@@ -43,6 +43,10 @@ function Explore() {
 
             return matchesSearch && matchesProfession && matchesLocation;
         });
+<<<<<<< HEAD
+=======
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
         setFilteredLabourers(labResults);
 
 
@@ -66,6 +70,10 @@ function Explore() {
 
             return matchesSearch && matchesProfession && matchesLocation;
         });
+<<<<<<< HEAD
+=======
+         
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
         setFilteredJobs(jobResults);
     }, [searchTerm, selectedProfession, selectedLocation, labourers, jobs]);
 

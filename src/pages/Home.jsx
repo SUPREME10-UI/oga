@@ -29,7 +29,11 @@ function Home({ onOpenAuth }) {
             setCurrentSlide((prev) => (prev + 1) % slides.length);
         }, 5000);
         return () => clearInterval(interval);
+<<<<<<< HEAD
     }, []);
+=======
+    }, [slides.length]);
+>>>>>>> ec49e4d07819638bda5eaf94ef1cf271f3cce358
 
     // Simple scroll reveal effect
     useEffect(() => {
