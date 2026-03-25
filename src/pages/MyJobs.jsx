@@ -4,7 +4,6 @@ import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import JobPostModal from '../components/jobs/JobPostModal';
 
-import { Button } from "@/components/ui/badge"; // Note: Checking actual button import below
 import { Button as ShadcnButton } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
