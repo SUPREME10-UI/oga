@@ -32,7 +32,8 @@ import {
     Lock,
     Phone,
     MapPin,
-    Hash
+    Hash,
+    Search
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -374,10 +375,10 @@ function Settings() {
                                 <p className="text-xs text-muted-foreground mt-1">Add an extra layer of security to your account logins</p>
                             </div>
                             <Switch 
-                                checked={form.settings.twoFactorEnabled} 
+                                checked={form.settings?.twoFactorEnabled || false} 
                                 onCheckedChange={(c) => setForm({
                                     ...form, 
-                                    settings: { ...form.settings, twoFactorEnabled: c }
+                                    settings: { ...(form.settings || {}), twoFactorEnabled: c }
                                 })} 
                             />
                         </div>
@@ -402,12 +403,12 @@ function Settings() {
                                     </div>
                                 </div>
                                 <Switch 
-                                    checked={form.settings.notifications.email} 
+                                    checked={form.settings?.notifications?.email ?? true} 
                                     onCheckedChange={(c) => setForm({
                                         ...form, 
                                         settings: { 
                                             ...form.settings, 
-                                            notifications: { ...form.settings.notifications, email: c }
+                                            notifications: { ...(form.settings?.notifications || {}), email: c }
                                         }
                                     })} 
                                 />
@@ -424,12 +425,12 @@ function Settings() {
                                     </div>
                                 </div>
                                 <Switch 
-                                    checked={form.settings.notifications.jobAlerts} 
+                                    checked={form.settings?.notifications?.jobAlerts ?? true} 
                                     onCheckedChange={(c) => setForm({
                                         ...form, 
                                         settings: { 
                                             ...form.settings, 
-                                            notifications: { ...form.settings.notifications, jobAlerts: c }
+                                            notifications: { ...(form.settings?.notifications || {}), jobAlerts: c }
                                         }
                                     })} 
                                 />
