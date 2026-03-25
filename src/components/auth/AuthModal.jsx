@@ -175,7 +175,17 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       }
     } catch (error) {
       console.error(`${provider} login error:`, error);
-      setAuthError(error.message);
+      let errorMessage = `Failed to sign in with ${provider}. `;
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "Sign-in popup was closed before completing. Please try again.";
+      } else if (error.code === 'auth/cancelled-popup-request') {
+        errorMessage = "Sign-in request was cancelled. Only one popup can be open at a time.";
+      } else if (error.code === 'auth/popup-blocked') {
+        errorMessage = "Sign-in popup was blocked by your browser. Please allow popups for this site.";
+      } else {
+        errorMessage += error.message;
+      }
+      setAuthError(errorMessage);
     } finally {
       setIsLoading(false);
     }
