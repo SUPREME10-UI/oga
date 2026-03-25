@@ -4,6 +4,7 @@ import { useData } from "../context/DataContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -17,14 +18,97 @@ import {
   Hammer,
   Briefcase,
   SlidersHorizontal,
+  Star,
+  MapPin,
+  CheckCircle,
 } from "lucide-react";
-import ArtisanCard from "../components/ArtisanCard";
-import JobCard from "../components/common/JobCard";
+import { Link } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import JobCard from "../components/common/JobCard";
+
+function ArtisanGridCard({ artisan }) {
+  const name = artisan.name || artisan.businessName || "Artisan";
+  const profession = artisan.profession || (artisan.skills?.[0]) || "Skilled Worker";
+  const avatarUrl = artisan.photoURL || artisan.photo || artisan.image || artisan.avatarUrl;
+  const location = artisan.location || artisan.city || "";
+  const isVerified = artisan.isVerified || artisan.verified;
+  const isAvailable = artisan.isAvailable !== false;
+  const rating = Number(artisan.rating || artisan.avgRating || 0);
+  const reviewCount = artisan.reviewCount || artisan.totalReviews || 0;
+  const hourlyRate = artisan.hourlyRate || artisan.rate;
+
+  return (
+    <Card className="card-hover overflow-hidden border border-border group">
+      {/* Cover */}
+      <div className="relative h-28 craft-gradient">
+        <div className="absolute inset-0 bg-black/20" />
+        {/* Availability badge */}
+        <div className="absolute top-2 right-2">
+          <Badge
+            className={`text-xs ${
+              isAvailable
+                ? "bg-green-500 text-white available-badge"
+                : "bg-gray-500 text-white"
+            }`}
+          >
+            {isAvailable ? "Available" : "Busy"}
+          </Badge>
+        </div>
+        {/* Avatar */}
+        <div className="absolute -bottom-6 left-4">
+          <div className="w-14 h-14 rounded-full border-3 border-white shadow-lg bg-white overflow-hidden">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt={name} className="w-full h-full object-cover" />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center craft-gradient text-white font-bold text-xl">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <CardContent className="pt-9 pb-4 px-4">
+        {/* Name */}
+        <div className="flex items-center gap-1 mb-0.5">
+          <h3 className="font-semibold text-foreground truncate text-base">{name}</h3>
+          {isVerified && <CheckCircle className="w-4 h-4 text-primary flex-shrink-0" />}
+        </div>
+        <p className="text-sm text-muted-foreground mb-2">{profession}</p>
+
+        {/* Location */}
+        {location && (
+          <div className="flex items-center gap-1 text-xs text-muted-foreground mb-2">
+            <MapPin className="w-3 h-3" />
+            <span className="truncate">{location}</span>
+          </div>
+        )}
+
+        {/* Rating */}
+        <div className="flex items-center gap-1 mb-3">
+          <Star className="w-3.5 h-3.5 star-filled fill-current" />
+          <span className="text-sm font-medium">{rating.toFixed(1)}</span>
+          <span className="text-xs text-muted-foreground">({reviewCount} reviews)</span>
+        </div>
+
+        {/* Rate + button */}
+        <div className="flex items-center justify-between mt-auto">
+          {hourlyRate ? (
+            <span className="text-sm font-semibold text-primary">GH₵{hourlyRate}/hr</span>
+          ) : (
+            <span className="text-xs text-muted-foreground">Rate on request</span>
+          )}
+          <Button asChild size="sm" className="text-xs px-3">
+            <Link to={`/profile/${artisan.id}`}>View Profile</Link>
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Explore() {
   const { labourers, jobs } = useData();
-  const navigate = useNavigate();
   const location = useLocation();
 
   const queryParams = new URLSearchParams(location.search);
@@ -41,7 +125,6 @@ export default function Explore() {
     ? labourers.filter((u) => u && u.type === "labourer")
     : [];
 
-  // Extract unique professions and locations for filters (safely)
   const professionsList = [
     "all",
     ...new Set(artisans.map((l) => l.profession).filter(Boolean)),
@@ -56,48 +139,32 @@ export default function Explore() {
     ),
   ];
 
-  // Filter artisans
-  const filteredArtisans = artisans.filter((labourer) => {
+  const filteredArtisans = artisans.filter((l) => {
     const searchMatch =
       !searchQuery ||
-      (labourer.name?.toLowerCase() || "").includes(
-        searchQuery.toLowerCase()
-      ) ||
-      (labourer.profession?.toLowerCase() || "").includes(
-        searchQuery.toLowerCase()
-      );
-    const profMatch =
-      selectedProfession === "all" ||
-      labourer.profession === selectedProfession;
-    const locMatch =
-      selectedLocation === "all" || labourer.location === selectedLocation;
+      (l.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+      (l.profession?.toLowerCase() || "").includes(searchQuery.toLowerCase());
+    const profMatch = selectedProfession === "all" || l.profession === selectedProfession;
+    const locMatch = selectedLocation === "all" || l.location === selectedLocation;
     return searchMatch && profMatch && locMatch;
   });
 
-  // Filter jobs
   const filteredJobs = Array.isArray(jobs)
     ? jobs.filter((job) => {
         if (!job) return false;
         const searchMatch =
           !searchQuery ||
-          (job.title?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          ) ||
-          (job.description?.toLowerCase() || "").includes(
-            searchQuery.toLowerCase()
-          );
+          (job.title?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+          (job.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
         const profMatch =
           selectedProfession === "all" ||
-          (job.category?.toLowerCase() || "") ===
-            selectedProfession.toLowerCase();
-        const locMatch =
-          selectedLocation === "all" || job.location === selectedLocation;
+          (job.category?.toLowerCase() || "") === selectedProfession.toLowerCase();
+        const locMatch = selectedLocation === "all" || job.location === selectedLocation;
         return searchMatch && profMatch && locMatch;
       })
     : [];
 
-  const currentData =
-    activeTab === "labourers" ? filteredArtisans : filteredJobs;
+  const currentData = activeTab === "labourers" ? filteredArtisans : filteredJobs;
   const hasActiveFilters =
     searchQuery || selectedProfession !== "all" || selectedLocation !== "all";
 
@@ -109,28 +176,26 @@ export default function Explore() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* ── Hero Search Header ── */}
-      <div className="bg-gradient-to-br from-slate-900 to-slate-800 py-12 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl font-bold font-serif text-white mb-3">
-            Find Skilled Artisans & Jobs
+      {/* Hero */}
+      <div className="hero-gradient py-14 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold font-serif text-white mb-3 tracking-tight">
+            Find Skilled Artisans &amp; Jobs
           </h1>
-          <p className="text-slate-400 mb-8">
+          <p className="text-white/60 mb-8 text-lg">
             Connect with verified professionals across Ghana
           </p>
-
-          {/* Search bar */}
           <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground z-10" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={
                 activeTab === "labourers"
-                  ? "Search artisans by name or skill..."
-                  : "Search jobs by title or description..."
+                  ? "Search by name, skill or profession..."
+                  : "Search jobs by title..."
               }
-              className="pl-12 pr-4 h-14 text-base rounded-xl bg-white border-0 shadow-lg"
+              className="pl-12 pr-10 h-14 text-base rounded-xl bg-white border-0 shadow-lg"
             />
             {searchQuery && (
               <button
@@ -144,24 +209,22 @@ export default function Explore() {
         </div>
       </div>
 
-      {/* ── Tabs & Filters ── */}
+      {/* Tabs & Filter bar */}
       <div className="sticky top-0 z-10 bg-background border-b border-border shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
-          <Tabs
-            value={activeTab}
-            onValueChange={(val) => {
-              setActiveTab(val);
-            }}
-            className="flex-shrink-0"
-          >
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-shrink-0">
             <TabsList>
               <TabsTrigger value="labourers" className="gap-2">
-                <Hammer className="w-4 h-4" />
-                Artisans
+                <Hammer className="w-4 h-4" /> Artisans
+                <Badge variant="secondary" className="ml-1 text-xs h-5">
+                  {filteredArtisans.length}
+                </Badge>
               </TabsTrigger>
               <TabsTrigger value="jobs" className="gap-2">
-                <Briefcase className="w-4 h-4" />
-                Jobs
+                <Briefcase className="w-4 h-4" /> Jobs
+                <Badge variant="secondary" className="ml-1 text-xs h-5">
+                  {filteredJobs.length}
+                </Badge>
               </TabsTrigger>
             </TabsList>
           </Tabs>
@@ -175,19 +238,11 @@ export default function Explore() {
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filters
-              {hasActiveFilters && (
-                <Badge className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs rounded-full bg-primary text-primary-foreground">
-                  !
-                </Badge>
-              )}
             </Button>
 
             {showFilters && (
               <>
-                <Select
-                  value={selectedProfession}
-                  onValueChange={setSelectedProfession}
-                >
+                <Select value={selectedProfession} onValueChange={setSelectedProfession}>
                   <SelectTrigger className="w-44 h-9 text-sm">
                     <SelectValue placeholder="All Professions" />
                   </SelectTrigger>
@@ -200,10 +255,7 @@ export default function Explore() {
                   </SelectContent>
                 </Select>
 
-                <Select
-                  value={selectedLocation}
-                  onValueChange={setSelectedLocation}
-                >
+                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                   <SelectTrigger className="w-44 h-9 text-sm">
                     <SelectValue placeholder="Any Location" />
                   </SelectTrigger>
@@ -225,48 +277,40 @@ export default function Explore() {
                 onClick={clearFilters}
                 className="text-muted-foreground gap-1"
               >
-                <X className="w-3.5 h-3.5" />
-                Clear
+                <X className="w-3.5 h-3.5" /> Clear
               </Button>
             )}
           </div>
-
-          <p className="text-sm text-muted-foreground ml-auto flex-shrink-0">
-            <span className="font-semibold text-foreground">
-              {currentData.length}
-            </span>{" "}
-            {activeTab === "labourers" ? "artisans" : "jobs"} found
-          </p>
         </div>
       </div>
 
-      {/* ── Results Grid ── */}
+      {/* Results */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         {currentData.length > 0 ? (
           <div
-            className={`grid gap-6 ${
+            className={`grid gap-5 ${
               activeTab === "labourers"
                 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                 : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             }`}
           >
-            {currentData.map((item) =>
-              activeTab === "labourers" ? (
-                <ArtisanCard key={item.id} artisan={item} />
-              ) : (
-                <JobCard key={item.id} job={item} />
-              )
-            )}
+            {activeTab === "labourers"
+              ? filteredArtisans.map((item) => (
+                  <ArtisanGridCard key={item.id} artisan={item} />
+                ))
+              : filteredJobs.map((item) => <JobCard key={item.id} job={item} />)}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             {activeTab === "labourers" ? (
-              <Hammer className="w-16 h-16 text-muted-foreground opacity-20 mb-4" />
+              <Hammer className="w-16 h-16 text-primary/20 mb-4" />
             ) : (
-              <Briefcase className="w-16 h-16 text-muted-foreground opacity-20 mb-4" />
+              <Briefcase className="w-16 h-16 text-primary/20 mb-4" />
             )}
-            <h3 className="text-xl font-semibold mb-2">
-              {hasActiveFilters ? "No results match your filters" : `No ${activeTab === "labourers" ? "artisans" : "jobs"} listed yet`}
+            <h3 className="text-xl font-semibold font-serif mb-2">
+              {hasActiveFilters
+                ? "No results match your filters"
+                : `No ${activeTab === "labourers" ? "artisans" : "jobs"} listed yet`}
             </h3>
             <p className="text-muted-foreground max-w-sm mb-6">
               {hasActiveFilters
