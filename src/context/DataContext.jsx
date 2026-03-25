@@ -50,8 +50,8 @@ export function DataProvider({ children }) {
             console.error("Error loading jobs:", error);
         });
 
-        const qLabs = query(collection(db, 'users'), where('type', '==', 'labourer'));
-        const unsubLabs = onSnapshot(qLabs, (snapshot) => {
+        const qUsers = query(collection(db, 'users'));
+        const unsubUsers = onSnapshot(qUsers, (snapshot) => {
             setLabourers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
         });
 

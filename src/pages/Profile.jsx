@@ -47,7 +47,7 @@ function StarRating({ rating = 0, size = 4 }) {
 function Profile({ onOpenAuth }) {
   const { id } = useParams();
   const { user } = useAuth();
-  const { labourers } = useData();
+  const { labourers, jobs } = useData(); // labourers actually contains all users now
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -56,16 +56,29 @@ function Profile({ onOpenAuth }) {
   const [reviews, setReviews] = useState([]);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
-  // 1. Fetch Labourer Details
+  // 1. Fetch User Details
   useEffect(() => {
     setLoading(true);
     const found = labourers.find((l) => String(l.id) === String(id));
-    setTimeout(() => {
+    
+    if (found) {
       setLabourer(found);
       setLoading(false);
-    }, 100);
-    window.scrollTo(0, 0);
+    } else {
+      // Small timeout to wait for data if it's still loading
+      const timer = setTimeout(() => {
+        const refound = labourers.find((l) => String(l.id) === String(id));
+        setLabourer(refound || null);
+        setLoading(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
   }, [id, labourers]);
+
+  // 1.1 Update page title/scroll
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
 
   // 2. Real-time Reviews Listener
   useEffect(() => {
@@ -77,6 +90,9 @@ function Profile({ onOpenAuth }) {
         ...doc.data()
       }));
       setReviews(fetchedReviews);
+    }, (err) => {
+        console.error("Reviews listener error:", err);
+        setReviews([]);
     });
     return () => unsubscribe();
   }, [id]);
@@ -94,18 +110,23 @@ function Profile({ onOpenAuth }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 text-center">
         <Hammer className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-        <h2 className="text-2xl font-bold font-serif mb-2">Artisan not found</h2>
-        <p className="text-muted-foreground mb-6">The artisan profile you are looking for does not exist or has been removed.</p>
+        <h2 className="text-2xl font-bold font-serif mb-2">Profile not found</h2>
+        <p className="text-muted-foreground mb-6">The profile you are looking for does not exist or has been removed.</p>
         <Button onClick={() => navigate('/explore')}>Browse Artisans</Button>
       </div>
     );
   }
 
-  const isHirer = user?.type === 'hirer';
-  const canReview = isHirer && user.uid !== labourer.id;
+  const isLabourer = labourer.type === 'labourer';
+  const isHirer = labourer.type === 'hirer';
+  const isOwnProfile = user?.uid === labourer.id || user?.id === labourer.id;
+  const canReview = user && !isOwnProfile && user.type === 'hirer' && isLabourer;
 
   const actualRating = labourer.rating || 0;
   const actualReviewCount = labourer.reviewCount || reviews.length;
+  
+  // Hirer specific stats
+  const hirerJobs = isHirer ? jobs.filter(j => String(j.hirerId) === String(labourer.id)) : [];
 
   return (
     <div className="bg-background min-h-screen pb-12">
@@ -169,40 +190,63 @@ function Profile({ onOpenAuth }) {
                     <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> Verified
                   </Badge>
                 )}
-                <Badge
-                  variant={labourer.isAvailable === false ? "secondary" : "default"}
-                  className={labourer.isAvailable !== false ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-gray-100 text-gray-500"}
-                >
-                  {labourer.isAvailable !== false ? "Available to Hire" : "Busy"}
-                </Badge>
+                {isLabourer && (
+                  <Badge
+                    variant={labourer.isAvailable === false ? "secondary" : "default"}
+                    className={labourer.isAvailable !== false ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-gray-100 text-gray-500"}
+                  >
+                    {labourer.isAvailable !== false ? "Available to Hire" : "Busy"}
+                  </Badge>
+                )}
+                {isHirer && (
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                        Employer
+                    </Badge>
+                )}
               </div>
-              <p className="text-muted-foreground text-lg mb-2">{labourer.profession}</p>
+              <p className="text-muted-foreground text-lg mb-2">{labourer.profession || (isHirer ? 'Job Provider' : 'Professional')}</p>
             </div>
 
             {/* Action buttons */}
             <div className="flex flex-wrap gap-3 sm:flex-shrink-0 pb-1">
-              {user && user.uid !== labourer.id && (
-                <Button
-                  variant="outline"
-                  onClick={() => navigate(`/dashboard/${user.type}/messages`, {
-                    state: { chatWith: { id: labourer.id, name: labourer.name, photo: labourer.image || labourer.photo } }
-                  })}
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" /> Message
-                </Button>
+              {!isOwnProfile && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                        if (!user) {
+                            if (onOpenAuth) onOpenAuth('login');
+                            else navigate('/login');
+                            return;
+                        }
+                        navigate(`/dashboard/${user.type}/messages`, {
+                            state: { chatWith: { id: labourer.id, name: labourer.name, photo: labourer.image || labourer.photo } }
+                        });
+                    }}
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" /> Message
+                  </Button>
+                  {isLabourer && (
+                    <Button
+                      onClick={() => {
+                        if (!user) {
+                          if (onOpenAuth) onOpenAuth('signup');
+                          else navigate('/login');
+                          return;
+                        }
+                        navigate('/dashboard/hirer');
+                      }}
+                    >
+                      <Calendar className="w-4 h-4 mr-2" /> Book Now
+                    </Button>
+                  )}
+                </>
               )}
-              <Button
-                onClick={() => {
-                  if (!user) {
-                    if (onOpenAuth) onOpenAuth('signup');
-                    else navigate('/login'); // Fallback if no modal prop
-                    return;
-                  }
-                  navigate('/dashboard/hirer'); // Simple fallback booking redirect
-                }}
-              >
-                <Calendar className="w-4 h-4 mr-2" /> Book Now
-              </Button>
+              {isOwnProfile && (
+                  <Button variant="outline" onClick={() => navigate(`/dashboard/${labourer.type}/settings`)}>
+                      Edit Profile
+                  </Button>
+              )}
             </div>
           </div>
         </div>
@@ -215,9 +259,16 @@ function Profile({ onOpenAuth }) {
                 <TabsTrigger value="about" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-6 text-base">
                   About
                 </TabsTrigger>
-                <TabsTrigger value="reviews" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-6 text-base">
-                  Reviews ({reviews.length})
-                </TabsTrigger>
+                {isLabourer && (
+                  <TabsTrigger value="reviews" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-6 text-base">
+                    Reviews ({reviews.length})
+                  </TabsTrigger>
+                )}
+                {isHirer && (
+                  <TabsTrigger value="jobs" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-6 text-base">
+                    Posted Jobs ({hirerJobs.length})
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               {/* About tab */}
@@ -226,27 +277,29 @@ function Profile({ onOpenAuth }) {
                   <CardContent className="pt-6">
                     <h3 className="font-bold font-serif text-lg mb-3">Biography</h3>
                     <p className="text-muted-foreground leading-relaxed">
-                      {labourer.bio || "This artisan hasn't provided a biography yet."}
+                      {labourer.bio || `${labourer.name} hasn't provided a biography yet.`}
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card className="border-border shadow-sm">
-                  <CardContent className="pt-6">
-                    <h3 className="font-bold font-serif text-lg mb-4">Skills & Capabilities</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {labourer.skills && labourer.skills.length > 0 ? (
-                        labourer.skills.map((skill) => (
-                          <Badge key={skill} variant="secondary" className="px-3 py-1 font-normal text-[0.9rem]">
-                            {skill}
-                          </Badge>
-                        ))
-                      ) : (
-                        <p className="text-muted-foreground text-sm italic">No specific skills listed</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+                {isLabourer && (
+                  <Card className="border-border shadow-sm">
+                    <CardContent className="pt-6">
+                      <h3 className="font-bold font-serif text-lg mb-4">Skills & Capabilities</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {labourer.skills && labourer.skills.length > 0 ? (
+                          labourer.skills.map((skill) => (
+                            <Badge key={skill} variant="secondary" className="px-3 py-1 font-normal text-[0.9rem]">
+                              {skill}
+                            </Badge>
+                          ))
+                        ) : (
+                          <p className="text-muted-foreground text-sm italic">No specific skills listed</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
 
               {/* Reviews tab */}
@@ -273,7 +326,7 @@ function Profile({ onOpenAuth }) {
                               <div>
                                 <p className="font-semibold text-foreground text-sm">{review.user}</p>
                                 <p className="text-xs text-muted-foreground">
-                                  {review.date || new Date(review.createdAt?.seconds * 1000).toLocaleDateString()}
+                                  {review.date || (review.createdAt?.seconds ? new Date(review.createdAt.seconds * 1000).toLocaleDateString() : 'Recent')}
                                 </p>
                               </div>
                             </div>
@@ -301,32 +354,74 @@ function Profile({ onOpenAuth }) {
                   )}
                 </div>
               </TabsContent>
+
+              {/* Jobs tab (for Hirers) */}
+              <TabsContent value="jobs" className="mt-0 space-y-4">
+                  {hirerJobs.length > 0 ? (
+                      hirerJobs.map(job => (
+                          <Card key={job.id} className="border-border hover:border-primary/50 transition-colors shadow-sm cursor-pointer" onClick={() => navigate(`/job/${job.id}`)}>
+                              <CardContent className="p-5 flex justify-between items-center">
+                                  <div>
+                                      <h4 className="font-bold text-lg">{job.title}</h4>
+                                      <div className="flex items-center gap-4 text-sm text-muted-foreground mt-1">
+                                          <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.location}</span>
+                                          <span className="font-medium text-primary">GH₵{job.budget || job.salary}</span>
+                                      </div>
+                                  </div>
+                                  <Badge variant="outline">{job.category}</Badge>
+                              </CardContent>
+                          </Card>
+                      ))
+                  ) : (
+                      <div className="text-center py-12 border border-dashed border-border rounded-xl">
+                          <p className="text-muted-foreground">No active job listings found.</p>
+                      </div>
+                  )}
+              </TabsContent>
             </Tabs>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Rating summary */}
+            {/* Rating summary or Hirer summary */}
             <Card className="border-border shadow-sm">
               <CardContent className="pt-6 pb-6 text-center">
-                <p className="text-5xl font-bold font-serif text-foreground mb-2">
-                  {actualRating.toFixed(1)}
-                </p>
-                <div className="flex justify-center mb-2">
-                  <StarRating rating={actualRating} size={5} />
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  Based on {actualReviewCount} reviews
-                </p>
+                {isLabourer ? (
+                    <>
+                        <p className="text-5xl font-bold font-serif text-foreground mb-2">
+                          {actualRating.toFixed(1)}
+                        </p>
+                        <div className="flex justify-center mb-2">
+                          <StarRating rating={actualRating} size={5} />
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Based on {actualReviewCount} reviews
+                        </p>
+                    </>
+                ) : (
+                    <>
+                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-3">
+                            <Briefcase className="w-8 h-8 text-blue-600" />
+                        </div>
+                        <h3 className="text-xl font-bold font-serif">Verified Employer</h3>
+                        <p className="text-sm text-muted-foreground mt-1">Member since {labourer.joinedDate || '2024'}</p>
+                    </>
+                )}
                 
                 <div className="grid grid-cols-2 gap-3 mt-6">
                   <div className="bg-secondary/20 rounded-xl p-3 border border-secondary">
-                    <p className="text-xl font-bold text-foreground">{labourer.jobsCompleted || 0}</p>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Jobs Done</p>
+                    <p className="text-xl font-bold text-foreground">
+                        {isLabourer ? (labourer.jobsCompleted || 0) : hirerJobs.length}
+                    </p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">
+                        {isLabourer ? "Jobs Done" : "Job Posts"}
+                    </p>
                   </div>
                   <div className="bg-secondary/20 rounded-xl p-3 border border-secondary">
-                    <p className="text-xl font-bold text-foreground">{labourer.experience || "1"}</p>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Years Exp.</p>
+                    <p className="text-xl font-bold text-foreground">{labourer.experience || (isHirer ? "Vetted" : "1")}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">
+                        {isLabourer ? "Years Exp." : "Trust Level"}
+                    </p>
                   </div>
                 </div>
               </CardContent>
@@ -335,18 +430,18 @@ function Profile({ onOpenAuth }) {
             {/* Contact Details */}
             <Card className="border-border shadow-sm">
               <CardHeader className="pb-3 border-b border-border/50">
-                <CardTitle className="text-lg font-serif">Contact Details</CardTitle>
+                <CardTitle className="text-lg font-serif">Contact Info</CardTitle>
               </CardHeader>
               <CardContent className="pt-4 space-y-4">
-                {labourer.phoneNumber && (
+                {(labourer.phoneNumber || labourer.phone) && (
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                       <Phone className="w-4 h-4 text-primary" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-muted-foreground font-medium mb-0.5">Phone Number</p>
-                      <a href={`tel:${labourer.phoneNumber}`} className="text-sm font-medium hover:text-primary transition-colors">
-                        {labourer.phoneNumber}
+                      <a href={`tel:${labourer.phoneNumber || labourer.phone}`} className="text-sm font-medium hover:text-primary transition-colors block truncate">
+                        {labourer.phoneNumber || labourer.phone}
                       </a>
                     </div>
                   </div>
@@ -356,9 +451,9 @@ function Profile({ onOpenAuth }) {
                     <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                       <Mail className="w-4 h-4 text-primary" />
                     </div>
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-xs text-muted-foreground font-medium mb-0.5">Email Address</p>
-                      <a href={`mailto:${labourer.email}`} className="text-sm font-medium hover:text-primary transition-colors truncate max-w-[200px] block">
+                      <a href={`mailto:${labourer.email}`} className="text-sm font-medium hover:text-primary transition-colors truncate block">
                         {labourer.email}
                       </a>
                     </div>
@@ -378,20 +473,22 @@ function Profile({ onOpenAuth }) {
               </CardContent>
             </Card>
 
-            {/* Pricing Summary */}
-            <Card className="border-border shadow-sm overflow-hidden">
-              <div className="h-2 bg-gradient-to-r from-primary to-orange-400 w-full" />
-              <CardContent className="pt-5 pb-5">
-                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">Hourly Rate</h3>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-2xl font-bold text-foreground">
-                    GH₵{labourer.hourlyRate || 50}
-                  </span>
-                  <span className="text-muted-foreground font-medium">/hr</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-2">Prices may vary based on job complexity and required materials.</p>
-              </CardContent>
-            </Card>
+            {/* Pricing Summary (Only for Labourers) */}
+            {isLabourer && (
+                <Card className="border-border shadow-sm overflow-hidden">
+                  <div className="h-2 bg-gradient-to-r from-primary to-orange-400 w-full" />
+                  <CardContent className="pt-5 pb-5">
+                    <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">Hourly Rate</h3>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-2xl font-bold text-foreground">
+                        GH₵{labourer.hourlyRate || 50}
+                      </span>
+                      <span className="text-muted-foreground font-medium">/hr</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-2">Prices may vary based on job complexity and required materials.</p>
+                  </CardContent>
+                </Card>
+            )}
           </div>
         </div>
       </div>
