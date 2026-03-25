@@ -11,6 +11,7 @@ import LabourerDashboard from './pages/LabourerDashboard';
 import JobDetail from './pages/JobDetail';
 import MyJobs from './pages/MyJobs';
 import Applications from './pages/Applications';
+import Bookings from './pages/Bookings';
 import Earnings from './pages/Earnings';
 import Messages from './pages/Messages';
 import Settings from './pages/Settings';
@@ -68,6 +69,7 @@ function App() {
               <Route path="/dashboard/hirer/jobs/:jobId/applicants" element={<Applicants />} />
               <Route path="/dashboard/hirer/applicants" element={<AllApplicants />} />
               <Route path="/dashboard/hirer/messages" element={<Messages />} />
+              <Route path="/dashboard/hirer/bookings" element={<Bookings />} />
               <Route path="/dashboard/hirer/settings" element={<Settings />} />
             </Route>
 
@@ -76,6 +78,7 @@ function App() {
               <Route path="/dashboard/labourer/applications" element={<Applications />} />
               <Route path="/dashboard/labourer/earnings" element={<Earnings />} />
               <Route path="/dashboard/labourer/messages" element={<Messages />} />
+              <Route path="/dashboard/labourer/bookings" element={<Bookings />} />
               <Route path="/dashboard/labourer/settings" element={<Settings />} />
             </Route>
           </Route>

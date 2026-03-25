@@ -42,6 +42,7 @@ export default function DashboardLayout() {
         if (path.endsWith('/applicants')) return 'Applicants';
         if (path.endsWith('/applications')) return 'My Applications';
         if (path.endsWith('/messages')) return 'Messages';
+        if (path.endsWith('/bookings')) return 'Bookings';
         if (path.endsWith('/settings')) return 'Settings';
         return 'Overview';
     };

@@ -22,6 +22,7 @@ export function DataProvider({ children }) {
     const [jobs, setJobs] = useState([]);
     const [labourers, setLabourers] = useState([]);
     const [applications, setApplications] = useState([]);
+    const [bookings, setBookings] = useState([]);
     const [notifications, setNotifications] = useState([]);
     const [globalChats, setGlobalChats] = useState([]);
     const [blockedUsers, setBlockedUsers] = useState(() => {
@@ -117,12 +118,24 @@ export function DataProvider({ children }) {
             console.error("Error loading chats:", error);
         });
 
+        const qBookings = query(collection(db, 'bookings'));
+        const unsubBookings = onSnapshot(qBookings, (snapshot) => {
+            const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+            data.sort((a, b) => {
+                const aTime = a.createdAt?.toMillis?.() || 0;
+                const bTime = b.createdAt?.toMillis?.() || 0;
+                return bTime - aTime;
+            });
+            setBookings(data);
+        }, (err) => console.error('Error loading bookings:', err));
+
         return () => {
             unsubJobs();
             unsubUsers();
             unsubApps();
             unsubNotifs();
             unsubChats();
+            unsubBookings();
         };
     }, []);
 
@@ -415,6 +428,49 @@ export function DataProvider({ children }) {
         }
     };
 
+    const createBooking = async (bookingData) => {
+        try {
+            const newBooking = {
+                ...bookingData,
+                status: 'Pending',
+                createdAt: serverTimestamp(),
+                date: new Date().toLocaleDateString()
+            };
+            const ref = await addDoc(collection(db, 'bookings'), newBooking);
+            await addNotification(
+                bookingData.labourerId,
+                'booking_request',
+                `New booking request from ${bookingData.hirerName} for "${bookingData.jobTitle}"`,
+                { bookingId: ref.id, hirerId: bookingData.hirerId }
+            );
+            return { id: ref.id, ...newBooking };
+        } catch (error) {
+            console.error('Error creating booking:', error);
+            throw error;
+        }
+    };
+
+    const updateBookingStatus = async (bookingId, newStatus) => {
+        try {
+            await updateDoc(doc(db, 'bookings', bookingId), {
+                status: newStatus,
+                updatedAt: serverTimestamp()
+            });
+            const booking = bookings.find(b => b.id === bookingId);
+            if (booking) {
+                await addNotification(
+                    booking.hirerId,
+                    'booking_update',
+                    `${booking.labourerName} has ${newStatus.toLowerCase()} your booking request for "${booking.jobTitle}"`,
+                    { bookingId, status: newStatus }
+                );
+            }
+        } catch (error) {
+            console.error('Error updating booking status:', error);
+            throw error;
+        }
+    };
+
     const blockUser = (userId) => {
         setBlockedUsers(prev => {
             if (prev.includes(userId)) return prev;
@@ -429,11 +485,12 @@ export function DataProvider({ children }) {
 
     return (
         <DataContext.Provider value={{
-            jobs, labourers, applications, notifications, globalChats, blockedUsers,
+            jobs, labourers, applications, bookings, notifications, globalChats, blockedUsers,
             addJob, updateJob, deleteJob, addLabourer,
             applyForJob, updateApplicationStatus, addNotification, markNotificationAsRead,
             updateLabourerAvailability, updateLabourerProfile, sendGlobalMessage, markChatAsRead,
-            clearChatMessages, deleteChat, toggleMuteChat, blockUser, addReview
+            clearChatMessages, deleteChat, toggleMuteChat, blockUser, addReview,
+            createBooking, updateBookingStatus
         }}>
             {children}
         </DataContext.Provider>

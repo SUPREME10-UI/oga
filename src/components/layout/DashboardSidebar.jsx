@@ -35,9 +35,11 @@ export default function DashboardSidebar({ className, onNavigate }) {
             title: "Manage",
             links: isHirer ? [
                 { to: "/dashboard/hirer/jobs", icon: Briefcase, label: "My Jobs" },
-                { to: "/dashboard/hirer/applicants", icon: Users, label: "Applicants" }
+                { to: "/dashboard/hirer/applicants", icon: Users, label: "Applicants" },
+                { to: "/dashboard/hirer/bookings", icon: Calendar, label: "Bookings" }
             ] : [
                 { to: "/dashboard/labourer/applications", icon: FileText, label: "My Applications" },
+                { to: "/dashboard/labourer/bookings", icon: Calendar, label: "Bookings" },
                 { to: "/dashboard/labourer/earnings", icon: CreditCard, label: "Earnings" }
             ]
         },

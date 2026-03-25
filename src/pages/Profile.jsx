@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { collection, query, orderBy, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import ReviewModal from '../components/common/ReviewModal';
+import BookingModal from '../components/common/BookingModal';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,6 +47,7 @@ function Profile({ onOpenAuth }) {
   const [loading, setLoading] = useState(true);
   const [reviews, setReviews] = useState([]);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
 
   // Fetch user directly from Firestore
   useEffect(() => {
@@ -231,10 +233,10 @@ function Profile({ onOpenAuth }) {
                   {isLabourer && !isOwnProfile && (
                     <Button
                       size="sm"
-                      variant={canReview ? "outline" : "default"}
+                      variant={canReview ? 'outline' : 'default'}
                       onClick={() => {
                         if (!user) { onOpenAuth?.('signup'); return; }
-                        navigate('/dashboard/hirer');
+                        setIsBookingOpen(true);
                       }}
                     >
                       <Calendar className="w-4 h-4 mr-1.5" /> Book Now
@@ -520,6 +522,11 @@ function Profile({ onOpenAuth }) {
         labourerId={profileData?.id}
         reviewerId={user?.uid || user?.id}
         reviewerName={user?.name || user?.displayName}
+      />
+      <BookingModal
+        isOpen={isBookingOpen}
+        onClose={() => setIsBookingOpen(false)}
+        artisan={profileData}
       />
     </div>
   );
