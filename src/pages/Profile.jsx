@@ -528,6 +528,41 @@ function Profile({ onOpenAuth }) {
         onClose={() => setIsBookingOpen(false)}
         artisan={profileData}
       />
+
+      {/* Mobile Sticky Action Bar */}
+      {!isOwnProfile && (
+        <div className="md:hidden sticky-bottom-bar flex items-center gap-3">
+          {isLabourer && (
+            <Button 
+              className="flex-1 h-12 rounded-xl text-base shadow-lg" 
+              onClick={() => setIsBookingOpen(true)}
+            >
+              Book Now
+            </Button>
+          )}
+          {canMessage && (
+            <Button 
+              variant="outline" 
+              className="flex-1 h-12 rounded-xl text-base bg-white"
+              onClick={() => navigate(`/dashboard/${user.type}/messages`, {
+                state: { chatWith: { id: profileData.id, name: displayName, photo: avatar } }
+              })}
+            >
+              Message
+            </Button>
+          )}
+          {canReview && (
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="h-12 w-12 rounded-xl bg-white flex-shrink-0"
+              onClick={() => setIsReviewOpen(true)}
+            >
+              <Star className="w-5 h-5" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   );
 }

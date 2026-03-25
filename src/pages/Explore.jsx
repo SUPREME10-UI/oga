@@ -13,6 +13,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
+import {
   Search,
   X,
   Hammer,
@@ -229,53 +239,110 @@ export default function Explore() {
             </TabsList>
           </Tabs>
 
-          <div className="flex flex-wrap items-center gap-2 flex-1">
-            <Button
-              variant="outline"
-              size="sm"
-              className="gap-2"
-              onClick={() => setShowFilters(!showFilters)}
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              Filters
-            </Button>
+          <div className="flex items-center gap-2 flex-1 justify-end md:justify-start">
+            {/* Desktop Filters */}
+            <div className="hidden md:flex items-center gap-2">
+              <Select value={selectedProfession} onValueChange={setSelectedProfession}>
+                <SelectTrigger className="w-44 h-9 text-sm">
+                  <SelectValue placeholder="All Professions" />
+                </SelectTrigger>
+                <SelectContent>
+                  {professionsList.map((prof) => (
+                    <SelectItem key={prof} value={prof}>
+                      {prof === "all" ? "All Professions" : prof}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
-            {showFilters && (
-              <>
-                <Select value={selectedProfession} onValueChange={setSelectedProfession}>
-                  <SelectTrigger className="w-44 h-9 text-sm">
-                    <SelectValue placeholder="All Professions" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {professionsList.map((prof) => (
-                      <SelectItem key={prof} value={prof}>
-                        {prof === "all" ? "All Professions" : prof}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                <SelectTrigger className="w-44 h-9 text-sm">
+                  <SelectValue placeholder="Any Location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locationsList.map((loc) => (
+                    <SelectItem key={loc} value={loc}>
+                      {loc === "all" ? "Any Location" : loc}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-                <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-                  <SelectTrigger className="w-44 h-9 text-sm">
-                    <SelectValue placeholder="Any Location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locationsList.map((loc) => (
-                      <SelectItem key={loc} value={loc}>
-                        {loc === "all" ? "Any Location" : loc}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
-            )}
+            {/* Mobile Filter Sheet */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="md:hidden gap-2"
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  Filters
+                  {hasActiveFilters && (
+                    <Badge className="ml-1 h-4 w-4 p-0 flex items-center justify-center bg-primary text-white text-[10px]">
+                      !
+                    </Badge>
+                  )}
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="bottom" className="rounded-t-3xl h-[70vh]">
+                <SheetHeader className="text-left">
+                  <SheetTitle className="font-serif">Filter Results</SheetTitle>
+                  <SheetDescription>
+                    Adjust your search parameters to find the perfect {activeTab === "labourers" ? "artisan" : "job"}.
+                  </SheetDescription>
+                </SheetHeader>
+                <div className="py-6 space-y-6">
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold">Profession / Category</label>
+                    <Select value={selectedProfession} onValueChange={setSelectedProfession}>
+                      <SelectTrigger className="w-full h-12">
+                        <SelectValue placeholder="All Professions" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {professionsList.map((prof) => (
+                          <SelectItem key={prof} value={prof}>
+                            {prof === "all" ? "All Professions" : prof}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="text-sm font-semibold">Location</label>
+                    <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                      <SelectTrigger className="w-full h-12">
+                        <SelectValue placeholder="Any Location" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {locationsList.map((loc) => (
+                          <SelectItem key={loc} value={loc}>
+                            {loc === "all" ? "Any Location" : loc}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <SheetFooter className="mt-4 flex-row gap-3">
+                  <Button variant="outline" className="flex-1" onClick={clearFilters}>
+                    Reset All
+                  </Button>
+                  <SheetClose asChild>
+                    <Button className="flex-1">Show Results</Button>
+                  </SheetClose>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
 
             {hasActiveFilters && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-muted-foreground gap-1"
+                className="text-muted-foreground gap-1 hidden md:flex"
               >
                 <X className="w-3.5 h-3.5" /> Clear
               </Button>

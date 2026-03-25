@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import DashboardSidebar from './DashboardSidebar';
+import MobileNav from './MobileNav';
 import { useAuth } from '../../context/AuthContext';
 import { useData } from '../../context/DataContext';
 
@@ -79,7 +80,7 @@ export default function DashboardLayout() {
             </div>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden">
+            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden pb-16 md:pb-0">
                 {/* Global Topbar */}
                 <header className="h-16 px-4 sm:px-6 bg-white border-b border-border flex items-center justify-between shadow-sm z-30 shrink-0">
                     <div className="flex items-center gap-3 sm:gap-4">
@@ -180,6 +181,7 @@ export default function DashboardLayout() {
                     <Outlet />
                 </main>
             </div>
+            <MobileNav />
         </div>
     );
 }

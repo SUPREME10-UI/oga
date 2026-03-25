@@ -325,6 +325,39 @@ function JobDetail() {
         cancelText="Not Now"
         type="primary"
       />
+
+      {/* Mobile Sticky Action Bar */}
+      <div className="lg:hidden sticky-bottom-bar flex items-center gap-3">
+        {canApply && (
+          <Button className="flex-1 h-12 rounded-xl text-base shadow-lg" onClick={handleApply}>
+            <CheckCircle className="w-4 h-4 mr-2" /> Apply Now
+          </Button>
+        )}
+        {canMessage && (
+          <Button
+            variant="outline"
+            className="flex-1 h-12 rounded-xl text-base bg-white"
+            onClick={() =>
+              navigate(`/dashboard/${user.type}/messages`, {
+                state: {
+                  chatWith: {
+                    id: job.hirerId,
+                    name: job.hirerName || 'Hirer',
+                    photo: null,
+                  },
+                },
+              })
+            }
+          >
+            <MessageCircle className="w-4 h-4 mr-2" /> Message
+          </Button>
+        )}
+        {!user && (
+          <Button className="w-full h-12 rounded-xl text-base" onClick={() => navigate('/login')}>
+            Sign in to Apply
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

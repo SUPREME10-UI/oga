@@ -160,31 +160,61 @@ export default function Navbar({ onLoginClick, isFluid }) {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-white">
-          <div className="container py-3 flex flex-col gap-1 mx-auto px-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                onClick={() => setMobileOpen(false)}
-                className={`px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-                  location.pathname === link.href
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {!user && (
-              <div className="pt-2 border-t border-border mt-1 flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1" onClick={() => { onLoginClick('login'); setMobileOpen(false); }}>
-                  Sign In
-                </Button>
-                <Button size="sm" className="flex-1" onClick={() => { onLoginClick('signup'); setMobileOpen(false); }}>
-                  Get Started
-                </Button>
-              </div>
+        <div className="md:hidden border-t border-border bg-white shadow-xl animate-in slide-in-from-top duration-300">
+          <div className="container py-4 flex flex-col gap-1 mx-auto px-4">
+            {!user ? (
+              <>
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`px-4 py-3 rounded-xl text-base font-medium transition-colors ${
+                      location.pathname === link.href
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="pt-4 border-t border-border mt-2 flex gap-3">
+                  <Button variant="outline" size="lg" className="flex-1 rounded-xl h-12" onClick={() => { onLoginClick('login'); setMobileOpen(false); }}>
+                    Sign In
+                  </Button>
+                  <Button size="lg" className="flex-1 rounded-xl h-12" onClick={() => { onOpenAuth('signup'); setMobileOpen(false); }}>
+                    Get Started
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="px-4 py-3 mb-2 border-b border-border/50">
+                  <p className="font-bold text-foreground">{user.name || user.email}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                </div>
+                {[
+                  { to: getDashboardLink(), label: "My Dashboard", icon: User },
+                  { to: `${getDashboardLink()}/settings`, label: "Settings", icon: Settings },
+                ].map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3.5 rounded-xl text-base font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+                  >
+                    <item.icon className="w-5 h-5 text-primary" />
+                    {item.label}
+                  </Link>
+                ))}
+                <button
+                  onClick={() => { logout(); setMobileOpen(false); }}
+                  className="mt-2 w-full flex items-center gap-3 px-4 py-4 rounded-xl text-base font-medium text-destructive hover:bg-destructive/5 transition-colors text-left"
+                >
+                  <LogOut className="w-5 h-5" />
+                  Sign Out
+                </button>
+              </>
             )}
           </div>
         </div>

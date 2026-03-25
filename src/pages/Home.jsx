@@ -113,36 +113,42 @@ export default function Home({ onOpenAuth }) {
             </p>
 
             {/* Search bar */}
-            <form onSubmit={handleSearch} className="flex gap-2 max-w-lg">
+            <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 max-w-lg">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for carpenters, plumbers..."
-                  className="pl-10 bg-white border-0 h-12 text-foreground placeholder:text-muted-foreground w-full"
+                  placeholder="Search artisans (e.g. Carpenter)..."
+                  className="pl-12 bg-white border-0 h-14 text-foreground placeholder:text-muted-foreground w-full rounded-xl shadow-inner"
                 />
               </div>
-              <Button type="submit" size="lg" className="h-12 px-6">
+              <Button type="submit" size="lg" className="h-14 px-8 rounded-xl font-bold shadow-lg">
                 Search
               </Button>
             </form>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-3 mt-6">
-              <Button size="lg" onClick={() => navigate('/explore')}>
-                <MapPin className="w-4 h-4 mr-2" />
-                Explore Jobs & Artisans
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="bg-white/10 border-white/30 text-white hover:bg-white/20"
-                onClick={() => onOpenAuth('signup')}
+            <div className="flex flex-col sm:flex-row gap-3 mt-8">
+              <Button 
+                size="lg" 
+                className="rounded-xl h-14 px-6 shadow-xl"
+                onClick={() => navigate('/explore')}
               >
-                <Hammer className="w-4 h-4 mr-2" />
-                Register as Artisan
+                <Search className="w-5 h-5 mr-2" />
+                Find Artisans
               </Button>
+              {!user && (
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="bg-white/10 border-white/30 text-white hover:bg-white/20 rounded-xl h-14 px-6"
+                  onClick={() => onOpenAuth('signup')}
+                >
+                  <Hammer className="w-5 h-5 mr-2" />
+                  Become an Artisan
+                </Button>
+              )}
             </div>
           </div>
         </div>

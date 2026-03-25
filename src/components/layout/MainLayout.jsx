@@ -1,6 +1,7 @@
 import { useLocation, Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import MobileNav from './MobileNav';
 
 function MainLayout({ onOpenAuth }) {
     const location = useLocation();
@@ -21,7 +22,7 @@ function MainLayout({ onOpenAuth }) {
     const isFluidNavbar = isLabourerDashboard;
 
     return (
-        <div className="app-container">
+        <div className="app-container pb-16 md:pb-0">
             {showNavbar && (
                 <Navbar
                     onLoginClick={(tab) => onOpenAuth(tab || 'login')}
@@ -34,6 +35,7 @@ function MainLayout({ onOpenAuth }) {
             </main>
 
             {showFooter && <Footer />}
+            <MobileNav />
         </div>
     );
 }
