@@ -2,7 +2,7 @@ import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
-import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import ReviewModal from '../components/common/ReviewModal';
 
@@ -56,24 +56,26 @@ function Profile({ onOpenAuth }) {
   const [reviews, setReviews] = useState([]);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
-  // 1. Fetch User Details
+  // 1. Fetch User Details directly from Firestore by document ID
   useEffect(() => {
+    if (!id) return;
     setLoading(true);
-    const found = labourers.find((l) => String(l.id) === String(id));
-    
-    if (found) {
-      setLabourer(found);
-      setLoading(false);
-    } else {
-      // Small timeout to wait for data if it's still loading
-      const timer = setTimeout(() => {
-        const refound = labourers.find((l) => String(l.id) === String(id));
-        setLabourer(refound || null);
-        setLoading(false);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [id, labourers]);
+    setLabourer(null);
+
+    getDoc(doc(db, 'users', id))
+      .then((snap) => {
+        if (snap.exists()) {
+          setLabourer({ id: snap.id, ...snap.data() });
+        } else {
+          setLabourer(null);
+        }
+      })
+      .catch((err) => {
+        console.error('Error fetching profile:', err);
+        setLabourer(null);
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
 
   // 1.1 Update page title/scroll
   useEffect(() => {
