@@ -154,7 +154,7 @@ function Profile({ onOpenAuth }) {
                 <img src={labourer.photo || labourer.image} alt={labourer.name} className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-primary text-primary-foreground text-4xl font-bold">
-                  {labourer.name.charAt(0)}
+                  {labourer?.name?.charAt(0) || '?'}
                 </div>
               )}
             </div>
@@ -162,7 +162,7 @@ function Profile({ onOpenAuth }) {
             <div className="flex-1 pb-1">
               <div className="flex flex-wrap items-center gap-2 mb-1">
                 <h1 className="text-3xl font-bold font-serif text-foreground">
-                  {labourer.name}
+                  {labourer?.name}
                 </h1>
                 {labourer.verified && (
                   <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors">
@@ -399,8 +399,8 @@ function Profile({ onOpenAuth }) {
       <ReviewModal
         isOpen={isReviewOpen}
         onClose={() => setIsReviewOpen(false)}
-        labourerId={labourer.id}
-        reviewerId={user?.uid}
+        labourerId={labourer?.id}
+        reviewerId={user?.uid || user?.id}
         reviewerName={user?.name}
       />
     </div>
