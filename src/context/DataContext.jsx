@@ -119,7 +119,7 @@ export function DataProvider({ children }) {
 
         return () => {
             unsubJobs();
-            unsubLabs();
+            unsubUsers();
             unsubApps();
             unsubNotifs();
             unsubChats();
