@@ -1,248 +1,410 @@
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import ReviewModal from '../components/common/ReviewModal';
-import './Profile.css';
+
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Star,
+  CheckCircle,
+  MessageCircle,
+  Calendar,
+  Hammer,
+  ChevronLeft,
+  Share2,
+} from "lucide-react";
+
+// Inline StarRating component
+function StarRating({ rating = 0, size = 4 }) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {[...Array(fullStars)].map((_, i) => (
+        <Star key={`full-${i}`} className={`w-${size} h-${size} fill-yellow-400 text-yellow-400`} />
+      ))}
+      {hasHalfStar && (
+        <Star key="half" className={`w-${size} h-${size} fill-yellow-400/50 text-yellow-400`} />
+      )}
+      {[...Array(emptyStars)].map((_, i) => (
+        <Star key={`empty-${i}`} className={`w-${size} h-${size} text-gray-300`} />
+      ))}
+    </div>
+  );
+}
 
 function Profile({ onOpenAuth }) {
-    const { id } = useParams();
-    const { user } = useAuth();
-    const { labourers } = useData();
-    const navigate = useNavigate();
-    const [labourer, setLabourer] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [reviews, setReviews] = useState([]);
-    const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const { id } = useParams();
+  const { user } = useAuth();
+  const { labourers } = useData();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    // 1. Fetch Labourer Details
-    useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setLoading(true);
-        const found = labourers.find(l => String(l.id) === String(id));
+  const [labourer, setLabourer] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState([]);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
 
-        setTimeout(() => {
-            setLabourer(found);
-            setLoading(false);
-        }, 100);
-        window.scrollTo(0, 0);
-    }, [id, labourers]);
+  // 1. Fetch Labourer Details
+  useEffect(() => {
+    setLoading(true);
+    const found = labourers.find((l) => String(l.id) === String(id));
+    setTimeout(() => {
+      setLabourer(found);
+      setLoading(false);
+    }, 100);
+    window.scrollTo(0, 0);
+  }, [id, labourers]);
 
-    // 2. Real-time Reviews Listener
-    useEffect(() => {
-        if (!id) return;
+  // 2. Real-time Reviews Listener
+  useEffect(() => {
+    if (!id) return;
+    const qReviews = query(collection(db, 'users', id, 'reviews'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(qReviews, (snapshot) => {
+      const fetchedReviews = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setReviews(fetchedReviews);
+    });
+    return () => unsubscribe();
+  }, [id]);
 
-        const qReviews = query(collection(db, 'users', id, 'reviews'), orderBy('createdAt', 'desc'));
-        const unsubscribe = onSnapshot(qReviews, (snapshot) => {
-            const fetchedReviews = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            setReviews(fetchedReviews);
-        });
-
-        return () => unsubscribe();
-    }, [id]);
-
-    if (loading) {
-        return (
-            <div className="profile-loading">
-                <div className="spinner"></div>
-                <p>Loading profile...</p>
-            </div>
-        );
-    }
-
-    if (!labourer) {
-        return (
-            <div className="profile-not-found">
-                <h2>Labourer not found</h2>
-                <Link to="/explore" className="btn-text">Back to Explore</Link>
-            </div>
-        );
-    }
-
-    const isHirer = user?.type === 'hirer';
-    const canReview = isHirer && user.uid !== labourer.id;
-
+  if (loading) {
     return (
-        <div className="profile-page">
-            {/* Custom Profile Navigation */}
-            <nav className="profile-nav">
-                <div className="container profile-nav-content">
-                    {user?.type === 'hirer' && (
-                        <button
-                            onClick={() => navigate('/dashboard/hirer')}
-                            className="btn-back"
-                        >
-                            <i className="fas fa-arrow-left"></i> Back to Dashboard
-                        </button>
-                    )}
-                    <Link to="/" className="brand-logo">
-                        <i className="fas fa-wrench"></i>
-                        <span>Oga</span>
-                    </Link>
-                    {user?.type !== 'hirer' && (
-                        <Link to="/explore" className="btn-back">
-                            <i className="fas fa-arrow-left"></i> Back
-                        </Link>
-                    )}
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mb-4"></div>
+        <p className="text-muted-foreground animate-pulse">Loading profile...</p>
+      </div>
+    );
+  }
+
+  if (!labourer) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-4 text-center">
+        <Hammer className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
+        <h2 className="text-2xl font-bold font-serif mb-2">Artisan not found</h2>
+        <p className="text-muted-foreground mb-6">The artisan profile you are looking for does not exist or has been removed.</p>
+        <Button onClick={() => navigate('/explore')}>Browse Artisans</Button>
+      </div>
+    );
+  }
+
+  const isHirer = user?.type === 'hirer';
+  const canReview = isHirer && user.uid !== labourer.id;
+
+  const actualRating = labourer.rating || 0;
+  const actualReviewCount = labourer.reviewCount || reviews.length;
+
+  return (
+    <div className="bg-background min-h-screen pb-12">
+      {/* Cover */}
+      <div className="relative h-56 md:h-72 bg-gradient-to-br from-blue-100 to-indigo-200">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
+        {/* Navigation controls */}
+        <div className="absolute top-4 inset-x-4 flex justify-between items-center z-10">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-white hover:bg-white/20"
+            onClick={() => {
+              if (location.state?.fromDashboard) {
+                navigate(`/dashboard/${user?.type || 'hirer'}`);
+              } else {
+                navigate(-1);
+              }
+            }}
+          >
+            <ChevronLeft className="w-4 h-4 mr-1" /> Back
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-white/20"
+            onClick={() => {
+              navigator.clipboard?.writeText(window.location.href);
+              alert("Link copied to clipboard!");
+            }}
+          >
+            <Share2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="container px-4 md:px-8 mx-auto max-w-6xl">
+        {/* Profile header */}
+        <div className="relative -mt-16 mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-5">
+            {/* Avatar */}
+            <div className="w-28 h-28 rounded-2xl border-4 border-background shadow-xl bg-secondary overflow-hidden flex-shrink-0">
+              {labourer.photo || labourer.image ? (
+                <img src={labourer.photo || labourer.image} alt={labourer.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-primary text-primary-foreground text-4xl font-bold">
+                  {labourer.name.charAt(0)}
                 </div>
-            </nav>
-
-            <div className="container">
-                <div className="profile-layout">
-                    {/* Left Sidebar: Key Info */}
-                    <aside className="profile-sidebar">
-                        <div className="profile-card">
-                            <div className="profile-hero-bg"></div>
-                            <div className="profile-img-container">
-                                <img src={labourer.photo || labourer.image} alt={labourer.name} className="profile-img-large" />
-                            </div>
-
-                            <div className="profile-card-content">
-                                <div className="profile-header-center">
-                                    <h1 className="profile-name">{labourer.name}</h1>
-                                    <p className="profile-profession">{labourer.profession}</p>
-
-                                    <div className="profile-rating-badge">
-                                        <i className="fas fa-star"></i>
-                                        <span>{labourer.rating || 0}</span>
-                                        <span className="review-count">({labourer.reviewCount || reviews.length} reviews)</span>
-                                    </div>
-                                </div>
-
-                                <div className="profile-verified-badge">
-                                    {labourer.verified ? (
-                                        <>
-                                            <i className="fas fa-check-circle"></i> Verified Professional
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="fas fa-user-clock"></i> Member
-                                        </>
-                                    )}
-                                </div>
-
-                                <div className="profile-stats-grid">
-                                    <div className="stat-item">
-                                        <span className="stat-label">Rate</span>
-                                        <span className="stat-value">GH₵{labourer.hourlyRate || 50}/hr</span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Location</span>
-                                        <span className="stat-value">{labourer.location}</span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Experience</span>
-                                        <span className="stat-value">{labourer.experience || 'N/A'}</span>
-                                    </div>
-                                </div>
-
-                                <button
-                                    className="btn btn-primary btn-block"
-                                    onClick={() => onOpenAuth ? onOpenAuth('signup') : null}
-                                >
-                                    Hire {labourer.name.split(' ')[0]}
-                                </button>
-                                {user && user.uid !== labourer.id && (
-                                    <>
-                                        <Link
-                                            to={`/dashboard/${user.type}/messages`}
-                                            state={{ chatWith: { id: labourer.id, name: labourer.name, photo: labourer.image || labourer.photo } }}
-                                            className="btn btn-white btn-block"
-                                            style={{ textAlign: 'center', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                                        >
-                                            Message
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
-                        </div>
-                    </aside>
-
-                    {/* Main Content: Bio, Skills, Reviews */}
-                    <main className="profile-main">
-                        <section className="profile-section">
-                            <h3>About</h3>
-                            <p className="profile-bio">{labourer.bio || "This user hasn't written a bio yet."}</p>
-                        </section>
-
-                        <section className="profile-section">
-                            <h3>Skills</h3>
-                            <div className="profile-skills-list">
-                                {labourer.skills && labourer.skills.map(skill => (
-                                    <span key={skill} className="skill-badge">{skill}</span>
-                                ))}
-                                {(!labourer.skills || labourer.skills.length === 0) && (
-                                    <span className="no-skill-badge">No specific skills listed</span>
-                                )}
-                            </div>
-                        </section>
-
-                        <section className="profile-section" id="reviews">
-                            <div className="section-head-row">
-                                <h3>Reviews ({reviews.length})</h3>
-                                {canReview && (
-                                    <button
-                                        className="btn-write-review"
-                                        onClick={() => setIsReviewOpen(true)}
-                                    >
-                                        <i className="fas fa-pen"></i> Write a Review
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="reviews-list">
-                                {reviews.length > 0 ? (
-                                    reviews.map(review => (
-                                        <div key={review.id} className="review-card">
-                                            <div className="review-header">
-                                                <div className="reviewer-info">
-                                                    <div className="reviewer-avatar">
-                                                        <i className="fas fa-user"></i>
-                                                    </div>
-                                                    <div>
-                                                        <span className="review-user">{review.user}</span>
-                                                        <span className="review-date">{review.date}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="review-rating">
-                                                    {[...Array(5)].map((_, i) => (
-                                                        <i
-                                                            key={i}
-                                                            className={`fas fa-star ${i < review.rating ? 'active' : ''}`}
-                                                        ></i>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            {review.comment && <p className="review-comment">{review.comment}</p>}
-                                        </div>
-                                    ))
-                                ) : (
-                                    <div className="no-reviews-state">
-                                        <i className="far fa-star"></i>
-                                        <p>No reviews yet.</p>
-                                        {canReview && <span>Be the first to review this {labourer.profession}!</span>}
-                                    </div>
-                                )}
-                            </div>
-                        </section>
-                    </main>
-                </div>
+              )}
             </div>
 
-            <ReviewModal
-                isOpen={isReviewOpen}
-                onClose={() => setIsReviewOpen(false)}
-                labourerId={labourer.id}
-                reviewerId={user?.uid}
-                reviewerName={user?.name}
-            />
+            <div className="flex-1 pb-1">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h1 className="text-3xl font-bold font-serif text-foreground">
+                  {labourer.name}
+                </h1>
+                {labourer.verified && (
+                  <Badge className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors">
+                    <CheckCircle className="w-3.5 h-3.5 mr-1.5" /> Verified
+                  </Badge>
+                )}
+                <Badge
+                  variant={labourer.isAvailable === false ? "secondary" : "default"}
+                  className={labourer.isAvailable !== false ? "bg-green-100 text-green-700 hover:bg-green-200 border-none" : "bg-gray-100 text-gray-500"}
+                >
+                  {labourer.isAvailable !== false ? "Available to Hire" : "Busy"}
+                </Badge>
+              </div>
+              <p className="text-muted-foreground text-lg mb-2">{labourer.profession}</p>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-wrap gap-3 sm:flex-shrink-0 pb-1">
+              {user && user.uid !== labourer.id && (
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/dashboard/${user.type}/messages`, {
+                    state: { chatWith: { id: labourer.id, name: labourer.name, photo: labourer.image || labourer.photo } }
+                  })}
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" /> Message
+                </Button>
+              )}
+              <Button
+                onClick={() => {
+                  if (!user) {
+                    if (onOpenAuth) onOpenAuth('signup');
+                    else navigate('/login'); // Fallback if no modal prop
+                    return;
+                  }
+                  navigate('/dashboard/hirer'); // Simple fallback booking redirect
+                }}
+              >
+                <Calendar className="w-4 h-4 mr-2" /> Book Now
+              </Button>
+            </div>
+          </div>
         </div>
-    );
+
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Main content */}
+          <div className="lg:col-span-2">
+            <Tabs defaultValue="about" className="w-full">
+              <TabsList className="mb-6 w-full justify-start overflow-x-auto border-b border-border rounded-none bg-transparent p-0 pl-1 h-12">
+                <TabsTrigger value="about" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-6 text-base">
+                  About
+                </TabsTrigger>
+                <TabsTrigger value="reviews" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:shadow-none rounded-none px-6 text-base">
+                  Reviews ({reviews.length})
+                </TabsTrigger>
+              </TabsList>
+
+              {/* About tab */}
+              <TabsContent value="about" className="space-y-6 mt-0">
+                <Card className="border-border shadow-sm">
+                  <CardContent className="pt-6">
+                    <h3 className="font-bold font-serif text-lg mb-3">Biography</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {labourer.bio || "This artisan hasn't provided a biography yet."}
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-border shadow-sm">
+                  <CardContent className="pt-6">
+                    <h3 className="font-bold font-serif text-lg mb-4">Skills & Capabilities</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {labourer.skills && labourer.skills.length > 0 ? (
+                        labourer.skills.map((skill) => (
+                          <Badge key={skill} variant="secondary" className="px-3 py-1 font-normal text-[0.9rem]">
+                            {skill}
+                          </Badge>
+                        ))
+                      ) : (
+                        <p className="text-muted-foreground text-sm italic">No specific skills listed</p>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              {/* Reviews tab */}
+              <TabsContent value="reviews" className="mt-0">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="font-bold font-serif text-xl">Customer Reviews</h3>
+                  {canReview && (
+                    <Button onClick={() => setIsReviewOpen(true)} variant="outline" size="sm">
+                      <Star className="w-4 h-4 mr-2" /> Write a Review
+                    </Button>
+                  )}
+                </div>
+
+                <div className="space-y-4">
+                  {reviews.length > 0 ? (
+                    reviews.map((review) => (
+                      <Card key={review.id} className="border-border shadow-sm">
+                        <CardContent className="pt-5 pb-5">
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary font-serif">
+                                {review.user?.charAt(0) || "U"}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-foreground text-sm">{review.user}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {review.date || new Date(review.createdAt?.seconds * 1000).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                            <StarRating rating={review.rating} size={4} />
+                          </div>
+                          {review.comment && (
+                            <p className="text-foreground/90 leading-relaxed text-[0.95rem]">"{review.comment}"</p>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="text-center py-12 px-4 border border-dashed border-border rounded-xl">
+                      <Star className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-20" />
+                      <h4 className="font-semibold mb-1">No Reviews Yet</h4>
+                      <p className="text-muted-foreground text-sm">
+                        {canReview ? "Be the first to review this artisan's work!" : "This artisan hasn't received any reviews."}
+                      </p>
+                      {canReview && (
+                        <Button className="mt-4" onClick={() => setIsReviewOpen(true)}>
+                          Write a Review
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Rating summary */}
+            <Card className="border-border shadow-sm">
+              <CardContent className="pt-6 pb-6 text-center">
+                <p className="text-5xl font-bold font-serif text-foreground mb-2">
+                  {actualRating.toFixed(1)}
+                </p>
+                <div className="flex justify-center mb-2">
+                  <StarRating rating={actualRating} size={5} />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Based on {actualReviewCount} reviews
+                </p>
+                
+                <div className="grid grid-cols-2 gap-3 mt-6">
+                  <div className="bg-secondary/20 rounded-xl p-3 border border-secondary">
+                    <p className="text-xl font-bold text-foreground">{labourer.jobsCompleted || 0}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Jobs Done</p>
+                  </div>
+                  <div className="bg-secondary/20 rounded-xl p-3 border border-secondary">
+                    <p className="text-xl font-bold text-foreground">{labourer.experience || "1"}</p>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mt-1">Years Exp.</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Contact Details */}
+            <Card className="border-border shadow-sm">
+              <CardHeader className="pb-3 border-b border-border/50">
+                <CardTitle className="text-lg font-serif">Contact Details</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-4 space-y-4">
+                {labourer.phoneNumber && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Phone className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-0.5">Phone Number</p>
+                      <a href={`tel:${labourer.phoneNumber}`} className="text-sm font-medium hover:text-primary transition-colors">
+                        {labourer.phoneNumber}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {labourer.email && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Mail className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-0.5">Email Address</p>
+                      <a href={`mailto:${labourer.email}`} className="text-sm font-medium hover:text-primary transition-colors truncate max-w-[200px] block">
+                        {labourer.email}
+                      </a>
+                    </div>
+                  </div>
+                )}
+                {labourer.location && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <MapPin className="w-4 h-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground font-medium mb-0.5">Location</p>
+                      <p className="text-sm font-medium">{labourer.location}</p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Pricing Summary */}
+            <Card className="border-border shadow-sm overflow-hidden">
+              <div className="h-2 bg-gradient-to-r from-primary to-orange-400 w-full" />
+              <CardContent className="pt-5 pb-5">
+                <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wider mb-2">Hourly Rate</h3>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-2xl font-bold text-foreground">
+                    GH₵{labourer.hourlyRate || 50}
+                  </span>
+                  <span className="text-muted-foreground font-medium">/hr</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Prices may vary based on job complexity and required materials.</p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
+      <ReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+        labourerId={labourer.id}
+        reviewerId={user?.uid}
+        reviewerName={user?.name}
+      />
+    </div>
+  );
 }
 
 export default Profile;

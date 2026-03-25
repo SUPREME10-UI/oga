@@ -1,0 +1,85 @@
+{
+  "query": "\nSELECT a.id as artisan_id, u.name, u.openId FROM artisans a JOIN users u ON a.userId = u.id WHERE u.openId LIKE 'demo-artisan-%' ORDER BY a.id;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3v2rtyvakpdweLV.ab2e18363cdc --database WP54uqojT2hdzD6eefaKhT --execute \nSELECT a.id as artisan_id, u.name, u.openId FROM artisans a JOIN users u ON a.userId = u.id WHERE u.openId LIKE 'demo-artisan-%' ORDER BY a.id;\n",
+  "rows": [
+    {
+      "artisan_id": "1",
+      "name": "Kwame Asante",
+      "openId": "demo-artisan-001"
+    },
+    {
+      "artisan_id": "2",
+      "name": "Abena Mensah",
+      "openId": "demo-artisan-002"
+    },
+    {
+      "artisan_id": "3",
+      "name": "Kofi Boateng",
+      "openId": "demo-artisan-003"
+    },
+    {
+      "artisan_id": "4",
+      "name": "Ama Owusu",
+      "openId": "demo-artisan-004"
+    },
+    {
+      "artisan_id": "5",
+      "name": "Yaw Darko",
+      "openId": "demo-artisan-005"
+    },
+    {
+      "artisan_id": "6",
+      "name": "Akosua Frimpong",
+      "openId": "demo-artisan-006"
+    },
+    {
+      "artisan_id": "7",
+      "name": "Kwesi Amponsah",
+      "openId": "demo-artisan-007"
+    },
+    {
+      "artisan_id": "8",
+      "name": "Efua Agyeman",
+      "openId": "demo-artisan-008"
+    },
+    {
+      "artisan_id": "9",
+      "name": "Nana Adjei",
+      "openId": "demo-artisan-009"
+    },
+    {
+      "artisan_id": "10",
+      "name": "Adwoa Amoah",
+      "openId": "demo-artisan-010"
+    },
+    {
+      "artisan_id": "11",
+      "name": "Kojo Appiah",
+      "openId": "demo-artisan-011"
+    },
+    {
+      "artisan_id": "12",
+      "name": "Maame Serwaa",
+      "openId": "demo-artisan-012"
+    },
+    {
+      "artisan_id": "13",
+      "name": "Fiifi Quaye",
+      "openId": "demo-artisan-013"
+    },
+    {
+      "artisan_id": "14",
+      "name": "Akua Baffoe",
+      "openId": "demo-artisan-014"
+    },
+    {
+      "artisan_id": "15",
+      "name": "Kwabena Tetteh",
+      "openId": "demo-artisan-015"
+    }
+  ],
+  "messages": [],
+  "stdout": "artisan_id\tname\topenId\n1\tKwame Asante\tdemo-artisan-001\n2\tAbena Mensah\tdemo-artisan-002\n3\tKofi Boateng\tdemo-artisan-003\n4\tAma Owusu\tdemo-artisan-004\n5\tYaw Darko\tdemo-artisan-005\n6\tAkosua Frimpong\tdemo-artisan-006\n7\tKwesi Amponsah\tdemo-artisan-007\n8\tEfua Agyeman\tdemo-artisan-008\n9\tNana Adjei\tdemo-artisan-009\n10\tAdwoa Amoah\tdemo-artisan-010\n11\tKojo Appiah\tdemo-artisan-011\n12\tMaame Serwaa\tdemo-artisan-012\n13\tFiifi Quaye\tdemo-artisan-013\n14\tAkua Baffoe\tdemo-artisan-014\n15\tKwabena Tetteh\tdemo-artisan-015\n",
+  "stderr": "",
+  "execution_time_ms": 380
+}

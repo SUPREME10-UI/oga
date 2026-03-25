@@ -4,8 +4,23 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
 import { useData } from '../context/DataContext';
 import { useAuth } from '../context/AuthContext';
-import DashboardSidebar from '../components/layout/DashboardSidebar';
-import './Applications.css';
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+    Search, 
+    Calendar, 
+    MessageCircle, 
+    CheckCircle2, 
+    FileText, 
+    Briefcase,
+    User,
+    ArrowRight,
+    MapPin,
+    Clock
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function Applications() {
     const { applications, updateApplicationStatus, jobs } = useData();
@@ -38,14 +53,15 @@ function Applications() {
     }, [jobs]);
 
     // Filter applications for the current labourer
-    const myApps = applications.filter(app => app.labourerId === user?.id).map(app => {
-        const job = jobs.find(j => j.id === app.jobId);
+    const myApps = applications.filter(app => app.labourerId === user?.id || app.labourerId === user?.uid).map(app => {
+        const job = jobs.find(j => String(j.id) === String(app.jobId));
         const hirerId = job?.hirerId;
         const hirerName = job?.hirerName || hirerNames[hirerId] || 'Unknown Hirer';
 
         return {
             ...app,
             jobTitle: job?.title || `Job #${app.jobId}`,
+            jobLocation: job?.location || 'Accra',
             hirerId,
             hirerName
         };
@@ -64,90 +80,101 @@ function Applications() {
     };
 
     return (
-        <div className="dashboard-page-container">
-            <header className="page-header">
-                <div className="header-side-left"></div>
-                <div className="header-left">
-                    <h1>My Applications</h1>
-                    <p>Track the status of jobs you've applied for</p>
+        <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto w-full animate-in fade-in duration-500">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="space-y-1">
+                    <h2 className="text-2xl font-bold font-serif">Application Journey</h2>
+                    <p className="text-muted-foreground text-sm">
+                        Keep track of your active pitches and job status
+                    </p>
                 </div>
-                <div className="header-side-right">
-                    <button className="btn-primary btn-sm" onClick={() => navigate('/dashboard/labourer')}>
-                        <i className="fas fa-search"></i> Browse Jobs
-                    </button>
-                </div>
-            </header>
+                <Button onClick={() => navigate('/dashboard/labourer')} className="rounded-full shadow-md">
+                    <Search className="w-4 h-4 mr-2" /> Browse New Gigs
+                </Button>
+            </div>
 
-            <div className="page-content">
-                <div className="applications-table-card">
-                    {myApps.length > 0 ? (
-                        <table className="apps-table">
-                            <thead>
-                                <tr>
-                                    <th>Job Details</th>
-                                    <th>Hirer</th>
-                                    <th>Applied On</th>
-                                    <th>Status</th>
-                                    <th style={{ textAlign: 'right' }}>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {myApps.map(app => (
-                                    <tr key={app.id}>
-                                        <td className="job-title-cell">
-                                            <div style={{ fontWeight: 600, color: 'var(--neutral-900)' }}>{app.jobTitle}</div>
-                                            <div style={{ fontSize: '0.75rem', color: 'var(--neutral-500)', fontWeight: 400 }}>Ref: #{app.jobId.slice(0, 8)}</div>
-                                        </td>
-                                        <td>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--neutral-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--neutral-400)' }}>
-                                                    <i className="fas fa-user"></i>
-                                                </div>
-                                                <span>{app.hirerName}</span>
-                                            </div>
-                                        </td>
-                                        <td>{app.date}</td>
-                                        <td>
-                                            <span className={`status-pill ${app.status.toLowerCase()}`}>
+            <div className="grid gap-4">
+                {myApps.length > 0 ? (
+                    myApps.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(app => (
+                        <Card key={app.id} className="group border-none shadow-sm hover:shadow-md transition-all overflow-hidden bg-white">
+                            <CardContent className="p-0">
+                                <div className="p-6 flex flex-col md:flex-row items-start md:items-center gap-6">
+                                    <div className="w-14 h-14 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center shrink-0 group-hover:bg-primary/5 group-hover:border-primary/20 transition-colors">
+                                        <FileText className="w-7 h-7 text-primary/40" />
+                                    </div>
+                                    
+                                    <div className="flex-1 min-w-0 space-y-1">
+                                        <div className="flex items-center gap-3">
+                                            <h3 className="text-lg font-bold truncate group-hover:text-primary transition-colors">{app.jobTitle}</h3>
+                                            <Badge variant="outline" className={cn(
+                                                "text-[10px] uppercase font-bold tracking-widest px-2 h-5",
+                                                app.status === 'Accepted' && "border-green-200 bg-green-50 text-green-700",
+                                                app.status === 'Completed' && "border-blue-200 bg-blue-50 text-blue-700",
+                                                app.status === 'Rejected' && "border-red-200 bg-red-50 text-red-700",
+                                                app.status === 'Pending' && "border-amber-200 bg-amber-50 text-amber-700"
+                                            )}>
                                                 {app.status}
-                                            </span>
-                                        </td>
-                                        <td className="actions-cell" style={{ justifyContent: 'flex-end' }}>
-                                            <button className="btn-view" onClick={() => navigate(`/job/${app.jobId}`)}>
-                                                View Details
-                                            </button>
-                                            {app.status === 'Accepted' && (
-                                                <button
-                                                    className="btn-complete"
-                                                    onClick={() => updateApplicationStatus(app.id, 'Completed')}
-                                                    title="Mark this job as completed"
-                                                >
-                                                    <i className="fas fa-check"></i> Done
-                                                </button>
-                                            )}
-                                            <button
-                                                className="btn-message"
-                                                onClick={() => handleMessageHirer(app)}
-                                                title="Message Hirer"
+                                            </Badge>
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                                            <span className="flex items-center gap-1 font-medium text-foreground"><User className="w-3 h-3" /> {app.hirerName}</span>
+                                            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {app.jobLocation}</span>
+                                            <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> {app.date}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end border-t md:border-t-0 pt-4 md:pt-0">
+                                        <div className="flex items-center gap-2">
+                                            <Button 
+                                                variant="ghost" 
+                                                size="sm" 
+                                                className="rounded-xl font-bold h-9 bg-slate-50 px-4"
+                                                onClick={() => navigate(`/job/${app.jobId}`)}
                                             >
-                                                <i className="fas fa-envelope"></i> Message
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    ) : (
-                        <div className="no-apps-state">
-                            <i className="fas fa-paper-plane"></i>
-                            <h3>No applications yet</h3>
-                            <p>You haven't applied for any jobs. Explore the latest opportunities and start your journey.</p>
+                                                Details
+                                            </Button>
+                                            
+                                            {app.status === 'Accepted' && (
+                                                <Button 
+                                                    variant="default" 
+                                                    size="sm" 
+                                                    className="bg-primary hover:bg-primary/90 rounded-xl font-bold h-9 px-4"
+                                                    onClick={() => updateApplicationStatus(app.id, 'Completed')}
+                                                >
+                                                    <CheckCircle2 className="w-4 h-4 mr-2" /> Done
+                                                </Button>
+                                            )}
+                                            
+                                            <Button 
+                                                variant="outline" 
+                                                size="icon" 
+                                                className="rounded-full h-9 w-9 text-muted-foreground hover:text-primary"
+                                                onClick={() => handleMessageHirer(app)}
+                                            >
+                                                <MessageCircle className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                ) : (
+                    <Card className="border-none shadow-sm py-24 text-center flex flex-col items-center justify-center bg-white">
+                        <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center mb-6 text-muted-foreground/20 border-2 border-dashed border-slate-200">
+                            <FileText className="w-10 h-10" />
                         </div>
-                    )}
-                </div>
+                        <h3 className="text-xl font-bold">No Applications Yet</h3>
+                        <p className="text-muted-foreground text-sm max-w-sm mx-auto mt-2 italic mb-8">You haven't applied for any jobs yet. Start browsing and pitch your skills to hirers!</p>
+                        <Button onClick={() => navigate('/dashboard/labourer')} className="rounded-full px-8 shadow-lg">
+                            Find Best Gigs
+                        </Button>
+                    </Card>
+                )}
             </div>
         </div>
     );
 }
 
 export default Applications;
+

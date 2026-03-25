@@ -19,6 +19,7 @@ import AllApplicants from './pages/AllApplicants';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import MainLayout from './components/layout/MainLayout';
+import DashboardLayout from './components/layout/DashboardLayout';
 import './App.css';
 
 import { useAuth } from './context/AuthContext';
@@ -53,8 +54,12 @@ function App() {
           <Route path="/job/:id" element={<JobDetail />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
+          {/* Fallback Catch-All - Fixes "pages aren't open" for bad URLs */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
 
-          {/* Protected Routes */}
+        {/* Dashboard Shell - completely separate from global Website Shell */}
+        <Route element={<DashboardLayout />}>
           <Route element={<ProtectedRoute allowedRoles={['hirer']} />}>
             <Route path="/dashboard/hirer" element={<HirerDashboard />} />
             <Route path="/dashboard/hirer/jobs" element={<MyJobs />} />
@@ -71,14 +76,10 @@ function App() {
             <Route path="/dashboard/labourer/messages" element={<Messages />} />
             <Route path="/dashboard/labourer/settings" element={<Settings />} />
           </Route>
-
-
-          {/* Generic Redirect */}
-          <Route path="/dashboard" element={<DashboardRedirect />} />
-
-          {/* Fallback Catch-All - Fixes "pages aren't open" for bad URLs */}
-          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
+
+        {/* Generic Redirect */}
+        <Route path="/dashboard" element={<DashboardRedirect />} />
       </Routes>
 
       <AuthModal

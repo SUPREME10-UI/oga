@@ -1,7 +1,40 @@
 import React, { useState, useEffect, useRef } from 'react';
-import DashboardSidebar from '../components/layout/DashboardSidebar';
 import { useAuth } from '../context/AuthContext';
-import './Settings.css';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { 
+    Select, 
+    SelectContent, 
+    SelectItem, 
+    SelectTrigger, 
+    SelectValue 
+} from "@/components/ui/select";
+import { 
+    Tabs, 
+    TabsContent, 
+    TabsList, 
+    TabsTrigger 
+} from "@/components/ui/tabs";
+import { 
+    User, 
+    ShieldCheck, 
+    Bell, 
+    Camera, 
+    Save, 
+    RotateCcw,
+    CheckCircle2,
+    AlertCircle,
+    UserCircle2,
+    Lock,
+    Phone,
+    MapPin,
+    Hash
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function Settings() {
     const { user, updateUser } = useAuth();
@@ -48,259 +81,365 @@ function Settings() {
         setAvatarPreview(user.photo || null);
     }, [user]);
 
-
-
     const handleAvatarClick = () => {
         if (fileRef.current) fileRef.current.click();
-    };
-
-    const readFileAsDataUrl = (file) => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
     };
 
     const handleAvatarChange = async (e) => {
         const f = e.target.files && e.target.files[0];
         if (!f) return;
-        const dataUrl = await readFileAsDataUrl(f);
-        setAvatarPreview(dataUrl);
-        // Note: we don't save immediately; user must click Save Changes
+        const reader = new FileReader();
+        reader.onload = () => setAvatarPreview(reader.result);
+        reader.readAsDataURL(f);
     };
 
     const handleSave = async () => {
         setSaving(true);
         setMessage(null);
 
-        // Basic validation
         if (!form.name.trim()) {
             setMessage({ type: 'error', text: 'Name is required.' });
             setSaving(false);
             return;
         }
-        if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-            setMessage({ type: 'error', text: 'Please provide a valid email address.' });
-            setSaving(false);
-            return;
-        }
 
-        // Build update payload
         const updates = {
-            name: form.name.trim(),
-            email: form.email.trim(),
-            phone: form.phone || '',
-            location: form.location || '',
-            bio: form.bio || '',
-            type: form.type,
+            ...form,
             photo: avatarPreview || '',
-            settings: {
-                twoFactorEnabled: !!form.settings.twoFactorEnabled,
-                notifications: {
-                    email: !!form.settings.notifications.email,
-                    jobAlerts: !!form.settings.notifications.jobAlerts
-                }
-            }
         };
 
         try {
-            // updateUser merges and persists to localStorage in AuthContext
-            updateUser(updates);
-            setMessage({ type: 'success', text: 'Profile settings saved.' });
+            await updateUser(updates);
+            setMessage({ type: 'success', text: 'Profile settings saved successfully.' });
         } catch (err) {
-            console.error('Error saving settings', err);
             setMessage({ type: 'error', text: 'Failed to save settings.' });
         } finally {
             setSaving(false);
-            // clear password inputs after save
-            setPasswordState({ current: '', newPass: '', confirm: '' });
         }
     };
 
-    const handleChangePassword = () => {
+    const handleChangePassword = async () => {
         setMessage(null);
-
-        // Simulated password handling stored on the user object.
-        // AuthContext stores whatever fields you give it in localStorage.
-        const existingPassword = user?.password || '';
-
         if (!passwordState.newPass || passwordState.newPass.length < 6) {
             setMessage({ type: 'error', text: 'New password must be at least 6 characters.' });
             return;
         }
         if (passwordState.newPass !== passwordState.confirm) {
-            setMessage({ type: 'error', text: 'New password and confirmation do not match.' });
+            setMessage({ type: 'error', text: 'Passwords do not match.' });
             return;
         }
 
-        if (existingPassword) {
-            // verify current
-            if (passwordState.current !== existingPassword) {
-                setMessage({ type: 'error', text: 'Current password is incorrect.' });
-                return;
-            }
-        } else {
-            // no existing password — allow set new
+        try {
+            await updateUser({ password: passwordState.newPass });
+            setMessage({ type: 'success', text: 'Password updated successfully.' });
+            setPasswordState({ current: '', newPass: '', confirm: '' });
+        } catch (err) {
+            setMessage({ type: 'error', text: 'Failed to update password.' });
         }
+    };
 
-        // Update password in user profile
-        updateUser({ password: passwordState.newPass });
-        setMessage({ type: 'success', text: 'Password updated.' });
-        setPasswordState({ current: '', newPass: '', confirm: '' });
+    const handleReset = () => {
+        if (!user) return;
+        setForm({
+            name: user.name || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            location: user.location || '',
+            bio: user.bio || '',
+            type: user.type || 'hirer',
+            settings: {
+                twoFactorEnabled: user.settings?.twoFactorEnabled || false,
+                notifications: {
+                    email: user.settings?.notifications?.email ?? true,
+                    jobAlerts: user.settings?.notifications?.jobAlerts ?? true
+                }
+            }
+        });
+        setAvatarPreview(user.photo || null);
+        setMessage({ type: 'info', text: 'Changes reverted to last saved state.' });
     };
 
     return (
-        <div className="hirer-dashboard-wrapper">
-            <DashboardSidebar />
-
-            <div className="hirer-dashboard-main">
-                <header className="page-header settings-topbar">
-                    <div className="header-side-left" />
-                    <div className="header-left">
-                        <h1>Account Settings</h1>
-                        <p>Manage your profile, security, and notifications</p>
-                    </div>
-                    <div className="settings-save-actions">
-                        <button className="btn-outline" onClick={() => {
-                            // reset to current user values
-                            if (user) {
-                                setForm({
-                                    name: user.name || '',
-                                    email: user.email || '',
-                                    phone: user.phone || '',
-                                    location: user.location || '',
-                                    bio: user.bio || '',
-                                    type: user.type || 'hirer',
-                                    settings: {
-                                        twoFactorEnabled: user.settings?.twoFactorEnabled || false,
-                                        notifications: {
-                                            email: user.settings?.notifications?.email ?? true,
-                                            jobAlerts: user.settings?.notifications?.jobAlerts ?? true
-                                        }
-                                    }
-                                });
-                                setAvatarPreview(user.photo || null);
-                                setMessage({ type: 'info', text: 'Changes reverted.' });
-                            }
-                        }}>Reset</button>
-                        <button className="btn-primary" onClick={handleSave} disabled={saving}>
-                            {saving ? 'Saving...' : 'Save Changes'}
-                        </button>
-                    </div>
-                </header>
-
-                <div className="dashboard-content-container settings-page">
-                    {message && (
-                        <div className={`settings-msg ${message.type}`}>
-                            {message.text}
-                        </div>
-                    )}
-
-                    <div className="settings-grid">
-                        <section className="settings-section card profile-card">
-                            <h2><i className="fas fa-user-circle"></i> Profile</h2>
-
-                            <div className="profile-row">
-                                <div className="avatar-column">
-                                    <div className="avatar-preview" onClick={handleAvatarClick} title="Click to change avatar">
-                                        {avatarPreview ? (
-                                            <img src={avatarPreview} alt="Avatar" />
-                                        ) : (
-                                            <div className="avatar-initial">{(form.name || 'U').charAt(0).toUpperCase()}</div>
-                                        )}
-                                    </div>
-                                    <input type="file" accept="image/*" ref={fileRef} style={{ display: 'none' }} onChange={handleAvatarChange} />
-                                    <div className="avatar-hint">Click avatar to upload (PNG, JPG)</div>
-                                </div>
-
-                                <div className="profile-fields">
-                                    <div className="form-group">
-                                    <div className="form-group">
-                                        <label htmlFor="settings-name">Full Name</label>
-                                        <input id="settings-name" name="name" autoComplete="name" value={form.name} onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))} />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label htmlFor="settings-email">Email Address</label>
-                                        <input id="settings-email" name="email" autoComplete="email" type="email" value={form.email} onChange={(e) => setForm(prev => ({ ...prev, email: e.target.value }))} />
-                                    </div>
-                                    </div>
-
-                                    <div className="form-row">
-                                        <div className="form-group half">
-                                        <div className="form-group half">
-                                            <label htmlFor="settings-phone">Phone</label>
-                                            <input id="settings-phone" name="phone" autoComplete="tel" type="tel" value={form.phone} onChange={(e) => setForm(prev => ({ ...prev, phone: e.target.value }))} />
-                                        </div>
-                                        <div className="form-group half">
-                                            <label htmlFor="settings-location">Location</label>
-                                            <input id="settings-location" name="location" autoComplete="address-level2" type="text" value={form.location} onChange={(e) => setForm(prev => ({ ...prev, location: e.target.value }))} />
-                                        </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label>Short Bio</label>
-                                        <textarea value={form.bio} onChange={(e) => setForm(prev => ({ ...prev, bio: e.target.value }))} rows={3} />
-                                    </div>
-
-                                    <div className="form-group">
-                                        <label>Account Type</label>
-                                        <select value={form.type} onChange={(e) => setForm(prev => ({ ...prev, type: e.target.value }))}>
-                                            <option value="hirer">Hirer</option>
-                                            <option value="labourer">Labourer</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-
-                        <section className="settings-section card security-card">
-                            <h2><i className="fas fa-shield-alt"></i> Security</h2>
-
-                            <div className="form-group">
-                                <label>Change Password</label>
-                                <div className="password-row">
-                                    <input type="password" placeholder="Current password" value={passwordState.current} onChange={(e) => setPasswordState(s => ({ ...s, current: e.target.value }))} />
-                                    <input type="password" placeholder="New password" value={passwordState.newPass} onChange={(e) => setPasswordState(s => ({ ...s, newPass: e.target.value }))} />
-                                    <input type="password" placeholder="Confirm new password" value={passwordState.confirm} onChange={(e) => setPasswordState(s => ({ ...s, confirm: e.target.value }))} />
-                                    <button className="btn-primary small" onClick={handleChangePassword}>Update Password</button>
-                                </div>
-                                <div className="hint">Password must be at least 6 characters.</div>
-                            </div>
-
-                            <div className="form-group">
-                                <label>Two-Factor Authentication</label>
-                                <div className="toggle-group">
-                                    <span>Enable Two-Factor Authentication</span>
-                                    <input type="checkbox" checked={!!form.settings.twoFactorEnabled} onChange={(e) => setForm(prev => ({ ...prev, settings: { ...prev.settings, twoFactorEnabled: e.target.checked } }))} />
-                                </div>
-                                <div className="hint">When enabled you'll need a second step to sign in.</div>
-                            </div>
-                        </section>
-
-                        <section className="settings-section card notifications-card">
-                            <h2><i className="fas fa-bell"></i> Notifications</h2>
-
-                            <div className="toggle-row">
-                                <label>Email Notifications</label>
-                                <input type="checkbox" checked={!!form.settings.notifications.email} onChange={(e) => setForm(prev => ({ ...prev, settings: { ...prev.settings, notifications: { ...prev.settings.notifications, email: e.target.checked } } }))} />
-                            </div>
-
-                            <div className="toggle-row">
-                                <label>New Job Alerts</label>
-                                <input type="checkbox" checked={!!form.settings.notifications.jobAlerts} onChange={(e) => setForm(prev => ({ ...prev, settings: { ...prev.settings, notifications: { ...prev.settings.notifications, jobAlerts: e.target.checked } } }))} />
-                            </div>
-
-                            <div className="hint">Notification preferences saved to your profile and used by the app.</div>
-                        </section>
-                    </div>
+        <div className="p-4 md:p-8 max-w-5xl mx-auto w-full space-y-8 animate-in fade-in duration-500">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="space-y-1">
+                    <h2 className="text-2xl font-bold font-serif">Account Harmony</h2>
+                    <p className="text-muted-foreground text-sm">Fine-tune your professional presence and app behavior</p>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={handleReset} className="rounded-full h-10 px-6">
+                        <RotateCcw className="w-4 h-4 mr-2" /> Reset
+                    </Button>
+                    <Button size="sm" onClick={handleSave} disabled={saving} className="rounded-full shadow-lg h-10 px-8">
+                        {saving ? (
+                            <span className="flex items-center"><RotateCcw className="w-4 h-4 mr-2 animate-spin" /> Saving...</span>
+                        ) : (
+                            <span className="flex items-center"><Save className="w-4 h-4 mr-2" /> Save Changes</span>
+                        )}
+                    </Button>
                 </div>
             </div>
+
+            {message && (
+                <div className={cn(
+                    "p-4 rounded-2xl flex items-center gap-3 animate-in slide-in-from-top-2 border shadow-sm",
+                    message.type === 'success' ? "bg-green-50 text-green-700 border-green-100" : 
+                    message.type === 'error' ? "bg-red-50 text-red-700 border-red-100" :
+                    "bg-blue-50 text-blue-700 border-blue-100"
+                )}>
+                    {message.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                    <span className="text-sm font-medium">{message.text}</span>
+                </div>
+            )}
+
+            <Tabs defaultValue="profile" className="w-full">
+                <TabsList className="bg-slate-100/50 p-1 rounded-2xl mb-8 border border-slate-200/50 inline-flex">
+                    <TabsTrigger value="profile" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary gap-2">
+                        <User className="w-4 h-4" /> Profile
+                    </TabsTrigger>
+                    <TabsTrigger value="security" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary gap-2">
+                        <ShieldCheck className="w-4 h-4" /> Security
+                    </TabsTrigger>
+                    <TabsTrigger value="notifications" className="rounded-xl px-8 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-primary gap-2">
+                        <Bell className="w-4 h-4" /> Alerts
+                    </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="profile" className="space-y-6">
+                    <Card className="border-none shadow-sm bg-white overflow-hidden p-8">
+                        <div className="flex flex-col md:flex-row gap-12">
+                            <div className="flex flex-col items-center gap-4 text-center">
+                                <div 
+                                    className="relative w-32 h-32 rounded-full border-4 border-slate-50 bg-slate-100 shadow-xl cursor-pointer group overflow-hidden transition-all hover:scale-105"
+                                    onClick={handleAvatarClick}
+                                >
+                                    {avatarPreview ? (
+                                        <img src={avatarPreview} alt="Profile" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <div className="w-full h-full flex items-center justify-center text-primary/20">
+                                            <UserCircle2 className="w-16 h-16" />
+                                        </div>
+                                    )}
+                                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Camera className="w-6 h-6 text-white" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-slate-800">Avatar Photo</h4>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">PNG or JPG, max 5MB</p>
+                                </div>
+                                <input type="file" ref={fileRef} className="hidden" accept="image/*" onChange={handleAvatarChange} />
+                            </div>
+
+                            <div className="flex-1 space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name" className="text-xs font-bold uppercase tracking-widest text-slate-500">Full Public Name</Label>
+                                        <div className="relative">
+                                            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                            <Input 
+                                                id="name" 
+                                                className="pl-10 h-12 bg-slate-50 border-slate-100 focus:bg-white transition-all rounded-xl"
+                                                value={form.name} 
+                                                onChange={(e) => setForm({...form, name: e.target.value})} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="email" className="text-xs font-bold uppercase tracking-widest text-slate-500">Contact Email</Label>
+                                        <div className="relative">
+                                            <Bell className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                            <Input 
+                                                id="email" 
+                                                type="email" 
+                                                className="pl-10 h-12 bg-slate-50 border-slate-100 focus:bg-white transition-all rounded-xl"
+                                                value={form.email} 
+                                                onChange={(e) => setForm({...form, email: e.target.value})} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="phone" className="text-xs font-bold uppercase tracking-widest text-slate-500">Phone Number</Label>
+                                        <div className="relative">
+                                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                            <Input 
+                                                id="phone" 
+                                                className="pl-10 h-12 bg-slate-50 border-slate-100 focus:bg-white transition-all rounded-xl"
+                                                value={form.phone} 
+                                                onChange={(e) => setForm({...form, phone: e.target.value})} 
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="location" className="text-xs font-bold uppercase tracking-widest text-slate-500">Preferred Location</Label>
+                                        <div className="relative">
+                                            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                            <Input 
+                                                id="location" 
+                                                className="pl-10 h-12 bg-slate-50 border-slate-100 focus:bg-white transition-all rounded-xl"
+                                                value={form.location} 
+                                                onChange={(e) => setForm({...form, location: e.target.value})} 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Professional Bio</Label>
+                                    <Textarea 
+                                        rows={4} 
+                                        className="bg-slate-50 border-slate-100 focus:bg-white transition-all rounded-2xl resize-none"
+                                        placeholder="Tell potential clients about your expertise..."
+                                        value={form.bio}
+                                        onChange={(e) => setForm({...form, bio: e.target.value})}
+                                    />
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">I am joining as a:</Label>
+                                    <Select 
+                                        value={form.type} 
+                                        onValueChange={(v) => setForm({...form, type: v})}
+                                    >
+                                        <SelectTrigger className="h-12 bg-slate-50 border-slate-100 rounded-xl">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="rounded-xl border-slate-100">
+                                            <SelectItem value="hirer">Home Owner / Business (Hirer)</SelectItem>
+                                            <SelectItem value="labourer">Skilled Artisan (Labourer)</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="security" className="space-y-6">
+                    <Card className="border-none shadow-sm bg-white p-8 space-y-8">
+                        <div>
+                            <h3 className="text-lg font-bold font-serif mb-1">Update Security Credentials</h3>
+                            <p className="text-muted-foreground text-sm">Keep your account safe with a strong, updated password</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Current Password</Label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                    <Input 
+                                        type="password" 
+                                        className="pl-10 h-12 bg-slate-50 border-slate-100 rounded-xl" 
+                                        value={passwordState.current}
+                                        onChange={(e) => setPasswordState({...passwordState, current: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            <div className="hidden md:block"></div>
+                            
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">New Password</Label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                    <Input 
+                                        type="password" 
+                                        className="pl-10 h-12 bg-slate-50 border-slate-100 rounded-xl" 
+                                        value={passwordState.newPass}
+                                        onChange={(e) => setPasswordState({...passwordState, newPass: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <Label className="text-xs font-bold uppercase tracking-widest text-slate-500">Confirm Password</Label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground/50" />
+                                    <Input 
+                                        type="password" 
+                                        className="pl-10 h-12 bg-slate-50 border-slate-100 rounded-xl" 
+                                        value={passwordState.confirm}
+                                        onChange={(e) => setPasswordState({...passwordState, confirm: e.target.value})}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <Button variant="outline" className="rounded-full px-8" onClick={handleChangePassword}>
+                            Update Gateway Secret
+                        </Button>
+
+                        <div className="pt-8 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <h4 className="font-bold flex items-center gap-2">
+                                    <ShieldCheck className="w-5 h-5 text-primary" /> Two-Factor Shield
+                                </h4>
+                                <p className="text-xs text-muted-foreground mt-1">Add an extra layer of security to your account logins</p>
+                            </div>
+                            <Switch 
+                                checked={form.settings.twoFactorEnabled} 
+                                onCheckedChange={(c) => setForm({
+                                    ...form, 
+                                    settings: { ...form.settings, twoFactorEnabled: c }
+                                })} 
+                            />
+                        </div>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="notifications" className="space-y-6">
+                    <Card className="border-none shadow-sm bg-white p-8">
+                        <div>
+                            <h3 className="text-lg font-bold font-serif mb-1">Alert Preferences</h3>
+                            <p className="text-muted-foreground text-sm">Control how and when we reach out to you</p>
+                        </div>
+                        <div className="mt-8 space-y-6">
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
+                                        <Bell className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-sm">Email Digest</h4>
+                                        <p className="text-xs text-muted-foreground">Receive weekly summaries of your activity</p>
+                                    </div>
+                                </div>
+                                <Switch 
+                                    checked={form.settings.notifications.email} 
+                                    onCheckedChange={(c) => setForm({
+                                        ...form, 
+                                        settings: { 
+                                            ...form.settings, 
+                                            notifications: { ...form.settings.notifications, email: c }
+                                        }
+                                    })} 
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                                        <Search className="w-5 h-5" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-sm">Real-time Job Alerts</h4>
+                                        <p className="text-xs text-muted-foreground">Instant notifications for new gig matches</p>
+                                    </div>
+                                </div>
+                                <Switch 
+                                    checked={form.settings.notifications.jobAlerts} 
+                                    onCheckedChange={(c) => setForm({
+                                        ...form, 
+                                        settings: { 
+                                            ...form.settings, 
+                                            notifications: { ...form.settings.notifications, jobAlerts: c }
+                                        }
+                                    })} 
+                                />
+                            </div>
+                        </div>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }
 
-export default Settings;
+export default Settings;
