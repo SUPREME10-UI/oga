@@ -389,7 +389,7 @@ function Profile({ onOpenAuth }) {
                 {isLabourer ? (
                     <>
                         <p className="text-5xl font-bold font-serif text-foreground mb-2">
-                          {actualRating.toFixed(1)}
+                          {Number(actualRating || 0).toFixed(1)}
                         </p>
                         <div className="flex justify-center mb-2">
                           <StarRating rating={actualRating} size={5} />

@@ -91,7 +91,7 @@ export default function ArtisanCard({ artisan, categoryName }) {
         {/* Rating */}
         <div className="flex items-center gap-1 mb-3">
           <Star className="w-3.5 h-3.5 star-filled fill-current" />
-          <span className="text-sm font-medium">{!isNaN(avgRating) ? avgRating.toFixed(1) : '0.0'}</span>
+          <span className="text-sm font-medium">{Number(avgRating || 0).toFixed(1)}</span>
           <span className="text-xs text-muted-foreground">({totalReviews} reviews)</span>
         </div>
 

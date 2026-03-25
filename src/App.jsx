@@ -20,6 +20,7 @@ import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import MainLayout from './components/layout/MainLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
+import ErrorBoundary from './components/common/ErrorBoundary';
 import './App.css';
 
 import { useAuth } from './context/AuthContext';
@@ -45,49 +46,51 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route element={<MainLayout onOpenAuth={openAuthModal} />}>
-          <Route path="/" element={<Home onOpenAuth={openAuthModal} />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/profile/:id" element={<Profile onOpenAuth={openAuthModal} />} />
-          <Route path="/job/:id" element={<JobDetail />} />
-          <Route path="/terms" element={<TermsOfService />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-          {/* Fallback Catch-All - Fixes "pages aren't open" for bad URLs */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Route>
-
-        {/* Dashboard Shell - completely separate from global Website Shell */}
-        <Route element={<DashboardLayout />}>
-          <Route element={<ProtectedRoute allowedRoles={['hirer']} />}>
-            <Route path="/dashboard/hirer" element={<HirerDashboard />} />
-            <Route path="/dashboard/hirer/jobs" element={<MyJobs />} />
-            <Route path="/dashboard/hirer/jobs/:jobId/applicants" element={<Applicants />} />
-            <Route path="/dashboard/hirer/applicants" element={<AllApplicants />} />
-            <Route path="/dashboard/hirer/messages" element={<Messages />} />
-            <Route path="/dashboard/hirer/settings" element={<Settings />} />
+    <ErrorBoundary>
+      <Router>
+        <Routes>
+          <Route element={<MainLayout onOpenAuth={openAuthModal} />}>
+            <Route path="/" element={<Home onOpenAuth={openAuthModal} />} />
+            <Route path="/explore" element={<Explore />} />
+            <Route path="/profile/:id" element={<Profile onOpenAuth={openAuthModal} />} />
+            <Route path="/job/:id" element={<JobDetail />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            {/* Fallback Catch-All - Fixes "pages aren't open" for bad URLs */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
 
-          <Route element={<ProtectedRoute allowedRoles={['labourer']} />}>
-            <Route path="/dashboard/labourer" element={<LabourerDashboard />} />
-            <Route path="/dashboard/labourer/applications" element={<Applications />} />
-            <Route path="/dashboard/labourer/earnings" element={<Earnings />} />
-            <Route path="/dashboard/labourer/messages" element={<Messages />} />
-            <Route path="/dashboard/labourer/settings" element={<Settings />} />
+          {/* Dashboard Shell - completely separate from global Website Shell */}
+          <Route element={<DashboardLayout />}>
+            <Route element={<ProtectedRoute allowedRoles={['hirer']} />}>
+              <Route path="/dashboard/hirer" element={<HirerDashboard />} />
+              <Route path="/dashboard/hirer/jobs" element={<MyJobs />} />
+              <Route path="/dashboard/hirer/jobs/:jobId/applicants" element={<Applicants />} />
+              <Route path="/dashboard/hirer/applicants" element={<AllApplicants />} />
+              <Route path="/dashboard/hirer/messages" element={<Messages />} />
+              <Route path="/dashboard/hirer/settings" element={<Settings />} />
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['labourer']} />}>
+              <Route path="/dashboard/labourer" element={<LabourerDashboard />} />
+              <Route path="/dashboard/labourer/applications" element={<Applications />} />
+              <Route path="/dashboard/labourer/earnings" element={<Earnings />} />
+              <Route path="/dashboard/labourer/messages" element={<Messages />} />
+              <Route path="/dashboard/labourer/settings" element={<Settings />} />
+            </Route>
           </Route>
-        </Route>
 
-        {/* Generic Redirect */}
-        <Route path="/dashboard" element={<DashboardRedirect />} />
-      </Routes>
+          {/* Generic Redirect */}
+          <Route path="/dashboard" element={<DashboardRedirect />} />
+        </Routes>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={closeAuthModal}
-        initialTab={authModalTab}
-      />
-    </Router>
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={closeAuthModal}
+          initialTab={authModalTab}
+        />
+      </Router>
+    </ErrorBoundary>
   );
 }
 
