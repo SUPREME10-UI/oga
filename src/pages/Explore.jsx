@@ -56,15 +56,19 @@ export default function Explore() {
   const mapRef = useRef(null);
   const markersRef = useRef([]);
 
-  // Extract unique professions and locations for filters
-  const professions = ["all", ...new Set(labourers.map(l => l.profession).filter(Boolean))];
+  // Extract unique professions and locations for filters (safely)
+  const professionsList = Array.isArray(labourers) 
+    ? ["all", ...new Set(labourers.filter(Boolean).map(l => l.profession).filter(Boolean))]
+    : ["all"];
+
   const locationsList = ["all", ...new Set([
-    ...labourers.map(l => l.location),
-    ...jobs.map(j => j.location)
+    ...(Array.isArray(labourers) ? labourers.filter(Boolean).map(l => l.location) : []),
+    ...(Array.isArray(jobs) ? jobs.filter(Boolean).map(j => j.location) : [])
   ].filter(Boolean))];
 
-  // Filter Data
-  const filteredLabourers = labourers.filter((labourer) => {
+  // Filter Data Safely
+  const filteredLabourers = Array.isArray(labourers) ? labourers.filter((labourer) => {
+    if (!labourer) return false;
     const searchMatch = !searchQuery || 
       (labourer.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (labourer.profession?.toLowerCase() || "").includes(searchQuery.toLowerCase());
@@ -73,9 +77,10 @@ export default function Explore() {
     const locMatch = selectedLocation === "all" || labourer.location === selectedLocation;
     
     return searchMatch && profMatch && locMatch;
-  });
+  }) : [];
 
-  const filteredJobs = jobs.filter((job) => {
+  const filteredJobs = Array.isArray(jobs) ? jobs.filter((job) => {
+    if (!job) return false;
     const searchMatch = !searchQuery || 
       (job.title?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
       (job.description?.toLowerCase() || "").includes(searchQuery.toLowerCase());
@@ -87,7 +92,7 @@ export default function Explore() {
     const locMatch = selectedLocation === "all" || job.location === selectedLocation;
     
     return searchMatch && profMatch && locMatch;
-  });
+  }) : [];
 
   const currentData = activeTab === "labourers" ? filteredLabourers : filteredJobs;
 
@@ -201,18 +206,18 @@ export default function Explore() {
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              <Select value={selectedProfession} onValueChange={setSelectedProfession}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="Profession" />
-                </SelectTrigger>
-                <SelectContent>
-                  {professions.map((prof) => (
-                    <SelectItem key={prof} value={prof}>
-                      {prof === "all" ? "All Professions" : prof}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      <Select value={selectedProfession} onValueChange={setSelectedProfession}>
+        <SelectTrigger className="bg-white">
+          <SelectValue placeholder="Profession" />
+        </SelectTrigger>
+        <SelectContent>
+          {professionsList.map((prof) => (
+            <SelectItem key={prof} value={prof}>
+              {prof === "all" ? "All Professions" : prof}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
               <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                 <SelectTrigger className="bg-white">

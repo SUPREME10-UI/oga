@@ -63,7 +63,7 @@ export default function JobCard({ job }) {
           <div className="flex items-center gap-2 text-sm font-medium text-primary mt-3 pt-3 border-t border-border">
             <Wallet className="w-4 h-4" />
             <span>
-              GH₵ {job.budget ? job.budget.toLocaleString() : "Negotiable"}
+              GH₵ {job.budget && !isNaN(Number(job.budget)) ? Number(job.budget).toLocaleString() : (job.budget || "Negotiable")}
             </span>
             <span className="text-xs text-muted-foreground ml-auto uppercase tracking-wider font-semibold">Est. Budget</span>
           </div>
