@@ -6,7 +6,6 @@
 dist/
 build/
 *.dist
-dist-ssr
 
 # Environment variables
 .env
@@ -14,20 +13,13 @@ dist-ssr
 .env.development.local
 .env.test.local
 .env.production.local
-.env.*.local
 
 # IDE and editor files
 .vscode/
-!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 *~
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
 
 # OS generated files
 .DS_Store
@@ -54,9 +46,11 @@ pids
 *.pid.lock
 *.bak
 
-# Coverage
+# Coverage directory used by tools like istanbul
 coverage/
 *.lcov
+
+# nyc test coverage
 .nyc_output
 
 # Dependency directories
@@ -65,32 +59,45 @@ jspm_packages/
 # TypeScript cache
 *.tsbuildinfo
 
-# Optional caches
+# Optional npm cache directory
 .npm
+
+# Optional eslint cache
 .eslintcache
+
+# Microbundle cache
 .rpt2_cache/
 .rts2_cache_cjs/
 .rts2_cache_es/
 .rts2_cache_umd/
 
-# Node REPL history
+# Optional REPL history
 .node_repl_history
 
-# Package outputs
+# Output of 'npm pack'
 *.tgz
+
+# Yarn Integrity file
 .yarn-integrity
 
-# Bundler caches
+# parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
 
-# Framework builds
+# Next.js build output
 .next
+
+# Nuxt.js build / generate output
 .nuxt
+
+# Gatsby files
+.cache/
+
+# Storybook build outputs
 .out
 .storybook-out
 
-# Temp folders
+# Temporary folders
 tmp/
 temp/
 
@@ -99,6 +106,8 @@ temp/
 *.sqlite
 *.sqlite3
 
-# Misc
+# Webdev artifacts (checkpoint zips, migrations, etc.)
 .webdev/
+
+# Manus version file (auto-generated, not part of source)
 client/public/__manus__/version.json

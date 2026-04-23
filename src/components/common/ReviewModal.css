@@ -1,0 +1,129 @@
+.review-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    backdrop-filter: blur(4px);
+}
+
+.review-modal {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 450px;
+    padding: 2rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.review-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.review-modal-header h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin: 0;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    color: #cbd5e0;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #4a5568;
+}
+
+.star-rating-lg {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.star-btn {
+    background: none;
+    border: none;
+    font-size: 2.5rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: transform 0.1s, color 0.2s;
+}
+
+.star-btn.active {
+    color: #ecc94b;
+}
+
+.star-btn:hover {
+    transform: scale(1.1);
+}
+
+.rating-text {
+    text-align: center;
+    color: #718096;
+    font-weight: 500;
+    margin-bottom: 2rem;
+    min-height: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.form-group textarea {
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1rem;
+    font-family: inherit;
+    font-size: 1rem;
+    resize: none;
+    transition: border-color 0.2s;
+    background: #f8fafc;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #f97415;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(249, 116, 21, 0.1);
+}
+
+.btn-submit-review {
+    width: 100%;
+    background: #f97415;
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-submit-review:hover {
+    background: #e65100;
+}
+
+.btn-submit-review:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+}
