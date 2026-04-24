@@ -11,7 +11,8 @@ import {
   Mail, 
   Settings,
   Hammer,
-  CreditCard
+  CreditCard,
+  Calendar
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -20,43 +21,68 @@ export default function DashboardSidebar({ className, onNavigate }) {
     const { notifications } = useData();
 
     const isHirer = user?.type === 'hirer';
+    const isAdmin = user?.type === 'admin';
     const myNotifications = notifications.filter(n => String(n.userId) === String(user?.id));
     const unreadMessages = myNotifications.filter(n => n.type === 'message' && !n.read).length;
 
     // Navigation configuration
-    const navGroups = [
-        {
-            title: "Overview",
-            links: [
-                { to: `/dashboard/${user?.type}`, icon: LayoutDashboard, label: "Dashboard", end: true }
-            ]
-        },
-        {
-            title: "Manage",
-            links: isHirer ? [
-                { to: "/dashboard/hirer/jobs", icon: Briefcase, label: "My Jobs" },
-                { to: "/dashboard/hirer/applicants", icon: Users, label: "Applicants" },
-                { to: "/dashboard/hirer/bookings", icon: Calendar, label: "Bookings" }
-            ] : [
-                { to: "/dashboard/labourer/applications", icon: FileText, label: "My Applications" },
-                { to: "/dashboard/labourer/bookings", icon: Calendar, label: "Bookings" },
-                { to: "/dashboard/labourer/earnings", icon: CreditCard, label: "Earnings" }
-            ]
-        },
-        {
-            title: "Discover",
-            links: [
-                { to: "/explore", icon: Search, label: "Artisan Directory" }
-            ]
-        },
-        {
-            title: "Account",
-            links: [
-                { to: `/dashboard/${user?.type}/messages`, icon: Mail, label: "Messages", badge: unreadMessages },
-                { to: `/dashboard/${user?.type}/settings`, icon: Settings, label: "Settings" }
-            ]
-        }
-    ];
+    let navGroups = [];
+
+    if (isAdmin) {
+        navGroups = [
+            {
+                title: "Overview",
+                links: [{ to: `/dashboard/admin`, icon: LayoutDashboard, label: "Dashboard", end: true }]
+            },
+            {
+                title: "Manage",
+                links: [
+                    { to: "/dashboard/admin/users", icon: Users, label: "Users" },
+                    { to: "/dashboard/admin/jobs", icon: Briefcase, label: "Jobs" }
+                ]
+            },
+            {
+                title: "Account",
+                links: [
+                    { to: `/dashboard/admin/settings`, icon: Settings, label: "Settings" }
+                ]
+            }
+        ];
+    } else {
+        navGroups = [
+            {
+                title: "Overview",
+                links: [
+                    { to: `/dashboard/${user?.type}`, icon: LayoutDashboard, label: "Dashboard", end: true }
+                ]
+            },
+            {
+                title: "Manage",
+                links: isHirer ? [
+                    { to: "/dashboard/hirer/jobs", icon: Briefcase, label: "My Jobs" },
+                    { to: "/dashboard/hirer/applicants", icon: Users, label: "Applicants" },
+                    { to: "/dashboard/hirer/bookings", icon: Calendar, label: "Bookings" }
+                ] : [
+                    { to: "/dashboard/labourer/applications", icon: FileText, label: "My Applications" },
+                    { to: "/dashboard/labourer/bookings", icon: Calendar, label: "Bookings" },
+                    { to: "/dashboard/labourer/earnings", icon: CreditCard, label: "Earnings" }
+                ]
+            },
+            {
+                title: "Discover",
+                links: [
+                    { to: "/explore", icon: Search, label: "Artisan Directory" }
+                ]
+            },
+            {
+                title: "Account",
+                links: [
+                    { to: `/dashboard/${user?.type}/messages`, icon: Mail, label: "Messages", badge: unreadMessages },
+                    { to: `/dashboard/${user?.type}/settings`, icon: Settings, label: "Settings" }
+                ]
+            }
+        ];
+    }
 
     return (
         <aside className={cn("flex flex-col h-full bg-white", className)}>
@@ -81,7 +107,7 @@ export default function DashboardSidebar({ className, onNavigate }) {
                     <div className="min-w-0">
                         <h3 className="font-semibold text-sm text-foreground truncate">{user?.name || 'User'}</h3>
                         <p className="text-xs text-muted-foreground capitalize">
-                            {isHirer ? 'Hirer Dashboard' : 'Artisan Dashboard'}
+                            {isAdmin ? 'Admin Dashboard' : isHirer ? 'Hirer Dashboard' : 'Artisan Dashboard'}
                         </p>
                     </div>
                 </div>

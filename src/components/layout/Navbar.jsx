@@ -74,18 +74,22 @@ export default function Navbar({ onLoginClick, isFluid }) {
             {user ? (
               <>
                 {/* Notifications */}
-                <Link to={getDashboardLink()}>
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Bell className="w-5 h-5" />
-                  </Button>
-                </Link>
+                {user.type !== 'admin' && (
+                  <Link to={getDashboardLink()}>
+                    <Button variant="ghost" size="icon" className="relative">
+                      <Bell className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                )}
 
                 {/* Chat */}
-                <Link to={`${getDashboardLink()}/messages`}>
-                  <Button variant="ghost" size="icon">
-                    <MessageCircle className="w-5 h-5" />
-                  </Button>
-                </Link>
+                {user.type !== 'admin' && (
+                  <Link to={`${getDashboardLink()}/messages`}>
+                    <Button variant="ghost" size="icon">
+                      <MessageCircle className="w-5 h-5" />
+                    </Button>
+                  </Link>
+                )}
 
                 {/* User menu */}
                 <DropdownMenu>
@@ -111,14 +115,16 @@ export default function Navbar({ onLoginClick, isFluid }) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link to={getDashboardLink()} className="flex items-center gap-2 cursor-pointer">
-                        <User className="w-4 h-4" /> My Dashboard
+                        <User className="w-4 h-4" /> {user?.type === 'admin' ? 'Admin Dashboard' : 'My Dashboard'}
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={`${getDashboardLink()}/messages`} className="flex items-center gap-2 cursor-pointer">
-                        <MessageCircle className="w-4 h-4" /> Messages
-                      </Link>
-                    </DropdownMenuItem>
+                    {user.type !== 'admin' && (
+                      <DropdownMenuItem asChild>
+                        <Link to={`${getDashboardLink()}/messages`} className="flex items-center gap-2 cursor-pointer">
+                          <MessageCircle className="w-4 h-4" /> Messages
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
                     <DropdownMenuItem asChild>
                       <Link to={`${getDashboardLink()}/settings`} className="flex items-center gap-2 cursor-pointer">
                         <Settings className="w-4 h-4" /> Settings
@@ -194,7 +200,7 @@ export default function Navbar({ onLoginClick, isFluid }) {
                   <p className="text-xs text-muted-foreground">{user.email}</p>
                 </div>
                 {[
-                  { to: getDashboardLink(), label: "My Dashboard", icon: User },
+                  { to: getDashboardLink(), label: user?.type === 'admin' ? "Admin Dashboard" : "My Dashboard", icon: User },
                   { to: `${getDashboardLink()}/settings`, label: "Settings", icon: Settings },
                 ].map((item) => (
                   <Link

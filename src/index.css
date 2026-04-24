@@ -120,10 +120,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
   }
+
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
   [type="button"]:not(:disabled),
@@ -138,6 +140,7 @@
 }
 
 @layer components {
+
   /**
    * Custom container utility that centers content and adds responsive padding.
    */
@@ -145,7 +148,8 @@
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem; /* 16px - mobile padding */
+    padding-left: 1rem;
+    /* 16px - mobile padding */
     padding-right: 1rem;
   }
 
@@ -156,16 +160,19 @@
 
   @media (min-width: 640px) {
     .container {
-      padding-left: 1.5rem; /* 24px - tablet padding */
+      padding-left: 1.5rem;
+      /* 24px - tablet padding */
       padding-right: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
     .container {
-      padding-left: 2rem; /* 32px - desktop padding */
+      padding-left: 2rem;
+      /* 32px - desktop padding */
       padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
+      max-width: 1280px;
+      /* Standard content width */
     }
   }
 }
@@ -183,19 +190,38 @@
 .card-hover {
   transition: all 0.2s ease;
 }
+
 .card-hover:hover {
-  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.12);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
 }
 
-.star-filled { color: oklch(0.78 0.14 80); }
-.star-empty  { color: oklch(0.80 0.02 75); }
+.star-filled {
+  color: oklch(0.78 0.14 80);
+}
+
+.star-empty {
+  color: oklch(0.80 0.02 75);
+}
 
 /* Custom scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: oklch(0.95 0.01 75); }
-::-webkit-scrollbar-thumb { background: oklch(0.75 0.05 65); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: oklch(0.62 0.16 55); }
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: oklch(0.95 0.01 75);
+}
+
+::-webkit-scrollbar-thumb {
+  background: oklch(0.75 0.05 65);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.62 0.16 55);
+}
 
 /* Chat bubbles */
 .chat-bubble-sent {
@@ -203,6 +229,7 @@
   color: white;
   border-radius: 18px 18px 4px 18px;
 }
+
 .chat-bubble-received {
   background: oklch(0.95 0.01 75);
   color: oklch(0.18 0.02 60);
@@ -211,33 +238,50 @@
 
 /* Badge pulse */
 @keyframes pulse-badge {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
 }
-.available-badge { animation: pulse-badge 2s ease-in-out infinite; }
+
+.available-badge {
+  animation: pulse-badge 2s ease-in-out infinite;
+}
 
 /* Line clamp */
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 .line-clamp-3 {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 /* Map container */
-.map-container { width: 100%; height: 100%; }
+.map-container {
+  width: 100%;
+  height: 100%;
+}
 
 /* ─── PWA / Mobile App Utilities ────────────────────────────────────────── */
 
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
 .safe-area-top {
   padding-top: env(safe-area-inset-top, 0px);
 }
@@ -254,11 +298,17 @@
 }
 
 @supports (height: 100dvh) {
-  .min-h-screen { min-height: 100dvh; }
-  .h-screen { height: 100dvh; }
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+
+  .h-screen {
+    height: 100dvh;
+  }
 }
 
-html, body {
+html,
+body {
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
 }
@@ -284,7 +334,7 @@ html, body {
   padding: 0.75rem 1rem;
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   z-index: 40;
-  box-shadow: 0 -4px 12px -2px rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 12px -2px rgba(0, 0, 0, 0.08);
 }
 
 .mobile-transition {

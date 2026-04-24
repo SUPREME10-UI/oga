@@ -39,6 +39,8 @@ export default function DashboardLayout() {
 
     const getPageTitle = () => {
         const path = location.pathname;
+        if (path.includes('/admin/jobs')) return 'Manage Jobs';
+        if (path.includes('/admin/users')) return 'Manage Users';
         if (path.endsWith('/jobs')) return 'My Jobs';
         if (path.endsWith('/applicants')) return 'Applicants';
         if (path.endsWith('/applications')) return 'My Applications';

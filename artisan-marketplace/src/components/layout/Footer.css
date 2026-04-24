@@ -1,0 +1,121 @@
+/* ===================================
+   FOOTER STYLES
+   =================================== */
+
+.footer {
+    background-color: var(--neutral-900);
+    color: var(--neutral-400);
+    padding: var(--space-16) 0 var(--space-8);
+    font-size: var(--text-sm);
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.5fr;
+    gap: var(--space-8);
+}
+
+@media (max-width: 1200px) {
+    .footer-content {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--space-12);
+    }
+}
+
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: var(--space-10);
+    }
+}
+
+.footer-section h3 {
+    color: #fff;
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-6);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.footer-section h3 i {
+    color: var(--brand-primary);
+}
+
+.footer-section p {
+    line-height: 1.6;
+    margin-bottom: var(--space-6);
+    max-width: 300px;
+}
+
+.footer-section a {
+    display: block;
+    margin-bottom: var(--space-3);
+    color: var(--neutral-400);
+    transition: var(--transition-base);
+}
+
+.footer-section a:hover {
+    color: #fff;
+    transform: translateX(4px);
+}
+
+/* Social Links */
+.social-links {
+    display: flex;
+    gap: var(--space-3);
+}
+
+.social-link {
+    display: flex !important;
+    /* Override block display above */
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #fff !important;
+    transition: var(--transition-smooth) !important;
+    margin-bottom: 0 !important;
+}
+
+.social-link:hover {
+    background-color: var(--brand-primary);
+    transform: translateY(-3px) !important;
+}
+
+/* Footer App Downloads */
+.footer-app-links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.footer-app-btn {
+    background-color: #0b0b0b;
+    border: 1px solid #333;
+    color: #fff !important;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    display: flex !important;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: 0 !important;
+    transition: all 0.3s ease;
+}
+
+.footer-app-btn:hover {
+    background-color: #1a1a1a;
+    transform: translateY(-2px) !important;
+    border-color: #555;
+    color: #fff !important;
+}
+
+.footer-app-btn i {
+    font-size: 1.5rem;
+}
+
+.footer-app-btn span {
+    font-weight: 600;
+}

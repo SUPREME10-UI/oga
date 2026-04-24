@@ -19,6 +19,9 @@ import Applicants from './pages/Applicants';
 import AllApplicants from './pages/AllApplicants';
 import TermsOfService from './pages/TermsOfService';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminJobs from './pages/admin/AdminJobs';
 import MainLayout from './components/layout/MainLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -80,6 +83,13 @@ function App() {
               <Route path="/dashboard/labourer/messages" element={<Messages />} />
               <Route path="/dashboard/labourer/bookings" element={<Bookings />} />
               <Route path="/dashboard/labourer/settings" element={<Settings />} />
+            </Route>
+
+            <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+              <Route path="/dashboard/admin" element={<AdminDashboard />} />
+              <Route path="/dashboard/admin/users" element={<AdminUsers />} />
+              <Route path="/dashboard/admin/jobs" element={<AdminJobs />} />
+              <Route path="/dashboard/admin/settings" element={<Settings />} />
             </Route>
           </Route>
 

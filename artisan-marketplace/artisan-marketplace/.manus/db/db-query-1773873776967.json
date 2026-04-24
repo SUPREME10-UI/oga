@@ -1,0 +1,9 @@
+{
+  "query": "\nALTER TABLE artisans MODIFY COLUMN country VARCHAR(100) DEFAULT 'Ghana';\nALTER TABLE artisans MODIFY COLUMN currency VARCHAR(10) DEFAULT 'GHS';\nALTER TABLE bookings MODIFY COLUMN currency VARCHAR(10) DEFAULT 'GHS';\nUPDATE artisans SET country = 'Ghana' WHERE country = 'Nigeria' OR country IS NULL;\nUPDATE artisans SET currency = 'GHS' WHERE currency = 'NGN' OR currency IS NULL;\nUPDATE bookings SET currency = 'GHS' WHERE currency = 'NGN' OR currency IS NULL;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3v2rtyvakpdweLV.ab2e18363cdc --database WP54uqojT2hdzD6eefaKhT --execute \nALTER TABLE artisans MODIFY COLUMN country VARCHAR(100) DEFAULT 'Ghana';\nALTER TABLE artisans MODIFY COLUMN currency VARCHAR(10) DEFAULT 'GHS';\nALTER TABLE bookings MODIFY COLUMN currency VARCHAR(10) DEFAULT 'GHS';\nUPDATE artisans SET country = 'Ghana' WHERE country = 'Nigeria' OR country IS NULL;\nUPDATE artisans SET currency = 'GHS' WHERE currency = 'NGN' OR currency IS NULL;\nUPDATE bookings SET currency = 'GHS' WHERE currency = 'NGN' OR currency IS NULL;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 977
+}

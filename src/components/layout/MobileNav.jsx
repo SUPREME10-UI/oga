@@ -12,12 +12,17 @@ export default function MobileNav() {
   if (!user) return null;
 
   const isLabourer = user.type === 'labourer';
+  const isAdmin = user.type === 'admin';
   const dashboardPath = `/dashboard/${user.type}`;
   
   // Count unread notifications for the badge
   const unreadCount = notifications?.filter(n => String(n.userId) === String(user.uid || user.id) && !n.read).length || 0;
 
-  const navItems = [
+  const navItems = isAdmin ? [
+    { to: dashboardPath, icon: Home, label: 'Dashboard' },
+    { to: `${dashboardPath}/users`, icon: User, label: 'Users' },
+    { to: `${dashboardPath}/jobs`, icon: Briefcase, label: 'Jobs' }
+  ] : [
     { to: '/', icon: Home, label: 'Home' },
     { to: '/explore', icon: Search, label: 'Explore' },
     { 
