@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, name FROM users WHERE openId IN ('demo-customer-001','demo-customer-002');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3v2rtyvakpdweLV.ab2e18363cdc --database WP54uqojT2hdzD6eefaKhT --execute SELECT id, name FROM users WHERE openId IN ('demo-customer-001','demo-customer-002');",
+  "rows": [
+    {
+      "id": "239",
+      "name": "Emmanuel Osei"
+    },
+    {
+      "id": "240",
+      "name": "Priscilla Acheampong"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\n239\tEmmanuel Osei\n240\tPriscilla Acheampong\n",
+  "stderr": "",
+  "execution_time_ms": 381
+}
