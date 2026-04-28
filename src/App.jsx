@@ -22,6 +22,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from './pages/admin/AdminUsers';
 import AdminJobs from './pages/admin/AdminJobs';
+import AdminLogin from './pages/admin/AdminLogin';
 import MainLayout from './components/layout/MainLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
 import ErrorBoundary from './components/common/ErrorBoundary';
@@ -95,6 +96,9 @@ function App() {
 
           {/* Generic Redirect */}
           <Route path="/dashboard" element={<DashboardRedirect />} />
+
+          {/* Secret Admin Login Portal - standalone, no layout wrapper */}
+          <Route path="/admin" element={<AdminLogin />} />
         </Routes>
 
         <AuthModal

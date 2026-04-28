@@ -391,36 +391,7 @@ function Settings() {
                     </Card>
                 </TabsContent>
 
-                {user?.type !== 'admin' && (
-                    <TabsContent value="developer" className="space-y-6">
-                        <Card className="border-none shadow-sm bg-white p-8">
-                            <div>
-                                <h3 className="text-lg font-bold font-serif mb-1 text-destructive">Developer Settings</h3>
-                                <p className="text-muted-foreground text-sm">Testing features and advanced options</p>
-                            </div>
-                            <div className="mt-8 flex items-center justify-between p-4 rounded-2xl bg-red-50 border border-red-100">
-                                <div>
-                                    <h4 className="font-bold flex items-center gap-2 text-destructive">
-                                        <ShieldAlert className="w-5 h-5" /> Developer Access
-                                    </h4>
-                                    <p className="text-xs text-red-700/80 mt-1">Temporarily promote this account to Administrator</p>
-                                </div>
-                                <Button 
-                                    variant="destructive" 
-                                    size="sm"
-                                    onClick={async () => {
-                                        if(window.confirm('Promote this account to Admin?')) {
-                                            await updateUser({ type: 'admin' });
-                                            window.location.href = '/dashboard/admin';
-                                        }
-                                    }}
-                                >
-                                    Promote to Admin
-                                </Button>
-                            </div>
-                        </Card>
-                    </TabsContent>
-                )}
+
 
                 <TabsContent value="notifications" className="space-y-6">
                     <Card className="border-none shadow-sm bg-white p-8">

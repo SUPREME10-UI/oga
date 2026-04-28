@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Hammer, CheckCircle, Upload, AlertCircle } from "lucide-react";
+import { Hammer, CheckCircle, Upload, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -34,6 +34,8 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [newUserName, setNewUserName] = useState("");
   const [authError, setAuthError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { login, signup, resetPassword, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
@@ -338,14 +340,24 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="password">Password</Label>
-                      <Input
-                        id="password"
-                        type="password"
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        placeholder="Enter your password"
-                        required
-                      />
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          placeholder="Enter your password"
+                          className="pr-10"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </div>
                     <div className="flex justify-end">
                       <Button
@@ -511,11 +523,43 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="password">Password *</Label>
-                        <Input id="password" type="password" value={formData.password} onChange={handleInputChange} required />
+                        <div className="relative">
+                          <Input 
+                            id="password" 
+                            type={showPassword ? "text" : "password"} 
+                            value={formData.password} 
+                            onChange={handleInputChange} 
+                            className="pr-10"
+                            required 
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="confirmPassword">Confirm Password *</Label>
-                        <Input id="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleInputChange} required />
+                        <div className="relative">
+                          <Input 
+                            id="confirmPassword" 
+                            type={showConfirmPassword ? "text" : "password"} 
+                            value={formData.confirmPassword} 
+                            onChange={handleInputChange} 
+                            className="pr-10"
+                            required 
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
                       </div>
                     </div>
 
