@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, startTransition } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -72,8 +72,10 @@ function App() {
   // ───────────────────────────────────────────────────────────────────────
 
   const openAuthModal = useCallback((tab = 'login') => {
-    setAuthModalTab(tab);
-    setIsAuthModalOpen(true);
+    startTransition(() => {
+      setAuthModalTab(tab);
+      setIsAuthModalOpen(true);
+    });
   }, []);
 
   const closeAuthModal = useCallback(() => {
