@@ -214,6 +214,7 @@ function LocationModal({ onAllow, onDeny }) {
 /* ─── MapView ──────────────────────────────────────────────────────────────── */
 export function MapView({
   className = "",
+  style = {},
   initialCenter = ACCRA,
   initialZoom = 12,
   onMapReady,
@@ -251,7 +252,10 @@ export function MapView({
   }
 
   return (
-    <div className={`relative w-full h-full ${className}`} style={{ minHeight: 300 }}>
+    <div
+      className={`relative w-full ${className}`}
+      style={{ height: '420px', minHeight: '300px', ...style }}
+    >
       {/* Permission modal */}
       {phase === "pending" && (
         <LocationModal onAllow={requestLocation} onDeny={denyLocation} />

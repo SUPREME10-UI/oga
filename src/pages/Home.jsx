@@ -254,8 +254,8 @@ export default function Home({ onOpenAuth }) {
               </Button>
             </div>
             <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-border aspect-video">
-                <MapView className="rounded-2xl" />
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-border" style={{ height: '420px' }}>
+                <MapView style={{ height: '420px' }} className="rounded-2xl" />
               </div>
               {/* Floating cards */}
               <div className="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg p-3 border border-border">
