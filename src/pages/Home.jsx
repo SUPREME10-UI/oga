@@ -254,7 +254,10 @@ export default function Home({ onOpenAuth }) {
               </Button>
             </div>
             <div className="relative">
-              <div className="rounded-2xl overflow-hidden shadow-2xl border border-border" style={{ height: '420px' }}>
+              <div
+                className="rounded-2xl overflow-hidden shadow-2xl border border-border"
+                style={{ height: '420px', isolation: 'isolate', position: 'relative' }}
+              >
                 <MapView style={{ height: '420px' }} className="rounded-2xl" />
               </div>
               {/* Floating cards */}
