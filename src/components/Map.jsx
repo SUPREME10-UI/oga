@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
-import "leaflet/dist/leaflet.css";
 
 // Fix Leaflet default icon paths broken by bundlers
 delete L.Icon.Default.prototype._getIconUrl;
@@ -43,10 +42,10 @@ const userIcon = L.divIcon({
 
 const ACCRA = { lat: 5.6037, lng: -0.187 };
 
-const STADIA_TILE_URL =
-  "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png";
-const STADIA_ATTRIBUTION =
-  '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
+const TILE_URL =
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const TILE_ATTRIBUTION =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 function LocationUpdater({ position }) {
   const map = useMap();
@@ -303,7 +302,7 @@ export function MapView({
           }
         }}
       >
-        <TileLayer url={STADIA_TILE_URL} attribution={STADIA_ATTRIBUTION} />
+        <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
 
         {userPosition && <LocationUpdater position={userPosition} />}
 
