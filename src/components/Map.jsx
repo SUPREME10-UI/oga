@@ -60,78 +60,75 @@ function LocationModal({ onAllow, onDeny }) {
   return (
     <div
       style={{
-        position: "fixed",
+        position: "absolute",   /* scoped to the map container, not the whole page */
         inset: 0,
-        zIndex: 99999,
+        zIndex: 500,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
-        background: "rgba(15,23,42,0.55)",
+        background: "rgba(30,20,10,0.52)",
         backdropFilter: "blur(6px)",
+        borderRadius: "inherit",
         animation: "backdrop-in .25s ease",
       }}
     >
       <div
         style={{
-          background: "#fff",
-          borderRadius: "20px",
-          boxShadow: "0 24px 64px rgba(0,0,0,0.22)",
-          maxWidth: 380,
+          /* warm cream background matching app --card color */
+          background: "oklch(1 0 0)",
+          borderRadius: "18px",
+          boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+          maxWidth: 340,
           width: "100%",
           overflow: "hidden",
           animation: "modal-in .3s cubic-bezier(.34,1.56,.64,1)",
         }}
       >
-        {/* Top gradient banner */}
+        {/* Top gradient banner — craft gradient (amber/orange) */}
         <div
           style={{
-            background: "linear-gradient(135deg,#1e40af 0%,#3b82f6 60%,#60a5fa 100%)",
-            padding: "32px 24px 28px",
+            background: "linear-gradient(135deg, oklch(0.50 0.16 45) 0%, oklch(0.62 0.16 55) 55%, oklch(0.70 0.15 65) 100%)",
+            padding: "28px 24px 24px",
             textAlign: "center",
             position: "relative",
+            overflow: "hidden",
           }}
         >
           {/* Decorative circles */}
-          <div style={{
-            position:"absolute",top:-30,right:-30,width:100,height:100,
-            borderRadius:"50%",background:"rgba(255,255,255,0.08)"
-          }}/>
-          <div style={{
-            position:"absolute",bottom:-20,left:-20,width:70,height:70,
-            borderRadius:"50%",background:"rgba(255,255,255,0.06)"
-          }}/>
+          <div style={{ position:"absolute",top:-28,right:-28,width:90,height:90,borderRadius:"50%",background:"rgba(255,255,255,0.08)" }}/>
+          <div style={{ position:"absolute",bottom:-18,left:-18,width:65,height:65,borderRadius:"50%",background:"rgba(255,255,255,0.06)" }}/>
 
           {/* Icon */}
           <div
             style={{
-              width: 72,
-              height: 72,
+              width: 64,
+              height: 64,
               background: "rgba(255,255,255,0.15)",
               borderRadius: "50%",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              margin: "0 auto 14px",
+              margin: "0 auto 12px",
               border: "2px solid rgba(255,255,255,0.3)",
             }}
           >
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/>
               <circle cx="12" cy="10" r="3"/>
             </svg>
           </div>
 
-          <h2 style={{ color: "#fff", fontSize: 20, fontWeight: 700, margin: "0 0 6px", letterSpacing: "-.3px" }}>
+          <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, margin: "0 0 5px", letterSpacing: "-.3px" }}>
             Enable Location
           </h2>
-          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: 13, margin: 0, lineHeight: 1.5 }}>
+          <p style={{ color: "rgba(255,255,255,0.82)", fontSize: 12, margin: 0, lineHeight: 1.5 }}>
             OgaHub wants to show artisans near you
           </p>
         </div>
 
         {/* Body */}
-        <div style={{ padding: "24px" }}>
+        <div style={{ padding: "20px" }}>
           {/* Feature bullets */}
           {[
             { icon: "🔍", text: "Find skilled artisans in your area" },
@@ -143,31 +140,34 @@ function LocationModal({ onAllow, onDeny }) {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: 12,
-                padding: "10px 0",
-                borderBottom: "1px solid #f1f5f9",
+                gap: 10,
+                padding: "9px 0",
+                /* warm border matching app --border color */
+                borderBottom: "1px solid oklch(0.88 0.02 75)",
               }}
             >
-              <span style={{ fontSize: 20, flexShrink: 0 }}>{icon}</span>
-              <span style={{ fontSize: 13, color: "#475569", lineHeight: 1.4 }}>{text}</span>
+              <span style={{ fontSize: 18, flexShrink: 0 }}>{icon}</span>
+              {/* muted-foreground color from app palette */}
+              <span style={{ fontSize: 12.5, color: "oklch(0.42 0.03 60)", lineHeight: 1.4 }}>{text}</span>
             </div>
           ))}
 
           {/* Buttons */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 9, marginTop: 18 }}>
             <button
               onClick={onAllow}
               style={{
                 width: "100%",
-                padding: "13px",
-                background: "linear-gradient(135deg,#2563eb,#3b82f6)",
+                padding: "12px",
+                /* primary amber/orange matching app --primary */
+                background: "linear-gradient(135deg, oklch(0.55 0.16 50), oklch(0.65 0.16 58))",
                 color: "#fff",
                 border: "none",
-                borderRadius: 12,
-                fontSize: 14,
+                borderRadius: 11,
+                fontSize: 13.5,
                 fontWeight: 600,
                 cursor: "pointer",
-                boxShadow: "0 4px 14px rgba(59,130,246,0.4)",
+                boxShadow: "0 4px 14px rgba(180,100,20,0.35)",
                 transition: "opacity .15s",
               }}
               onMouseOver={(e) => (e.currentTarget.style.opacity = ".88")}
@@ -179,31 +179,27 @@ function LocationModal({ onAllow, onDeny }) {
               onClick={onDeny}
               style={{
                 width: "100%",
-                padding: "12px",
+                padding: "11px",
                 background: "transparent",
-                color: "#94a3b8",
-                border: "1.5px solid #e2e8f0",
-                borderRadius: 12,
-                fontSize: 13,
+                /* muted-foreground */
+                color: "oklch(0.52 0.03 60)",
+                /* border color from app palette */
+                border: "1.5px solid oklch(0.88 0.02 75)",
+                borderRadius: 11,
+                fontSize: 12.5,
                 fontWeight: 500,
                 cursor: "pointer",
                 transition: "border-color .15s, color .15s",
               }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = "#cbd5e1";
-                e.currentTarget.style.color = "#64748b";
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.borderColor = "#e2e8f0";
-                e.currentTarget.style.color = "#94a3b8";
-              }}
+              onMouseOver={(e) => { e.currentTarget.style.borderColor = "oklch(0.75 0.05 65)"; e.currentTarget.style.color = "oklch(0.35 0.04 60)"; }}
+              onMouseOut={(e) => { e.currentTarget.style.borderColor = "oklch(0.88 0.02 75)"; e.currentTarget.style.color = "oklch(0.52 0.03 60)"; }}
             >
               Not now
             </button>
           </div>
 
-          <p style={{ textAlign: "center", fontSize: 11, color: "#cbd5e1", marginTop: 14 }}>
-            You can change this in your browser settings anytime
+          <p style={{ textAlign: "center", fontSize: 10.5, color: "oklch(0.70 0.02 70)", marginTop: 12 }}>
+            You can change this in browser settings anytime
           </p>
         </div>
       </div>
