@@ -186,7 +186,7 @@ export default function Home({ onOpenAuth }) {
       <section className="py-14 bg-secondary/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold font-serif text-foreground mb-3">Browse by Category</h2>
+            <h2 className="text-3xl font-bold font-serif text-foreground mb-3">Browse by Category v2</h2>
             <p className="text-muted-foreground max-w-lg mx-auto">
               Find the right professional for every job. From home repairs to custom crafts.
             </p>
