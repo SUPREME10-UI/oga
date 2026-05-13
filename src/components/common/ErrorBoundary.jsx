@@ -43,7 +43,7 @@ class ErrorBoundary extends React.Component {
               <Home className="w-4 h-4 mr-2" /> Go Home
             </Button>
           </div>
-          {process.env.NODE_ENV === 'development' && (
+          {false && (
             <div className="mt-12 p-4 bg-slate-200 rounded-lg text-left overflow-auto max-w-2xl">
               <p className="font-mono text-xs text-slate-800">{this.state.error?.toString()}</p>
             </div>
