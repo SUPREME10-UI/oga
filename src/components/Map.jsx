@@ -3,13 +3,6 @@ import { useEffect, useRef } from "react";
 /**
  * MapView — uses window.L (Leaflet loaded via CDN in index.html)
  * This completely bypasses npm/bundler issues that affect react-leaflet in production.
- *
- * Props:
- *   className     – extra CSS classes on the wrapper div
- *   style         – inline styles merged onto the wrapper div
- *   initialCenter – { lat, lng } (defaults to Accra)
- *   initialZoom   – number (default 12)
- *   onMapReady    – callback(leafletMap)
  */
 export function MapView({
   className = "",
@@ -30,12 +23,14 @@ export function MapView({
     const L = window.L;
     if (!L) {
       console.error("[MapView] Leaflet (window.L) not available. Check CDN script in index.html.");
-      el.innerHTML = `
-        <div style="padding: 20px; text-align: center; background: #fee2e2; color: #991b1b; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px;">
-          <p style="font-weight: bold;">Map Error</p>
-          <p style="font-size: 12px;">Leaflet library failed to load. Please check your internet connection or browser console.</p>
-        </div>
-      `;
+      if (el) {
+        el.innerHTML = `
+          <div style="padding: 20px; text-align: center; background: #fee2e2; color: #991b1b; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px;">
+            <p style="font-weight: bold;">Map Error</p>
+            <p style="font-size: 12px;">Leaflet library failed to load. Please check your internet connection or browser console.</p>
+          </div>
+        `;
+      }
       return;
     }
 
@@ -55,34 +50,21 @@ export function MapView({
     mapInstanceRef.current = map;
     if (onMapReady) onMapReady(map);
 
-    // Try geolocation silently (permission already handled at app level)
+    // Try geolocation silently
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude: lat, longitude: lng } = pos.coords;
 
-          // Pulsing "you are here" marker using divIcon
           const userIcon = L.divIcon({
             className: "",
             html: `
               <div style="position:relative;width:22px;height:22px;">
-                <div style="
-                  position:absolute;inset:0;border-radius:50%;
-                  background:rgba(180,100,20,0.22);
-                  animation:pulse-user 2s infinite;
-                "></div>
-                <div style="
-                  position:absolute;inset:4px;border-radius:50%;
-                  background:#c97e2e;
-                  border:2px solid white;
-                  box-shadow:0 2px 8px rgba(180,100,20,0.45);
-                "></div>
+                <div style="position:absolute;inset:0;border-radius:50%;background:rgba(180,100,20,0.22);animation:pulse-user 2s infinite;"></div>
+                <div style="position:absolute;inset:4px;border-radius:50%;background:#c97e2e;border:2px solid white;box-shadow:0 2px 8px rgba(180,100,20,0.45);"></div>
               </div>
               <style>
-                @keyframes pulse-user{
-                  0%,100%{transform:scale(1);opacity:.6}
-                  50%{transform:scale(2.4);opacity:0}
-                }
+                @keyframes pulse-user{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(2.4);opacity:0}}
               </style>
             `,
             iconSize: [22, 22],
@@ -96,14 +78,11 @@ export function MapView({
 
           map.flyTo([lat, lng], 15, { duration: 1.6 });
         },
-        () => {
-          // Geolocation denied/failed — map still shows default center
-        },
+        () => {},
         { enableHighAccuracy: true, timeout: 10000 }
       );
     }
 
-    // Cleanup on unmount
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
