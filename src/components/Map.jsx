@@ -16,7 +16,6 @@ export function MapView({
 
   useEffect(() => {
     const el = containerRef.current;
-    console.log("[MapView] Mounting...", { el, L: window.L });
     if (!el || mapInstanceRef.current) return;
 
     // window.L is loaded via CDN <script> in index.html
@@ -100,8 +99,6 @@ export function MapView({
         width: "100%",
         height: "420px",
         minHeight: "300px",
-        background: "#f0f0f0",
-        border: "2px dashed #ccc",
         ...style,
       }}
     />
