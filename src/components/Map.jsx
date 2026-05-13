@@ -23,6 +23,7 @@ export function MapView({
 
   useEffect(() => {
     const el = containerRef.current;
+    console.log("[MapView] Mounting...", { el, L: window.L });
     if (!el || mapInstanceRef.current) return;
 
     // window.L is loaded via CDN <script> in index.html
