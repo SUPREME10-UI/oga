@@ -29,6 +29,12 @@ export function MapView({
     const L = window.L;
     if (!L) {
       console.error("[MapView] Leaflet (window.L) not available. Check CDN script in index.html.");
+      el.innerHTML = `
+        <div style="padding: 20px; text-align: center; background: #fee2e2; color: #991b1b; border-radius: 12px; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 10px;">
+          <p style="font-weight: bold;">Map Error</p>
+          <p style="font-size: 12px;">Leaflet library failed to load. Please check your internet connection or browser console.</p>
+        </div>
+      `;
       return;
     }
 
