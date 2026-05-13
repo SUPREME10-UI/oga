@@ -100,6 +100,8 @@ export function MapView({
         width: "100%",
         height: "420px",
         minHeight: "300px",
+        background: "#f0f0f0",
+        border: "2px dashed #ccc",
         ...style,
       }}
     />
