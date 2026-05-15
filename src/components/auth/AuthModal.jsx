@@ -76,7 +76,8 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     try {
       const userData = await login(formData.email, formData.password);
       onClose();
-      navigate(userData && userData.type ? `/dashboard/${userData.type}` : "/dashboard");
+      const type = userData && userData.type ? userData.type.toLowerCase() : "hirer";
+      navigate(`/dashboard/${type}`);
     } catch (error) {
       console.error("Error during login:", error);
       let errorMessage = "Failed to sign in. ";
@@ -132,7 +133,8 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       setTimeout(() => {
         setShowSuccess(false);
         onClose();
-        navigate(`/dashboard/${userData.type}`);
+        const type = userData && userData.type ? userData.type.toLowerCase() : "hirer";
+        navigate(`/dashboard/${type}`);
       }, 3000);
     } catch (error) {
       console.error("Error during signup:", error);
@@ -163,14 +165,16 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         if (userData.isNewUser || !userData.name) {
           setNewUserName(userData.name || "User");
           setShowSuccess(true);
+          const type = (userData.type || accountType).toLowerCase();
           setTimeout(() => {
             setShowSuccess(false);
             onClose();
-            navigate(`/dashboard/${userData.type || accountType}`);
+            navigate(`/dashboard/${type}`);
           }, 3000);
         } else {
+          const type = (userData.type || accountType).toLowerCase();
           onClose();
-          navigate(`/dashboard/${userData.type || accountType}`);
+          navigate(`/dashboard/${type}`);
         }
       }
     } catch (error) {

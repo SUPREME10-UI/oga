@@ -20,10 +20,12 @@ const ProtectedRoute = ({ allowedRoles }) => {
         return <Navigate to="/" state={{ from: location }} replace />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.type)) {
+    const userType = user.type ? user.type.toLowerCase() : 'hirer';
+
+    if (allowedRoles && !allowedRoles.includes(userType)) {
         console.log(`ProtectedRoute: User type ${user.type} not allowed for roles:`, allowedRoles);
         // If user has the wrong role, redirect them to their appropriate dashboard
-        return <Navigate to={`/dashboard/${user.type}`} replace />;
+        return <Navigate to={`/dashboard/${userType}`} replace />;
     }
 
     return <Outlet />;

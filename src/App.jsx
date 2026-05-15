@@ -30,7 +30,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 const DashboardRedirect = () => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/" replace />;
-  return <Navigate to={`/dashboard/${user.type}`} replace />;
+  const userType = user.type ? user.type.toLowerCase() : 'hirer';
+  return <Navigate to={`/dashboard/${userType}`} replace />;
 };
 
 function App() {
