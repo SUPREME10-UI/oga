@@ -44,7 +44,17 @@ export function AuthProvider({ children }) {
                 }
             } catch (error) {
                 console.error('Auth state observer error:', error);
-                setUser(null);
+                // Even if Firestore fetch fails, the user is still authenticated in Firebase Auth.
+                // Do NOT set user to null, or they will be kicked out in ProtectedRoute.
+                if (firebaseUser) {
+                    setUser({
+                        uid: firebaseUser.uid,
+                        id: firebaseUser.uid,
+                        email: firebaseUser.email
+                    });
+                } else {
+                    setUser(null);
+                }
             } finally {
                 setLoading(false);
             }
