@@ -14,7 +14,6 @@ function JobPostModal({ isOpen, onClose, onJobPost, initialData }) {
 
     useEffect(() => {
         if (initialData) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
             setFormData(initialData);
         } else {
             setFormData({ title: '', category: '', location: '', budget: '', description: '', urgency: 'normal' });

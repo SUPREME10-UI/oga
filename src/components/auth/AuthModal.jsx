@@ -47,7 +47,7 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     if (isOpen) {
       onClose();
     }
-  }, [location.pathname]);
+  }, [location.pathname, isOpen, onClose]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
