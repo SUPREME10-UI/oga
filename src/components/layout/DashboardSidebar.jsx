@@ -11,7 +11,8 @@ import {
   Mail, 
   Settings,
   Hammer,
-  CreditCard
+  CreditCard,
+  Calendar
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
