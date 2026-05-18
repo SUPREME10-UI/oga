@@ -22,6 +22,10 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import MainLayout from './components/layout/MainLayout';
 import DashboardLayout from './components/layout/DashboardLayout';
 import ErrorBoundary from './components/common/ErrorBoundary';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminJobs from './pages/admin/AdminJobs';
 import './App.css';
 
 import { useAuth } from './context/AuthContext';
@@ -186,6 +190,9 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
 
+          {/* Admin Portal - standalone, no layout wrapper */}
+          <Route path="/admin" element={<AdminLogin />} />
+
           {/* Dashboard Shell - completely separate from global Website Shell */}
           <Route element={<DashboardLayout />}>
             <Route element={<ProtectedRoute allowedRoles={['hirer']} />}>
@@ -206,6 +213,13 @@ function App() {
               <Route path="/dashboard/labourer/bookings" element={<Bookings />} />
               <Route path="/dashboard/labourer/settings" element={<Settings />} />
             </Route>
+          </Route>
+
+          {/* Admin Dashboard */}
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard/admin" element={<AdminDashboard />} />
+            <Route path="/dashboard/admin/users" element={<AdminUsers />} />
+            <Route path="/dashboard/admin/jobs" element={<AdminJobs />} />
           </Route>
 
           {/* Generic Redirect */}
