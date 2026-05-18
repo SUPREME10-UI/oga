@@ -97,6 +97,10 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       setAuthError("Passwords do not match");
       return;
     }
+    if (!formData.photo) {
+      setAuthError("Please upload a profile photo.");
+      return;
+    }
     if (accountType === "labourer") {
       if (!formData.profession || !formData.experience || !formData.bio) {
         setAuthError("Please fill in all labourer details.");
@@ -427,7 +431,6 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
                           accept="image/*"
                           onChange={handleFileChange}
                           className="hidden"
-                          required={activeTab === "signup"}
                         />
                         <Label htmlFor="photo" className="cursor-pointer flex flex-col items-center gap-2">
                           {formData.photo ? (
