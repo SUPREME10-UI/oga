@@ -47,7 +47,8 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     if (isOpen) {
       onClose();
     }
-  }, [location.pathname, isOpen, onClose]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;

@@ -25,19 +25,21 @@ export function AuthProvider({ children }) {
                     // Get user profile from Firestore
                     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
                     if (userDoc.exists()) {
-                        setUser({
+                        setUser(prev => ({
                             uid: firebaseUser.uid,
                             id: firebaseUser.uid, // Add id for compatibility
                             email: firebaseUser.email,
-                            ...userDoc.data()
-                        });
+                            ...userDoc.data(),
+                            ...prev // preserve optimistically set data
+                        }));
                     } else {
                         // Fallback if doc doesn't exist yet but user is authenticated
-                        setUser({
+                        setUser(prev => ({
                             uid: firebaseUser.uid,
                             id: firebaseUser.uid, // Add id for compatibility
-                            email: firebaseUser.email
-                        });
+                            email: firebaseUser.email,
+                            ...prev
+                        }));
                     }
                 } else {
                     setUser(null);
@@ -47,11 +49,12 @@ export function AuthProvider({ children }) {
                 // Even if Firestore fetch fails, the user is still authenticated in Firebase Auth.
                 // Do NOT set user to null, or they will be kicked out in ProtectedRoute.
                 if (firebaseUser) {
-                    setUser({
+                    setUser(prev => ({
                         uid: firebaseUser.uid,
                         id: firebaseUser.uid,
-                        email: firebaseUser.email
-                    });
+                        email: firebaseUser.email,
+                        ...prev
+                    }));
                 } else {
                     setUser(null);
                 }
