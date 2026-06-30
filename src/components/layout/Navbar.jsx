@@ -35,7 +35,9 @@ export default function Navbar({ onLoginClick, isFluid }) {
 
   const getDashboardLink = () => {
     if (!user) return "/";
-    return `/dashboard/${user.type || user.role || 'hirer'}`;
+    let userType = (user.type || user.role || 'hirer').toLowerCase();
+    if (userType === 'administrator') userType = 'admin';
+    return `/dashboard/${userType}`;
   };
 
   return (

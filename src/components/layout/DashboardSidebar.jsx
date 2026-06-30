@@ -21,6 +21,8 @@ export default function DashboardSidebar({ className, onNavigate }) {
     const { notifications } = useData();
 
     const isHirer = user?.type === 'hirer';
+    const isAdmin = user?.type === 'admin' || user?.type === 'administrator';
+    const userRole = isAdmin ? 'admin' : (user?.type || 'hirer');
     const myNotifications = notifications.filter(n => String(n.userId) === String(user?.id));
     const unreadMessages = myNotifications.filter(n => n.type === 'message' && !n.read).length;
 
@@ -29,12 +31,15 @@ export default function DashboardSidebar({ className, onNavigate }) {
         {
             title: "Overview",
             links: [
-                { to: `/dashboard/${user?.type}`, icon: LayoutDashboard, label: "Dashboard", end: true }
+                { to: `/dashboard/${userRole}`, icon: LayoutDashboard, label: "Dashboard", end: true }
             ]
         },
         {
             title: "Manage",
-            links: isHirer ? [
+            links: isAdmin ? [
+                { to: "/dashboard/admin/users", icon: Users, label: "Manage Users" },
+                { to: "/dashboard/admin/jobs", icon: Briefcase, label: "Manage Jobs" }
+            ] : isHirer ? [
                 { to: "/dashboard/hirer/jobs", icon: Briefcase, label: "My Jobs" },
                 { to: "/dashboard/hirer/applicants", icon: Users, label: "Applicants" },
                 { to: "/dashboard/hirer/bookings", icon: Calendar, label: "Bookings" }
@@ -53,8 +58,8 @@ export default function DashboardSidebar({ className, onNavigate }) {
         {
             title: "Account",
             links: [
-                { to: `/dashboard/${user?.type}/messages`, icon: Mail, label: "Messages", badge: unreadMessages },
-                { to: `/dashboard/${user?.type}/settings`, icon: Settings, label: "Settings" }
+                { to: `/dashboard/${userRole}/messages`, icon: Mail, label: "Messages", badge: unreadMessages },
+                { to: `/dashboard/${userRole}/settings`, icon: Settings, label: "Settings" }
             ]
         }
     ];
@@ -82,7 +87,7 @@ export default function DashboardSidebar({ className, onNavigate }) {
                     <div className="min-w-0">
                         <h3 className="font-semibold text-sm text-foreground truncate">{user?.name || 'User'}</h3>
                         <p className="text-xs text-muted-foreground capitalize">
-                            {isHirer ? 'Hirer Dashboard' : 'Artisan Dashboard'}
+                            {isAdmin ? 'Admin Dashboard' : isHirer ? 'Hirer Dashboard' : 'Artisan Dashboard'}
                         </p>
                     </div>
                 </div>

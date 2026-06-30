@@ -71,7 +71,8 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
     try {
       const userData = await login(formData.email, formData.password);
       onClose();
-      const type = userData && userData.type ? userData.type.toLowerCase() : "hirer";
+      let type = userData && userData.type ? userData.type.toLowerCase() : "hirer";
+      if (type === 'administrator') type = 'admin';
       navigate(`/dashboard/${type}`);
     } catch (error) {
       console.error("Error during login:", error);
@@ -132,7 +133,8 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
       setTimeout(() => {
         setShowSuccess(false);
         onClose();
-        const type = userData && userData.type ? userData.type.toLowerCase() : "hirer";
+        let type = userData && userData.type ? userData.type.toLowerCase() : "hirer";
+        if (type === 'administrator') type = 'admin';
         navigate(`/dashboard/${type}`);
       }, 3000);
     } catch (error) {
@@ -161,17 +163,17 @@ function AuthModal({ isOpen, onClose, initialTab = "login" }) {
         userData = await signInWithGoogle(profileData);
       }
       if (userData) {
+        let type = (userData.type || accountType).toLowerCase();
+        if (type === 'administrator') type = 'admin';
         if (userData.isNewUser || !userData.name) {
           setNewUserName(userData.name || "User");
           setShowSuccess(true);
-          const type = (userData.type || accountType).toLowerCase();
           setTimeout(() => {
             setShowSuccess(false);
             onClose();
             navigate(`/dashboard/${type}`);
           }, 3000);
         } else {
-          const type = (userData.type || accountType).toLowerCase();
           onClose();
           navigate(`/dashboard/${type}`);
         }

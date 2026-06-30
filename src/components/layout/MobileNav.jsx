@@ -11,8 +11,10 @@ export default function MobileNav() {
 
   if (!user) return null;
 
-  const isLabourer = user.type === 'labourer';
-  const dashboardPath = `/dashboard/${user.type}`;
+  let userType = user.type ? user.type.toLowerCase() : 'hirer';
+  if (userType === 'administrator') userType = 'admin';
+  const isLabourer = userType === 'labourer';
+  const dashboardPath = `/dashboard/${userType}`;
   
   // Count unread notifications for the badge
   const unreadCount = notifications?.filter(n => String(n.userId) === String(user.uid || user.id) && !n.read).length || 0;

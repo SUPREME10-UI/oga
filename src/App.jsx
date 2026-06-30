@@ -34,7 +34,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 const DashboardRedirect = () => {
   const { user } = useAuth();
   if (!user) return <Navigate to="/" replace />;
-  const userType = user.type ? user.type.toLowerCase() : 'hirer';
+  let userType = user.type ? user.type.toLowerCase() : 'hirer';
+  if (userType === 'administrator') userType = 'admin';
   return <Navigate to={`/dashboard/${userType}`} replace />;
 };
 
@@ -216,10 +217,14 @@ function App() {
           </Route>
 
           {/* Admin Dashboard */}
-          <Route element={<DashboardLayout />}>
-            <Route path="/dashboard/admin" element={<AdminDashboard />} />
-            <Route path="/dashboard/admin/users" element={<AdminUsers />} />
-            <Route path="/dashboard/admin/jobs" element={<AdminJobs />} />
+          <Route element={<ProtectedRoute allowedRoles={['admin', 'administrator']} />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard/admin" element={<AdminDashboard />} />
+              <Route path="/dashboard/admin/users" element={<AdminUsers />} />
+              <Route path="/dashboard/admin/jobs" element={<AdminJobs />} />
+              <Route path="/dashboard/admin/messages" element={<Messages />} />
+              <Route path="/dashboard/admin/settings" element={<Settings />} />
+            </Route>
           </Route>
 
           {/* Generic Redirect */}

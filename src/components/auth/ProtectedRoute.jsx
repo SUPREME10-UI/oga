@@ -20,7 +20,8 @@ const ProtectedRoute = ({ allowedRoles }) => {
         return <Navigate to="/" state={{ from: location }} replace />;
     }
 
-    const userType = user.type ? user.type.toLowerCase() : 'hirer';
+    let userType = user.type ? user.type.toLowerCase() : 'hirer';
+    if (userType === 'administrator') userType = 'admin';
 
     if (allowedRoles && !allowedRoles.includes(userType)) {
         console.log(`ProtectedRoute: User type ${user.type} not allowed for roles:`, allowedRoles);

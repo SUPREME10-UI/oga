@@ -67,6 +67,7 @@ export function AuthProvider({ children }) {
     }, []);
 
     const login = async (email, password) => {
+        setLoading(true);
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password);
             // Fetch user profile immediately for redirection purposes
@@ -85,11 +86,13 @@ export function AuthProvider({ children }) {
             return userData;
         } catch (error) {
             console.error('Login error:', error);
+            setLoading(false);
             throw error;
         }
     };
 
     const signup = async (email, password, profileData) => {
+        setLoading(true);
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
@@ -111,11 +114,13 @@ export function AuthProvider({ children }) {
             return fullUserData;
         } catch (error) {
             console.error('Signup error:', error);
+            setLoading(false);
             throw error;
         }
     };
 
     const signInWithGoogle = async (profileData = {}) => {
+        setLoading(true);
         try {
             const provider = new GoogleAuthProvider();
             const result = await signInWithPopup(auth, provider);
@@ -148,6 +153,7 @@ export function AuthProvider({ children }) {
             return userData;
         } catch (error) {
             console.error('Google Sign-In Error:', error);
+            setLoading(false);
             throw error;
         }
     };

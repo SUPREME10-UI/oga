@@ -32,7 +32,9 @@ export default function DashboardLayout() {
     const handleNotificationClick = async (notif) => {
         await markNotificationAsRead(notif.id);
         if (notif.type === 'message') {
-            navigate(`/dashboard/${user.type}/messages`);
+            let userType = user?.type ? user.type.toLowerCase() : 'hirer';
+            if (userType === 'administrator') userType = 'admin';
+            navigate(`/dashboard/${userType}/messages`);
         }
         setShowNotifications(false);
     };

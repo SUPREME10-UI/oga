@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../../services/firebase';
+import { useAuth } from '../../context/AuthContext';
 import { Shield, Eye, EyeOff, Lock, Mail, AlertCircle, Hammer, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 export default function AdminLogin() {
     const navigate = useNavigate();
+    const { login, logout, resetPassword } = useAuth();
     const [mode, setMode] = useState('login'); // 'login' or 'reset'
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -23,7 +22,7 @@ export default function AdminLogin() {
 
         if (mode === 'reset') {
             try {
-                await sendPasswordResetEmail(auth, email);
+                await resetPassword(email);
                 setSuccess('Reset link sent! Please check your email inbox.');
                 setLoading(false);
             } catch (err) {
@@ -35,15 +34,12 @@ export default function AdminLogin() {
         }
 
         try {
-            // Sign in with Firebase
-            const credential = await signInWithEmailAndPassword(auth, email, password);
+            // Sign in using our AuthContext provider
+            const userData = await login(email, password);
 
-            // Fetch the user doc from Firestore to check their role
-            const userDoc = await getDoc(doc(db, 'users', credential.user.uid));
-
-            if (!userDoc.exists() || userDoc.data().type !== 'admin') {
+            if (!userData || userData.type !== 'admin') {
                 // Not an admin — sign them back out and show error
-                await auth.signOut();
+                await logout();
                 setError('Access denied. This portal is for authorized administrators only.');
                 setLoading(false);
                 return;
